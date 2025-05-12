@@ -9,6 +9,15 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 
 ---
 
+## Pages in this repo
+
+| Page | File | Description |
+|------|------|-------------|
+| **Home** | `index.html` | Landing page linking to all tools |
+| **Curriculum Vitae** | `AsadMirza_CV.html` | Full interactive academic CV |
+
+---
+
 ## Contact
 
 **Dr. Asad Mirza, PhD**
@@ -17,9 +26,6 @@ Florida International University · Miami, FL 33174
 
 📧 [amirza@fiu.edu](mailto:amirza@fiu.edu)
 🔗 [ORCID: 0000-0003-4515-2203](https://orcid.org/0000-0003-4515-2203)
-📑 [Google Scholar](https://scholar.google.com/citations?user=a8fYPM0AAAAJ)
-🔬 [ResearchGate](https://www.researchgate.net/profile/Asad_Mirza2)
-⌥ [GitHub](https://github.com/DThornz)
 
 ---
 
