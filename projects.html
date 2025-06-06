@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Asad Mirza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6f8;--bg2:#ffffff;--bg3:#eef0f4;--bg4:#e8ebf2;
+  --border:#d0d6e0;--border2:#c5cad8;
+  --teal:#0b7a6e;--teal-dim:#0b7a6e;--teal-glow:rgba(11,122,110,.08);
+  --amber:#b45309;--amber-glow:rgba(180,83,9,.08);
+  --violet:#7c3aed;--rose:#dc2626;--green:#15803d;--orange:#c2410c;
+  --text:#1a202c;--muted:#4a5568;--dim:#718096;--dimmer:#a0aec0;
+  --mono:'DM Mono',monospace;--serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.10),0 8px 32px rgba(0,0,0,.06);
+  --tr:0.22s cubic-bezier(.4,0,.2,1);--r:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);background:var(--bg);color:var(--text);
+  font-size:15px;line-height:1.65;min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 45% at 85% 15%,rgba(45,212,191,.05) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 35% at 10% 85%,rgba(167,139,250,.03) 0%,transparent 60%);
+}
+a{color:var(--teal);text-decoration:none;transition:color var(--tr)}
+a:hover{color:var(--teal);text-decoration:underline}
+
+/* ── Site Nav (matches other pages) ─────────────────────── */
+.site-nav{
+  position:sticky;top:0;z-index:200;
+  background:var(--nav-bg,rgba(245,246,248,.92));backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;padding:0 24px;height:44px;
+}
+body.dark-mode .site-nav{background:rgba(6,14,28,.96)!important;border-color:#1c3050!important;}
+.site-nav-logo{
+  font-family:var(--mono);font-size:.8em;color:var(--teal);font-weight:500;
+  letter-spacing:.04em;margin-right:auto;white-space:nowrap;text-decoration:none;
+}
+.site-nav-logo span{color:var(--muted)}
+.site-nav-link{
+  padding:5px 12px;border-radius:6px;font-size:.76em;
+  color:var(--muted);text-decoration:none;transition:all var(--tr);
+  border:1px solid transparent;font-family:var(--sans);white-space:nowrap;
+}
+.site-nav-link:hover{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.15);text-decoration:none}
+.site-nav-link.curr{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.2);font-weight:600}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.page-hero{
+  position:relative;z-index:1;
+  padding:48px 40px 36px;max-width:1100px;margin:0 auto;
+}
+.page-eyebrow{
+  font-family:var(--mono);font-size:.7em;color:var(--teal);
+  letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;
+}
+.page-title{
+  font-family:var(--serif);font-size:clamp(2em,4vw,3em);
+  font-weight:400;margin-bottom:10px;
+}
+.page-title span{color:var(--teal)}
+.page-desc{font-size:.9em;color:var(--muted);max-width:600px;line-height:1.6;margin-bottom:24px}
+.filter-bar{display:flex;gap:7px;flex-wrap:wrap}
+.filter-btn{
+  padding:5px 14px;border-radius:99px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--muted);font-size:.76em;
+  font-family:var(--mono);cursor:pointer;transition:all var(--tr);
+}
+.filter-btn:hover{border-color:var(--teal-dim);color:var(--teal)}
+.filter-btn.active{background:var(--teal);color:#06111f;border-color:var(--teal);font-weight:600}
+
+/* ── Project Grid ────────────────────────────────────────── */
+.projects-wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 40px 80px}
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:22px;
+}
+
+/* ── Project Card ────────────────────────────────────────── */
+.proj-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  transition:border-color var(--tr),transform var(--tr),box-shadow var(--tr);
+  display:flex;flex-direction:column;cursor:pointer;
+}
+.proj-card:hover{
+  border-color:var(--teal-dim);transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.proj-card.hidden{display:none}
+
+/* Media slot */
+.proj-media{
+  width:100%;aspect-ratio:16/9;background:var(--bg3);
+  position:relative;overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.proj-media-placeholder{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  color:var(--dim);
+}
+.proj-media-placeholder .ph-icon{font-size:2.5em;opacity:.4}
+.proj-media-placeholder .ph-text{font-family:var(--mono);font-size:.68em;letter-spacing:.08em;text-transform:uppercase;opacity:.35}
+.proj-media img{width:100%;height:100%;object-fit:cover;display:block}
+.proj-media video{width:100%;height:100%;object-fit:cover;display:block}
+.proj-media iframe{width:100%;height:100%;border:none}
+.proj-media-badge{
+  position:absolute;top:10px;right:10px;
+  padding:3px 8px;border-radius:99px;font-size:.65em;
+  font-family:var(--mono);font-weight:500;
+  background:rgba(6,14,28,.8);color:var(--teal);
+  border:1px solid rgba(45,212,191,.25);backdrop-filter:blur(8px);
+}
+
+/* Card body */
+.proj-body{padding:18px 20px 14px;flex:1;display:flex;flex-direction:column;gap:0}
+.proj-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.proj-tag{
+  padding:2px 8px;border-radius:99px;font-size:.65em;font-family:var(--mono);
+  border:1px solid;
+}
+.proj-tag.cfd{background:rgba(45,212,191,.08);color:var(--teal);border-color:rgba(45,212,191,.2)}
+.proj-tag.fea{background:rgba(245,158,11,.08);color:var(--amber);border-color:rgba(245,158,11,.2)}
+.proj-tag.bio{background:rgba(167,139,250,.08);color:var(--violet);border-color:rgba(167,139,250,.2)}
+.proj-tag.ml{background:rgba(74,222,128,.08);color:var(--green);border-color:rgba(74,222,128,.2)}
+.proj-tag.code{background:rgba(248,113,113,.08);color:var(--rose);border-color:rgba(248,113,113,.2)}
+
+.proj-title{
+  font-family:var(--serif);font-size:1.15em;font-weight:400;
+  color:var(--text);margin-bottom:7px;line-height:1.3;
+}
+.proj-desc{font-size:.83em;color:var(--muted);line-height:1.6;flex:1}
+
+.proj-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:14px;padding-top:12px;border-top:1px solid var(--border);
+}
+.proj-year{font-family:var(--mono);font-size:.7em;color:var(--dim)}
+.proj-links{display:flex;gap:6px}
+.proj-link{
+  padding:3px 10px;border-radius:5px;font-size:.7em;font-family:var(--mono);
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--muted);text-decoration:none;transition:all var(--tr);
+}
+.proj-link:hover{border-color:var(--teal);color:var(--teal);text-decoration:none}
+
+/* Expand overlay */
+.proj-expand-btn{
+  position:absolute;inset:0;background:none;border:none;
+  cursor:pointer;z-index:1;
+}
+
+/* ── Expanded modal ──────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(4,9,18,.85);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:14px;max-width:780px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(16px) scale(.97);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.modal-overlay.open .modal{transform:translateY(0) scale(1)}
+.modal-media{width:100%;aspect-ratio:16/9;background:var(--bg3);position:relative;overflow:hidden;border-radius:14px 14px 0 0}
+.modal-media img,.modal-media video{width:100%;height:100%;object-fit:cover}
+.modal-media iframe{width:100%;height:100%;border:none}
+.modal-body{padding:26px 28px}
+.modal-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.modal-title{font-family:var(--serif);font-size:1.7em;font-weight:400;color:var(--text);margin-bottom:8px;line-height:1.2}
+.modal-subtitle{font-size:.85em;color:var(--muted);font-style:italic;margin-bottom:18px}
+.modal-section-label{
+  font-family:var(--mono);font-size:.65em;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.modal-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.modal-text{font-size:.88em;color:var(--muted);line-height:1.75;margin-bottom:16px}
+.modal-text strong{color:var(--text)}
+
+/* Equation display */
+.modal-eq{
+  background:var(--bg3);border:1px solid var(--border);
+  border-left:3px solid var(--amber);
+  border-radius:6px;padding:12px 16px;
+  font-family:var(--mono);font-size:.82em;color:var(--amber);
+  margin:12px 0;line-height:1.8;white-space:pre-wrap;
+}
+.modal-eq .eq-comment{color:var(--dim)}
+
+/* Gallery strip */
+.modal-gallery{display:flex;gap:8px;overflow-x:auto;margin:12px 0;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.modal-gallery img{height:120px;width:auto;border-radius:6px;border:1px solid var(--border);flex-shrink:0;object-fit:cover;cursor:pointer;transition:border-color var(--tr)}
+.modal-gallery img:hover{border-color:var(--teal)}
+
+/* Metrics bar */
+.modal-metrics{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0}
+.modal-metric{flex:1;padding:12px;text-align:center;border-right:1px solid var(--border)}
+.modal-metric:last-child{border-right:none}
+.modal-metric-num{font-family:var(--serif);font-size:1.4em;color:var(--teal);margin-bottom:2px}
+.modal-metric-label{font-family:var(--mono);font-size:.62em;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+
+/* Modal links */
+.modal-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.modal-link{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 16px;border-radius:7px;font-size:.8em;font-family:var(--mono);
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--teal);text-decoration:none;transition:all var(--tr);
+}
+.modal-link:hover{border-color:var(--teal);background:var(--teal-glow);text-decoration:none}
+
+/* Close btn */
+.modal-close{
+  position:sticky;top:0;float:right;
+  margin:12px 12px 0 0;width:32px;height:32px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--muted);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--tr);z-index:10;
+}
+.modal-close:hover{border-color:var(--teal);color:var(--teal)}
+
+/* Coming-soon cards */
+.proj-card.placeholder{opacity:.45;cursor:default;pointer-events:none}
+.proj-card.placeholder:hover{transform:none;box-shadow:none;border-color:var(--border)}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media(max-width:700px){
+  .page-hero,.projects-wrap{padding-left:16px;padding-right:16px}
+  .projects-grid{grid-template-columns:1fr}
+  .modal-body{padding:18px 16px}
+  .modal-metrics{flex-wrap:wrap}
+  .modal-metric{min-width:50%}
+}
+
+
+/* ───────────────────────────────────────────────────────────
+   SITE-WIDE ACCESSIBILITY PANEL  +  LIGHT/DARK THEME SYSTEM
+   Default: light mode. Dark mode activated by .dark-mode on <body>.
+─────────────────────────────────────────────────────────── */
+
+/* ── Floating gear button ── */
+.acc-btn{
+  position:fixed;bottom:22px;right:22px;z-index:9100;
+  width:38px;height:38px;border-radius:50%;
+  background:#0b7a6e;color:#fff;border:none;
+  cursor:pointer;font-size:1em;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.2);transition:transform .2s;
+}
+.acc-btn:hover{transform:scale(1.1)}
+
+/* ── Panel ── */
+.acc-panel{
+  position:fixed;bottom:70px;right:22px;z-index:9100;
+  width:220px;padding:16px 18px 12px;border-radius:12px;
+  border:1px solid #d4d9e8;background:#fff;
+  box-shadow:0 8px 32px rgba(0,0,0,.13);
+  opacity:0;transform:translateY(8px) scale(.97);
+  pointer-events:none;transition:all .2s cubic-bezier(.4,0,.2,1);
+}
+.acc-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+.acc-panel-title{font-size:.77em;font-weight:600;margin-bottom:13px;color:#1a202c}
+.acc-row{margin-bottom:12px}
+.acc-row-label{font-size:.65em;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin-bottom:6px}
+.acc-toggle-row{display:flex;align-items:center;justify-content:space-between}
+.acc-toggle-label{font-size:.81em;color:#4a5568}
+.acc-switch{position:relative;width:38px;height:20px;flex-shrink:0}
+.acc-switch input{opacity:0;width:0;height:0}
+.acc-slider{position:absolute;inset:0;background:#d1d5db;border-radius:99px;cursor:pointer;transition:background .18s}
+.acc-slider::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;left:3px;top:3px;background:#fff;transition:transform .18s}
+.acc-switch input:checked + .acc-slider{background:#0b7a6e}
+.acc-switch input:checked + .acc-slider::before{transform:translateX(18px)}
+.acc-btn-group{display:flex;gap:4px}
+.acc-opt{flex:1;padding:4px;border:1px solid #d4d9e8;border-radius:5px;
+  background:#f5f6f8;color:#718096;font-size:.72em;cursor:pointer;text-align:center;
+  transition:all .15s;font-family:inherit;line-height:1.4}
+.acc-opt:hover{color:#0b7a6e;border-color:#0b7a6e;background:rgba(11,122,110,.06)}
+.acc-opt.active{color:#0b7a6e;border-color:#0b7a6e;background:rgba(11,122,110,.08);font-weight:600}
+
+/* ── Dark mode acc-panel overrides ── */
+body.dark-mode .acc-panel{background:#0a1628;border-color:#1c3050}
+body.dark-mode .acc-panel-title{color:#e2e8f0}
+body.dark-mode .acc-toggle-label{color:#94a3b8}
+body.dark-mode .acc-opt{background:#132240;border-color:#1c3050;color:#7a90ae}
+body.dark-mode .acc-opt.active{background:rgba(45,212,191,.15);border-color:#2dd4bf;color:#2dd4bf}
+
+/* ── Font variants ── */
+body.font-serif,body.font-serif *:not(code):not(pre){font-family:'DM Serif Display',Georgia,serif!important}
+body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courier New',monospace!important}
+
+/* ── Size variants ── */
+body.size-sm{font-size:13px!important}
+body.size-md{font-size:15px!important}
+body.size-lg{font-size:17px!important}
+
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE — comprehensive overrides for every page
+   All rules use !important to beat any hardcoded backgrounds.
+══════════════════════════════════════════════════════════ */
+body.dark-mode{
+  background:#060e1c!important;
+  color:#e2e8f0!important;
+}
+
+/* ── Navigation ── */
+body.dark-mode .site-nav-link,body.dark-mode .nav-link{color:#7a90ae!important}
+body.dark-mode .site-nav-link:hover,body.dark-mode .site-nav-link.curr{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
+body.dark-mode .site-nav-logo{color:#2dd4bf!important}
+body.dark-mode .nav-link:hover,body.dark-mode .nav-link.active{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
+body.dark-mode .nav-logo{color:#2dd4bf!important}
+body.dark-mode .nav{background:rgba(6,14,28,.96)!important;border-color:#1c3050!important}
+
+/* ── Page / layout backgrounds ── */
+body.dark-mode main,
+body.dark-mode .page-wrap,
+body.dark-mode .content,
+body.dark-mode .layout,
+body.dark-mode .layout-wrapper,
+body.dark-mode .main-content{background:transparent!important}
+
+body.dark-mode .sidebar{background:#0a1628!important;border-color:#1c3050!important;color:#e2e8f0!important}
+body.dark-mode .nav-item{color:#7a90ae!important}
+body.dark-mode .nav-item:hover,body.dark-mode .nav-item.active{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
+body.dark-mode .nav-section-label{color:#3d5470!important}
+body.dark-mode .nav-count{background:#0f1f38!important;color:#3d5470!important}
+
+/* ── Cards & panels ── */
+body.dark-mode .card,
+body.dark-mode .proj-card,
+body.dark-mode .calc-card,
+body.dark-mode .sim-section,
+body.dark-mode .canvas-card,
+body.dark-mode .phase-wrap{background:#0a1628!important;border-color:#1c3050!important}
+body.dark-mode .card:hover,
+body.dark-mode .proj-card:hover{border-color:#1a8a7d!important}
+body.dark-mode .card-title,
+body.dark-mode .proj-title{color:#e2e8f0!important}
+body.dark-mode .card-desc,
+body.dark-mode .proj-desc,
+body.dark-mode .card-subtitle{color:#7a90ae!important}
+body.dark-mode .card-tag,
+body.dark-mode .proj-tag,
+body.dark-mode .section-tag,
+body.dark-mode .hero-eyebrow,
+body.dark-mode .page-eyebrow{color:#2dd4bf!important}
+
+/* ── Hero section ── */
+body.dark-mode .hero{border-color:#1c3050!important}
+body.dark-mode .hero-title,
+body.dark-mode .page-title,
+body.dark-mode .hero-name,
+body.dark-mode .section-title{color:#e2e8f0!important}
+body.dark-mode .hero-sub,
+body.dark-mode .section-body,
+body.dark-mode .page-desc{color:#7a90ae!important}
+body.dark-mode .hero-links .hero-badge,
+body.dark-mode .hero-badge{background:rgba(28,48,80,.8)!important;border-color:#1c3050!important;color:#7a90ae!important}
+body.dark-mode .hero-badges .pill{background:rgba(45,212,191,.12)!important;border-color:rgba(45,212,191,.2)!important;color:#2dd4bf!important}
+
+/* ── Stats & metrics ── */
+body.dark-mode .stats-ribbon,
+body.dark-mode .hero-meta{background:transparent!important}
+body.dark-mode .stat-card{background:#0a1628!important;border-color:#1c3050!important}
+body.dark-mode .stat-label,body.dark-mode .hero-stat-label{color:#3d5470!important}
+
+/* ── Calc page specifics ── */
+body.dark-mode .sim-controls{background:#0f1f38!important}
+body.dark-mode .sim-plots{background:#0a1628!important}
+body.dark-mode .ctrl-group-label{color:#2dd4bf!important}
+body.dark-mode .ctrl-label,body.dark-mode .ctrl-val{color:#94a3b8!important}
+body.dark-mode .ctrl-select,
+body.dark-mode .field,
+body.dark-mode select,
+body.dark-mode input[type=number],
+body.dark-mode input[type=text]{background:#132240!important;border-color:#1c3050!important;color:#e2e8f0!important}
+body.dark-mode .card-header,
+body.dark-mode .canvas-card-header{background:#0f1f38!important;border-color:#1c3050!important}
+body.dark-mode .canvas-card-title{color:#e2e8f0!important}
+body.dark-mode .canvas-card-sub{color:#7a90ae!important}
+body.dark-mode .formula,body.dark-mode .eq-block{background:#0f1f38!important;border-color:#1c3050!important}
+body.dark-mode .output{background:#0f1f38!important;border-color:#1c3050!important}
+body.dark-mode .output-header{background:rgba(45,212,191,.07)!important;border-color:#1c3050!important}
+body.dark-mode .out-row{border-color:rgba(28,48,80,.6)!important}
+body.dark-mode .out-label{color:#7a90ae!important}
+body.dark-mode .btn-calc{background:#2dd4bf!important;color:#06111f!important}
+body.dark-mode .btn-stop,body.dark-mode .btn-reset{background:#132240!important;color:#7a90ae!important;border-color:#1c3050!important}
+body.dark-mode .param-table th{background:#0f1f38!important;border-color:#1c3050!important;color:#3d5470!important}
+body.dark-mode .param-table td{border-color:#1c3050!important}
+body.dark-mode .conv-table td,body.dark-mode .conv-table th{border-color:#1c3050!important}
+
+/* ── HH page ── */
+body.dark-mode .circuit-wrap,
+body.dark-mode .callout{background:#0a1628!important;border-color:#1c3050!important}
+body.dark-mode .eq-block{color:#f59e0b!important}
+body.dark-mode .section-body p,body.dark-mode .section-body{color:#7a90ae!important}
+body.dark-mode .section-num{color:#2dd4bf!important}
+body.dark-mode .ap-stats{background:#0f1f38!important;border-color:#1c3050!important}
+body.dark-mode .ap-stat{border-color:#1c3050!important}
+body.dark-mode .ap-stat-label{color:#3d5470!important}
+body.dark-mode .sim-header{background:linear-gradient(135deg,#0a6b60 0%,#0d8a7c 100%)!important}
+body.dark-mode .ref-item{border-color:#1c3050!important;color:#7a90ae!important}
+body.dark-mode .param-table{background:transparent!important}
+body.dark-mode .hero-meta .hero-stat-num,body.dark-mode .hero-stat-num{color:#2dd4bf!important}
+body.dark-mode .hero-pills .pill{background:rgba(45,212,191,.1)!important;border-color:rgba(45,212,191,.2)!important}
+
+/* ── Modals ── */
+body.dark-mode .modal-overlay{background:rgba(2,6,14,.88)!important}
+body.dark-mode .modal{background:#0a1628!important;border-color:#1c3050!important}
+body.dark-mode .modal-body,.modal-title{color:#e2e8f0!important}
+body.dark-mode .modal-subtitle,.modal-text{color:#7a90ae!important}
+body.dark-mode .modal-section-label{color:#2dd4bf!important}
+body.dark-mode .modal-section-label::after{background:#1c3050!important}
+body.dark-mode .modal-metrics{border-color:#1c3050!important}
+body.dark-mode .modal-metric{border-color:#1c3050!important;background:transparent!important}
+body.dark-mode .modal-link{background:#0f1f38!important;border-color:#1c3050!important}
+body.dark-mode .filter-btn{background:#0f1f38!important;border-color:#1c3050!important;color:#7a90ae!important}
+body.dark-mode .filter-btn.active{background:#2dd4bf!important;color:#06111f!important;border-color:#2dd4bf!important}
+body.dark-mode .modal-close{background:#0f1f38!important;border-color:#1c3050!important;color:#7a90ae!important}
+body.dark-mode .modal-media{background:#0f1f38!important}
+body.dark-mode .modal-eq{background:#0f1f38!important;border-color:#1c3050!important}
+
+/* ── Projects ── */
+body.dark-mode .proj-media{background:#0f1f38!important}
+body.dark-mode .ph-icon,.dark-mode .ph-text{color:#3d5470!important}
+body.dark-mode .proj-media-badge{background:rgba(6,14,28,.9)!important;border-color:rgba(45,212,191,.25)!important}
+body.dark-mode .proj-footer{border-color:#1c3050!important}
+body.dark-mode .proj-year{color:#3d5470!important}
+body.dark-mode .proj-link{background:#0f1f38!important;border-color:#1c3050!important;color:#7a90ae!important}
+body.dark-mode .proj-link:hover{border-color:#2dd4bf!important;color:#2dd4bf!important}
+body.dark-mode .page-hero,.dark-mode .projects-wrap{background:transparent!important}
+
+/* ── index landing cards ── */
+body.dark-mode .card-chips .chip{background:rgba(45,212,191,.1)!important;border-color:rgba(45,212,191,.2)!important;color:#2dd4bf!important}
+body.dark-mode .card::before{opacity:0}
+body.dark-mode footer{border-color:#1c3050!important;color:#3d5470!important}
+body.dark-mode footer a{color:#3d5470!important}
+
+/* ── Divider / misc ── */
+body.dark-mode .section-divider{background:#1c3050!important}
+body.dark-mode .callout-amber{background:rgba(245,158,11,.08)!important;border-color:rgba(245,158,11,.25)!important}
+body.dark-mode .callout-title{color:#7a90ae!important}
+body.dark-mode .callout-amber .callout-title{color:#f59e0b!important}
+body.dark-mode .hero{border-color:#1c3050!important}
+
+
+/* ── Nav dropdown ── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: 100%; left: 50%;
+  background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  min-width: 170px; padding: 6px;
+  padding-top: 12px;
+  margin-top: -6px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: block; padding: 7px 14px; border-radius: 6px;
+  font-size: .77em; color: var(--muted); text-decoration: none;
+  font-family: var(--sans); white-space: nowrap;
+  transition: all .15s;
+}
+.nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
+body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
+</style>
+</head>
+<body class="light-mode">
+
+<!-- ── Site Nav ───────────────────────────────────────────── -->
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link" href="index.html">Home</a>
+  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
+  <div class="nav-dropdown">
+  <a class="site-nav-link curr" href="projects.html">Projects ▾</a>
+  <div class="nav-dropdown-menu">
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/hodgkin-huxley/">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/maxwell-boltzmann/">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/lbm-cfd/">🌊 LBM CFD Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ Eng / FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/academic-ref-validator/">📑 Reference Validator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/1D-Energy-Transport-Sim/">🌡 1D Energy Transport Sim</a>
+    <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
+  </div>
+</div>
+</div>
+
+<!-- ── Page Hero ─────────────────────────────────────────── -->
+<div class="page-hero">
+  <div class="page-eyebrow">Research Portfolio</div>
+  <h1 class="page-title">Project <span>Showcase</span></h1>
+  <p class="page-desc">Selected research projects, tools, and computational work spanning cardiovascular CFD, biomedical image analysis, cerebrovascular modeling, and engineering education.</p>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filter('all',this)">All</button>
+    <button class="filter-btn" onclick="filter('cfd',this)">CFD / FSI</button>
+    <button class="filter-btn" onclick="filter('fea',this)">FEA</button>
+    <button class="filter-btn" onclick="filter('bio',this)">Biomedical</button>
+    <button class="filter-btn" onclick="filter('ml',this)">Image / ML</button>
+    <button class="filter-btn" onclick="filter('code',this)">Software</button>
+      <button class="filter-btn" onclick="filter('cardio',this)">Cardiovascular</button>
+      <button class="filter-btn" onclick="filter('sim',this)">Simulation</button>
+      <button class="filter-btn" onclick="filter('edu',this)">Educational</button>
+      <button class="filter-btn" onclick="filter('phys',this)">Physics</button>
+      <button class="filter-btn" onclick="filter('neuro',this)">Neuroscience</button>
+  </div>
+</div>
+
+<!-- ── Projects Grid ─────────────────────────────────────── -->
+<div class="projects-wrap">
+<div class="projects-grid" id="grid">
+
+  <!-- ══ PROJECT: PhD Dissertation ══════════════════════════ -->
+  <div class="proj-card" data-tags="cfd bio fea cardio sim"
+    data-title="PhD Dissertation — Computational CAVD Biomarker Pipeline"
+    data-subtitle="Florida International University · Defended June 26, 2024"
+    data-year="2024"
+    data-desc="Doctoral dissertation developing and validating hemodynamic biomarkers of calcific aortic valve disease (CAVD) detectable before symptomatic onset. Four aims: (1) Non-Newtonian blood modeling requirements in severely calcified valves; (2) PSIS bioscaffold early-stage CAVD model validated against in vitro hydrodynamics and nanoindentation; (3) Mouse aortic valve parametric model explaining species differences in coronary cusp calcification; (4) Parametric 50+ FSI pipeline across clinical valve sizes (22–30mm) and CAVD grades 1–6."
+    data-desc2="Key findings: TAWSS and OSI detect early-stage CAVD (28% TAWSS increase, p<0.05 stiffness change) when all conventional hydrodynamic parameters are normal. Non-Newtonian viscosity models are required for accurate WSS prediction in severe CAVD. Larger valve size shows a marginal hemodynamic protective effect. Asymmetric CAVD grades produce asymmetric aortic jets linked to downstream aortic wall stress patterns."
+    data-metrics='[["50+","FSI simulations"],["R²>0.85","Validation"],["2","Publications"]]'
+    data-equations="TAWSS = (1/T)·∫|τ_w| dt     # time-averaged wall shear stress
+OSI = 0.5·(1 − |∫τ dt| / ∫|τ| dt)   # oscillatory shear index
+Carreau-Yasuda: μ(γ̇) = μ∞ + (μ₀−μ∞)[1+(λγ̇)ᵃ]^((n−1)/a)"
+    data-links='[{"text":"📄 Bioengineering 2024","url":"https://doi.org/10.3390/bioengineering11100955"},{"text":"📄 J. Biomech. Eng. 2022","url":"https://doi.org/10.1115/1.4054630"},{"text":"🎓 Full Summary","url":"dissertation.html"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🫀</span>
+        <span class="ph-text">Aortic Valve FSI · CAVD Biomarkers</span>
+      </div>
+      <span class="proj-media-badge">CFD · FSI · Biomarkers</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD/FSI</span>
+        <span class="proj-tag bio">Cardiovascular</span>
+        <span class="proj-tag fea">FEA</span>
+      </div>
+      <div class="proj-title">PhD Dissertation — Computational CAVD Biomarker Pipeline</div>
+      <div class="proj-desc">Developed and validated TAWSS and OSI as pre-symptomatic CAVD biomarkers through patient-specific FSI simulations spanning 50+ valve geometries across clinical sizes and disease grades.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2019 – 2024</span>
+        <div class="proj-links">
+          <a class="proj-link" href="dissertation.html" onclick="event.stopPropagation()">Summary →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- ══ PROJECT 2: Non-Newtonian Modeling ════════════════════════ -->
+  <div class="proj-card" data-tags="cfd bio cardio sim"
+    data-title="Non-Newtonian Blood Flow Modeling"
+    data-subtitle="Journal of Biomechanical Engineering 2022"
+    data-year="2021–2022"
+    data-desc="Investigated when Newtonian vs non-Newtonian viscosity models are required in aortic valve CFD. In severely calcified geometries, regions of low shear rate (<100 s⁻¹) develop on the fibrosa surface — particularly in crevices between calcific nodules — where the Newtonian assumption yields artificially low WSS predictions. Compared Newtonian, Power Law, Carreau, and Quemada models across quasi-steady simulations."
+    data-desc2="Findings: Quemada and Carreau models show the largest deviation from Newtonian at low shear, directly relevant to sub-clinical thrombosis risk assessment in TAVR planning and CAVD progression modeling."
+    data-metrics='[["4","Viscosity models"],["<100 s⁻¹","Critical threshold"],["1","Publication"]]'
+    data-equations="μ_eff(Carreau) = μ_∞ + (μ₀−μ_∞)·(1+(λγ̇)²)^((n−1)/2)
+μ_eff(Quemada)  = μ_∞·(1 − k·φ/2)⁻²
+# Blood: μ₀=0.056, μ_∞=0.00345 Pa·s, λ=3.313 s, n=0.3568"
+    data-links='[{"text":"📄 J Biomech Eng 2022","url":"https://doi.org/10.1115/1.4054630"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🩸</span>
+        <span class="ph-text">Add viscosity comparison figure</span>
+      </div>
+      <span class="proj-media-badge">Non-Newtonian</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag bio">Blood Rheology</span>
+      </div>
+      <div class="proj-title">Non-Newtonian Blood Flow Modeling</div>
+      <div class="proj-desc">Benchmarked four viscosity models in severely calcified aortic valve geometries; identified where Newtonian assumption fails.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2021 – 2022</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://doi.org/10.1115/1.4054630" target="_blank" onclick="event.stopPropagation()">DOI</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 3: AVF Model ════════════════════════════════════ -->
+  <div class="proj-card" data-tags="cfd bio cardio sim"
+    data-title="Arteriovenous Fistula Bypass Flow Model"
+    data-subtitle="Acta Biomaterialia 2026"
+    data-year="2023–2026"
+    data-desc="Co-developed a novel in vitro bypass flow model capable of generating spatially localized regions of disturbed, physiological, and stagnant flow within a single device — designed to study endothelial cell mechanotransduction in an arteriovenous fistula context relevant to intimal hyperplasia and dialysis access failure."
+    data-desc2="CFD characterized local velocity and shear fields across all zones. High-content imaging revealed ECs in disturbed-flow regions exhibited loss of alignment, disrupted adherens junctions, and elevated ICAM-1 expression — validating the model's physiological fidelity."
+    data-metrics='[["3","Flow zones"],["1","Publication (2026)"],["Acta Biom.","Journal"]]'
+    data-equations="Re = ρ·U·D_h / μ           # local Reynolds per zone
+τ_w = 4·μ·Q / (π·R³)      # Newtonian wall shear
+Dean = Re·√(r/R)           # curvature effects at bends"
+    data-links='[{"text":"📄 Acta Biomaterialia 2026","url":"https://doi.org/10.1016/j.actbio.2026.01.044"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🔬</span>
+        <span class="ph-text">Add device / CFD figure</span>
+      </div>
+      <span class="proj-media-badge">CFD · In Vitro</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag bio">Vascular</span>
+      </div>
+      <div class="proj-title">Arteriovenous Fistula Bypass Flow Model</div>
+      <div class="proj-desc">Multi-zone in vitro device + CFD to study endothelial mechanotransduction across disturbed, physiological, and stagnant flows.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2023 – 2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://doi.org/10.1016/j.actbio.2026.01.044" target="_blank" onclick="event.stopPropagation()">DOI</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 4: Nitric Oxide Transport ═══════════════════════ -->
+  <div class="proj-card" data-tags="cfd bio neuro sim"
+    data-title="Cerebrovascular Nitric Oxide Transport"
+    data-subtitle="BMES 2024–2025 · Ongoing"
+    data-year="2024–Present"
+    data-desc="Developed a multiscale Green's Function method solver for nitric oxide (NO) diffusion and tissue consumption in cerebral microvascular networks. The model computes steady-state and transient NO concentration fields across 3D network graphs extracted from mouse brain vasculature segmentations, capturing vessel-wall production, luminal transport, and parenchymal consumption simultaneously."
+    data-desc2="Key engineering challenges: efficient handling of large sparse linear systems for 3D networks with thousands of vessel segments; GPU-parallelizable design; selective recalculation of tissue points. Implemented in MATLAB with parfeval CPU parallelism and vectorized batch designs."
+    data-metrics='[["3D","Network solver"],["Green&#39;s Fn.","Method"],["MATLAB","Platform"]]'
+    data-equations="∂C/∂t = D·∇²C − k·C + S(x)   # NO transport PDE
+C(x) = ∫ G(x,x&#39;)·S(x&#39;) dx&#39;   # Green&#39;s function solution
+G(r) = exp(−r/λ)/(4πDr)     # free-space Green&#39;s function
+λ = √(D/k)                   # diffusion–consumption length"
+    data-links='[]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🧠</span>
+        <span class="ph-text">Add network visualization</span>
+      </div>
+      <span class="proj-media-badge">Multiscale · MATLAB</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">Transport</span>
+        <span class="proj-tag bio">Cerebrovascular</span>
+        <span class="proj-tag code">MATLAB</span>
+      </div>
+      <div class="proj-title">Cerebrovascular Nitric Oxide Transport</div>
+      <div class="proj-desc">Multiscale Green's Function solver for NO diffusion across 3D mouse brain microvascular networks.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2024 – Present</span>
+        <div class="proj-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 5: IP3R Calcium Signaling ═══════════════════════ -->
+  <div class="proj-card" data-tags="bio code neuro sim"
+    data-title="IP₃R Stochastic Calcium Signaling"
+    data-subtitle="In preparation · PI: Dr. Tsoukias"
+    data-year="2024–Present"
+    data-desc="Building a CTMC-based stochastic model of IP₃ receptor (IP₃R) calcium channel gating in brain capillary endothelial cells. The model captures the stochastic opening and closing of n and h gates with a quasi-steady fast m gate assumption, enabling simulation of spontaneous calcium puffs and IP₃-triggered calcium events at subcellular resolution."
+    data-desc2="Co-authoring with Niloufar Khakpour, Mark T. Nelson, and Nikolaos M. Tsoukias. Also developing a transient 3D calcium diffusion model in an ellipsoidal endothelial cell geometry with embedded ER, spatially localized PMCA/SERCA pumps, and 4 clusters of 20 IP₃R channels."
+    data-metrics='[["CTMC","Method"],["3D","Diffusion model"],["4×20","IP₃R channels"]]'
+    data-equations="dP/dt = Q·P             # CTMC master equation
+dn/dt = α_n·(1−n) − β_n·n  # activation gate
+dh/dt = α_h·(1−h) − β_h·h  # inactivation gate
+m = m_∞(Ca,IP₃)             # fast gate (quasi-steady)"
+    data-links='[]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">⚗️</span>
+        <span class="ph-text">Add puff simulation figure</span>
+      </div>
+      <span class="proj-media-badge">Stochastic · CTMC</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag bio">Calcium Signaling</span>
+        <span class="proj-tag code">MATLAB</span>
+      </div>
+      <div class="proj-title">IP₃R Stochastic Calcium Signaling</div>
+      <div class="proj-desc">CTMC model of IP₃R gating in brain capillary endothelial cells; 3D calcium diffusion in ellipsoidal cell geometry.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2024 – Present</span>
+        <div class="proj-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 6: Fiber Analysis GUI ═══════════════════════════ -->
+  <div class="proj-card" data-tags="ml code"
+    data-title="SEM Fiber Diameter Analysis GUI"
+    data-subtitle="FiberAnalysisGUI.m · Prasad Lab"
+    data-year="2026"
+    data-desc="Built FiberAnalysisGUI.m — a MATLAB GUI for automated fiber diameter measurement from SEM images of electrospun PCL scaffolds (Prasad Lab / PhD candidate Ariadna Herrera). The full processing pipeline runs on every parameter change: illumination correction → CLAHE → Gaussian smoothing → Gabor filter bank → adaptive binarization → bwskel pruning → distance transform diameter measurement → Normal distribution fit."
+    data-desc2="Design principles: minimal abstraction, no try/catch guards, inline code, teal color scheme consistent with other lab tools. Replaces manual ImageJ workflows with a reproducible, batch-capable automated pipeline."
+    data-metrics='[["8","Pipeline stages"],["Auto","Batch capable"],["MATLAB","GUI"]]'
+    data-equations="d_fiber = 2 · DT(skeleton_pixel)  # distance transform diameter
+Gabor: g(x,y) = exp(−(x²+y²/γ²)/2σ²)·cos(2πx/λ+φ)
+CLAHE: local histogram equalization per tile"
+    data-links='[]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🔎</span>
+        <span class="ph-text">Add SEM image / GUI screenshot</span>
+      </div>
+      <span class="proj-media-badge">Image Processing · MATLAB</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag ml">Image Analysis</span>
+        <span class="proj-tag code">MATLAB GUI</span>
+      </div>
+      <div class="proj-title">SEM Fiber Diameter Analysis GUI</div>
+      <div class="proj-desc">Automated MATLAB GUI for electrospun fiber diameter measurement from SEM images using Gabor filtering and distance transform.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 7: Brain Vasculature Pipeline ═══════════════════ -->
+  <div class="proj-card" data-tags="ml code neuro"
+    data-title="Brain Vasculature Graph Pipeline"
+    data-subtitle="vascular_pipeline.m · Tsoukias Lab"
+    data-year="2024–Present"
+    data-desc="Developed vascular_pipeline.m and vascular_viz.m in MATLAB to process ~20 GB NIfTI mouse brain segmentation files (VesSAP-style, 3 µm isotropic voxels) into skeleton graphs with per-edge radius and length metadata for downstream 1D Hagen-Poiseuille flow simulation."
+    data-desc2="Key engineering: stride downsampling, surface shell masking, distance transform radius estimation, tight bounding-box crop before bwskel to avoid OOM errors on 96 GB RAM machine (peak ~6× logical volume). Also developed graph-convolution diameter smoothing to suppress spurious large-radius fragments before pial vessel extraction in the VesselGraph BALBc_no1 dataset (~3.5M nodes, ~5.3M edges)."
+    data-metrics='[["20 GB","NIfTI input"],["3.5M","Graph nodes"],["96 GB","RAM target"]]'
+    data-equations="r_edge = mean(DT(skeleton_voxels))  # distance transform radius
+HP_flow: Q = π·r⁴·ΔP / (8·μ·L)    # 1D Poiseuille on each edge
+Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
+    data-links='[]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🕸</span>
+        <span class="ph-text">Add vasculature graph render</span>
+      </div>
+      <span class="proj-media-badge">Graph · NIfTI · MATLAB</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag ml">Image Analysis</span>
+        <span class="proj-tag code">MATLAB</span>
+        <span class="proj-tag bio">Cerebrovascular</span>
+      </div>
+      <div class="proj-title">Brain Vasculature Graph Pipeline</div>
+      <div class="proj-desc">MATLAB pipeline converting 20 GB NIfTI mouse brain segmentations into skeleton graphs for 1D Hagen-Poiseuille network flow simulation.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2024 – Present</span>
+        <div class="proj-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
+  <div class="proj-card" data-tags="code bio edu phys sim"
+    data-title="Hodgkin–Huxley Interactive Neuron Model"
+    data-subtitle="Live · dthornz.github.io/hodgkin-huxley · 2026"
+    data-year="2026"
+    data-desc="A fully interactive, browser-based implementation of the landmark 1952 Hodgkin–Huxley neuron model — the quantitative framework for action potential generation that won the Nobel Prize in Physiology or Medicine in 1963. Built as an educational tool for biomedical engineering students studying computational neuroscience and membrane biophysics."
+    data-desc2="The page integrates a 4th-order Runge–Kutta solver (dt=0.01 ms) with real-time Canvas API plots showing membrane potential, gating variables (m, h, n), ionic currents (INa, IK, IL), steady-state curves (m∞, h∞, n∞), time constants (τm, τh, τn), and a V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), change temperature (Q10 scaling), switch stimulus types (step/pulse/ramp/sinusoidal), and observe threshold phenomena, refractory periods, and tonic firing."
+    data-metrics='[["4","ODEs (RK4)"],["1952","Nobel model"],["6","Live plots"]]' 
+    data-equations="Cm·dV/dt = Iext − gNa·m³h·(V−ENa) − gK·n⁴·(V−EK) − gL·(V−EL)
+dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
+φ(T) = 3^((T−6.3)/10)    # Q10 temperature scaling"
+    data-links='[{"text":"🧠 Open Interactive Model","url":"https://dthornz.github.io/hodgkin-huxley/"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🧠</span>
+        <span class="ph-text">Live simulator — click to open</span>
+      </div>
+      <span class="proj-media-badge">Interactive · JS · Canvas</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag bio">Neuroscience</span>
+        <span class="proj-tag code">Simulation</span>
+        <span class="proj-tag code">Educational</span>
+      </div>
+      <div class="proj-title">Hodgkin–Huxley Neuron Model</div>
+      <div class="proj-desc">Interactive RK4 simulator of the Nobel Prize-winning 1952 action potential model with real-time plots, parameter controls, channel blockers, and phase portraits.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/hodgkin-huxley/" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT: Maxwell–Boltzmann Simulator ══════════════════ -->
+  <div class="proj-card" data-tags="code edu phys sim"
+    data-title="Maxwell–Boltzmann Gas Simulator (2D)"
+    data-subtitle="Live · dthornz.github.io/maxwell-boltzmann · 2026"
+    data-year="2026"
+    data-desc="A browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an interactive educational tool for biomedical engineering and physics students studying statistical mechanics and kinetic gas theory."
+    data-desc2="The simulation implements spatial-hash O(N) collision detection (allowing hundreds of particles at interactive frame rates), a real-time speed histogram with running average, and a theoretical Maxwell–Boltzmann curve computed from the instantaneous mean kinetic energy. The page includes a full mathematical derivation of the 2D distribution from first principles, historical background on Maxwell and Boltzmann, and properly cited figures and references."
+    data-metrics='[["2D","Ideal gas"],["O(N)","Collision detection"],["500","Default particles"]]'
+    data-equations="f(v) = (m/k_BT)·v·exp(−mv²/2k_BT)
+v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
+⟨KE⟩ = k_BT    (2D equipartition)"
+    data-tech="JavaScript · Canvas API · Chart.js · KaTeX"
+    data-links='[{"text":"🚀 Launch Simulator","url":"https://dthornz.github.io/maxwell-boltzmann/"}]'
+    onclick="openModal(this)"
+  >
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">⚛</span>
+        <span class="ph-text">Interactive 2D gas simulation</span>
+      </div>
+      <span class="proj-media-badge">Physics · Kinetics</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag code">Software</span>
+        <span class="proj-tag bio">Physics</span>
+      </div>
+      <div class="proj-title">Maxwell–Boltzmann Gas Simulator (2D)</div>
+      <div class="proj-desc">Hard-disk molecular dynamics simulation showing emergent MB speed distribution. Includes live histogram, theoretical curve, and full derivation.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/maxwell-boltzmann/" target="_blank" onclick="event.stopPropagation()">Launch →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 8: FEA/CFD Calculator ══════════════════════════ -->
+  <div class="proj-card" data-tags="code cfd fea sim edu"
+    data-title="Eng / FEA / CFD Calculator Hub"
+    data-subtitle="Live · dthornz.github.io/eng-fea-cfd-calc · 2026"
+    data-year="2026"
+    data-desc="A comprehensive single-page engineering calculator hub with 80+ client-side calculators across 12 disciplines. Designed as a teaching and research aid. All calculations run in the browser — no server, no data sent."
+    data-desc2="Covers: Fluid Mechanics (Y+, Reynolds/Dean/Mach/Womersley, turbulence BCs, boundary layer, pipe flow), Biomedical CFD (Carreau/Power Law, WSS/OSI/TAWSS), Structural FEA (elastic constants, Von Mises/Tresca, pressure vessel, beam deflection), Thermodynamics (conduction, convection, radiation, fin efficiency), Advanced Mechanics (fracture, fatigue, torsion, buckling), Electrical Eng. (RC/RL/RLC, Op-Amp), Biomedical Eng. (Nernst, Goldman, hemodynamics), Dynamics & Control (MSD system, projectile), Civil Eng. (Manning, Darcy seepage), Geometry, Calculus & vector ∇ tools, and 7 live Unit Converters."
+    data-metrics='[["80+","Calculators"],["12","Disciplines"],["0","Server needed"]]'
+    data-equations="y⁺ = u_τ·Δy/ν  →  Δy = y⁺·ν/u_τ    # Y+ wall distance
+k = 1.5·(U·I)²              # turbulent kinetic energy
+ε = Cμ^(3/4)·k^(3/2)/ℓ     # turbulent dissipation"
+    data-links='[{"text":"🔗 Open Calculator","url":"https://dthornz.github.io/eng-fea-cfd-calc/"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">⚙️</span>
+        <span class="ph-text">Add screenshot of calculator</span>
+      </div>
+      <span class="proj-media-badge">Web Tool</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag fea">FEA</span>
+        <span class="proj-tag code">Web</span>
+      </div>
+      <div class="proj-title">Eng / FEA / CFD Calculator Hub</div>
+      <div class="proj-desc">80+ client-side calculators across 12 engineering disciplines. Covers CFD, FEA, thermodynamics, electrical, biomedical, civil, geometry, calculus, and more.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/eng-fea-cfd-calc/" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT: LBM CFD Simulator ═══════════════════════════ -->
+  <div class="proj-card" data-tags="code cfd bio sim edu"
+    data-title="2D LBM CFD Simulator"
+    data-subtitle="Live · dthornz.github.io/lbm-cfd · 2026"
+    data-year="2026"
+    data-desc="A browser-based GPU lattice-Boltzmann solver for 2D incompressible blood flow at the vessel scale. Uses the D2Q9/BGK scheme recovered from the Chapman–Enskog expansion to approximate the incompressible Navier–Stokes equations. Built as an interactive research and teaching tool for biomedical CFD students."
+    data-desc2="Runs entirely on the GPU via WebGL2 fragment shaders, achieving interactive frame rates for grids up to 512×256. Supports Newtonian and shear-thinning Carreau–Yasuda non-Newtonian blood rheology, pulsatile inlet BCs, velocity and pressure boundaries, and 8 vascular presets (straight channel, stenosis, aneurysm, bifurcation, and more). Users can draw custom obstacles in real time and visualise velocity magnitude, pressure, or vorticity."
+    data-metrics='[["D2Q9","Lattice scheme"],["WebGL2","GPU solver"],["8","Vascular presets"]]'
+    data-equations="f_i(x+e_i,t+1) = f_i(x,t) − (f_i − f_i^eq)/τ    # BGK collision
+f_i^eq = w_i·ρ·[1 + (e_i·u)/c_s² + (e_i·u)²/2c_s⁴ − u²/2c_s²]
+μ_eff = μ_∞ + (μ₀−μ_∞)·[1+(λγ̇)²]^((n−1)/2)   # Carreau–Yasuda"
+    data-tech="WebGL2 · GLSL · JavaScript · KaTeX"
+    data-links='[{"text":"🚀 Launch Simulator","url":"https://dthornz.github.io/lbm-cfd/"}]'
+    onclick="openModal(this)"
+  >
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🌊</span>
+        <span class="ph-text">Interactive GPU flow simulation</span>
+      </div>
+      <span class="proj-media-badge">CFD · WebGL2</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag code">Software</span>
+        <span class="proj-tag bio">Biomedical</span>
+      </div>
+      <div class="proj-title">2D LBM CFD Simulator</div>
+      <div class="proj-desc">GPU lattice-Boltzmann solver for 2D blood flow. D2Q9/BGK scheme, Carreau–Yasuda rheology, 8 vascular presets, real-time obstacle drawing.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/lbm-cfd/" onclick="event.stopPropagation()">Launch →</a>
+        </div>
+      </div>
+    </div>
+  </div>  <!-- ══ PROJECT 1: CAVD Biomarkers ═══════════════════════════════ -->
+  <!--
+    TO ADD MEDIA:
+      Option A — YouTube:  set data-yt="YOUR_VIDEO_ID"
+      Option B — Image:    set data-img="src/images/cavd_hero.png"
+      Option C — Video:    set data-vid="src/videos/cavd_sim.mp4"
+    MODAL GALLERY:  add comma-separated image paths to data-gallery
+    LINKS:          edit data-links JSON array
+    EQUATIONS:      edit data-equations (use \n for line breaks)
+  -->
+  <div class="proj-card" data-tags="cfd bio cardio sim"
+    data-title="CAVD Hemodynamic Biomarkers"
+    data-subtitle="Bioengineering 2024 · Journal of Biomechanical Engineering 2022"
+    data-year="2019–2024"
+    data-desc="Developed a computational pipeline for predicting early-stage calcific aortic valve disease (CAVD) through hemodynamic biomarkers. Using patient-specific FSI simulations, identified that time-averaged wall shear stress (TAWSS) and oscillatory shear index (OSI) change significantly in mildly calcified valves even when standard hydrodynamic metrics remain normal — establishing these as pre-symptomatic indicators of disease onset."
+    data-desc2="Demonstrated that non-Newtonian blood viscosity models (Carreau, Quemada) are required for accurate WSS prediction in severely calcified geometries, where shear rates drop below 100 s⁻¹ in crevice regions — invalidating the Newtonian assumption commonly used in cardiovascular CFD."
+    data-metrics='[["50+","Virtual patients"],["0.85+","R² validation"],["2","Publications"]]'
+    data-equations="τ_w = Cƒ · (ρU²/2)     # wall shear stress
+OSI = 0.5·(1 − |∫τ dt| / ∫|τ| dt)  # oscillatory shear index
+TAWSS = (1/T)·∫|τ| dt              # time-averaged WSS"
+    data-links='[{"text":"📄 Bioengineering 2024","url":"https://doi.org/10.3390/bioengineering11100955"},{"text":"📄 J Biomech Eng 2022","url":"https://doi.org/10.1115/1.4054630"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <!--
+        Replace the placeholder below with one of:
+        <img src="src/images/cavd_hero.png" alt="CAVD simulation">
+        <video autoplay muted loop playsinline src="src/videos/cavd_WSS.mp4"></video>
+        <iframe src="https://www.youtube.com/embed/YOUR_ID?autoplay=1&mute=1&loop=1"></iframe>
+      -->
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🫀</span>
+        <span class="ph-text">Add image / video / YouTube</span>
+      </div>
+      <span class="proj-media-badge">CFD · FSI</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag bio">Cardiovascular</span>
+        <span class="proj-tag fea">FSI</span>
+      </div>
+      <div class="proj-title">CAVD Hemodynamic Biomarkers</div>
+      <div class="proj-desc">Patient-specific FSI pipeline identifying TAWSS and OSI as pre-symptomatic markers of calcific aortic valve disease.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2019 – 2024</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://doi.org/10.3390/bioengineering11100955" target="_blank" onclick="event.stopPropagation()">DOI</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 9: Reference Validator ══════════════════════════ -->
+  <div class="proj-card" data-tags="code edu"
+    data-title="Academic Reference Validator"
+    data-subtitle="Live · academic-ref-validator · GitHub Pages"
+    data-year="2026"
+    data-desc="Paste a reference list and validate each entry against CrossRef, Europe PMC, Semantic Scholar, arXiv, Google Books, and Open Library. Detects fake DOIs, recycled DOIs, title mismatches, and metadata inconsistencies. Supports fuzzy title matching for OCR errors and diacritics. All processing runs client-side — no data sent to any server."
+    data-metrics=""
+    data-links='[{"label":"Open App →","url":"https://dthornz.github.io/academic-ref-validator/"},{"label":"GitHub →","url":"https://github.com/DThornz/academic-ref-validator"}]'>
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        <span class="ph-icon">📑</span>
+        <span class="ph-text">Reference Validator</span>
+      </div>
+      <span class="proj-media-badge">Web Tool</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag code">Web</span>
+      </div>
+      <div class="proj-title">Academic Reference Validator</div>
+      <div class="proj-desc">Validate reference lists against CrossRef, EPMC, Semantic Scholar, arXiv, and more — detecting fake DOIs, recycled DOIs, and title mismatches.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/academic-ref-validator/" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECT 10: 1D Energy Transport Simulator ══════════════════════════ -->
+  <div class="proj-card" data-tags="code edu phys sim"
+    data-title="1D Energy Transport Simulator"
+    data-subtitle="Live · 1D-Energy-Transport-Sim · GitHub Pages"
+    data-year="2026"
+    data-desc="Interactive browser-based solver for the one-dimensional heat equation supporting Cartesian, cylindrical, and spherical coordinate systems. Users configure Dirichlet or Neumann boundary conditions, material thermal properties (conductivity, density, specific heat), and spatial/temporal resolution, then observe transient temperature evolution with the tridiagonal steady-state analytical solution overlaid. Implements an explicit forward-Euler finite difference scheme with automatic Von Neumann stability enforcement (real-time Δt capping). All computation runs client-side with no dependencies."
+    data-metrics=""
+    data-links='[{"label":"🚀 Launch Simulator","url":"https://dthornz.github.io/1D-Energy-Transport-Sim/"},{"label":"GitHub →","url":"https://github.com/DThornz/1D-Energy-Transport-Sim"}]'>
+    <div class="proj-media">
+      <div class="proj-placeholder">
+        <span class="ph-icon">🌡</span>
+        <span class="ph-text">1D Energy Transport Sim</span>
+      </div>
+      <span class="proj-media-badge">Web Tool</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag code">Simulation</span>
+      </div>
+      <div class="proj-title">1D Energy Transport Simulator</div>
+      <div class="proj-desc">Finite difference solver for the 1D heat equation in Cartesian, cylindrical, and spherical coordinates with configurable BCs and real-time steady-state overlay.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/1D-Energy-Transport-Sim/" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /projects-grid -->
+</div><!-- /projects-wrap -->
+
+<!-- ── Modal ──────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalIfBg(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-media" id="modal-media"></div>
+    <div class="modal-body">
+      <div class="modal-tags" id="modal-tags"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-subtitle" id="modal-subtitle"></div>
+      <div id="modal-metrics-wrap"></div>
+      <div class="modal-section-label">Overview</div>
+      <div class="modal-text" id="modal-desc"></div>
+      <div id="modal-desc2-wrap"></div>
+      <div id="modal-eq-wrap"></div>
+      <div id="modal-gallery-wrap"></div>
+      <div class="modal-links" id="modal-links"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Filter ─────────────────────────────────────────────── */
+function filter(tag, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.proj-card:not(.placeholder)').forEach(c=>{
+    const tags = c.dataset.tags || '';
+    c.classList.toggle('hidden', tag !== 'all' && !tags.includes(tag));
+  });
+}
+
+/* ── Modal ──────────────────────────────────────────────── */
+function openModal(card){
+  const o = card.dataset;
+
+  // Media
+  const mm = document.getElementById('modal-media');
+  if(o.yt){
+    mm.innerHTML=`<iframe src="https://www.youtube.com/embed/${o.yt}?autoplay=0" allowfullscreen></iframe>`;
+    mm.style.display='block';
+  } else if(o.img){
+    mm.innerHTML=`<img src="${o.img}" alt="${o.title}">`;
+    mm.style.display='block';
+  } else if(o.vid){
+    mm.innerHTML=`<video controls src="${o.vid}"></video>`;
+    mm.style.display='block';
+  } else {
+    mm.style.display='none';
+  }
+
+  // Tags (re-use card's tag elements)
+  const tagsEl = document.getElementById('modal-tags');
+  tagsEl.innerHTML = card.querySelector('.proj-tags').innerHTML;
+
+  document.getElementById('modal-title').textContent    = o.title || '';
+  document.getElementById('modal-subtitle').textContent = o.subtitle || '';
+  document.getElementById('modal-desc').innerHTML = (o.desc||'').replace(/\n/g,'<br>');
+
+  // Second paragraph
+  const d2w = document.getElementById('modal-desc2-wrap');
+  if(o.desc2){ d2w.innerHTML=`<div class="modal-section-label">Details</div><div class="modal-text">${o.desc2.replace(/\n/g,'<br>')}</div>`; }
+  else { d2w.innerHTML=''; }
+
+  // Metrics
+  const mw = document.getElementById('modal-metrics-wrap');
+  if(o.metrics){
+    const ms = JSON.parse(o.metrics);
+    mw.innerHTML='<div class="modal-metrics">' + ms.map(m=>`<div class="modal-metric"><div class="modal-metric-num">${m[0]}</div><div class="modal-metric-label">${m[1]}</div></div>`).join('') + '</div>';
+  } else { mw.innerHTML=''; }
+
+  // Equations
+  const eqw = document.getElementById('modal-eq-wrap');
+  if(o.equations){ eqw.innerHTML=`<div class="modal-section-label">Key Equations</div><div class="modal-eq">${o.equations}</div>`; }
+  else { eqw.innerHTML=''; }
+
+  // Gallery
+  const gw = document.getElementById('modal-gallery-wrap');
+  if(o.gallery && o.gallery.trim()){
+    const imgs = o.gallery.split(',').map(s=>s.trim()).filter(Boolean);
+    gw.innerHTML='<div class="modal-section-label">Gallery</div><div class="modal-gallery">' + imgs.map(i=>`<img src="${i}" onclick="window.open('${i}','_blank')">`).join('') + '</div>';
+  } else { gw.innerHTML=''; }
+
+  // Links
+  const lw = document.getElementById('modal-links');
+  if(o.links){
+    const ls = JSON.parse(o.links);
+    lw.innerHTML = ls.map(l=>`<a class="modal-link" href="${l.url}" target="_blank">${l.text}</a>`).join('');
+  } else { lw.innerHTML=''; }
+
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeModalIfBg(e){
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+</script>
+
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
+<div class="acc-panel" id="acc-panel">
+  <div class="acc-panel-title">⚙ Display Settings</div>
+  <div class="acc-row">
+    <div class="acc-row-label">Color Mode</div>
+    <div class="acc-toggle-row">
+      <span class="acc-toggle-label">Dark Mode</span>
+      <label class="acc-switch">
+        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
+        <span class="acc-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Size</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
+      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
+      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Style</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
+      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
+      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var FONTS=['','font-serif','font-mono'];
+  var LS=window.localStorage;
+
+  function lsGet(k){try{return LS?LS.getItem(k):null;}catch(e){return null;}}
+  function lsSet(k,v){try{if(LS)LS.setItem(k,v);}catch(e){}}
+
+  function applyPrefs(){
+    var dark=lsGet('acc_dark')==='1';
+    var sz=lsGet('acc_sz')||'md';
+    var fi=parseInt(lsGet('acc_fi')||'0');
+    var b=document.body;
+    // Theme
+    b.classList.toggle('dark-mode',dark);
+    b.classList.toggle('light-mode',!dark);
+    // Size
+    b.classList.remove('size-sm','size-md','size-lg');
+    b.classList.add('size-'+sz);
+    // Font
+    b.classList.remove('font-serif','font-mono');
+    if(FONTS[fi]) b.classList.add(FONTS[fi]);
+    // Sync controls
+    var cb=document.getElementById('acc-dark');
+    if(cb) cb.checked=dark;
+    ['sm','md','lg'].forEach(function(s){
+      var el=document.getElementById('acc-'+s);
+      if(el) el.classList.toggle('active',s===sz);
+    });
+    [0,1,2].forEach(function(i){
+      var el=document.getElementById('acc-f'+i);
+      if(el) el.classList.toggle('active',i===fi);
+    });
+  }
+
+  window.accToggle=function(){
+    var p=document.getElementById('acc-panel');
+    if(p) p.classList.toggle('open');
+  };
+  window.accDark=function(cb){lsSet('acc_dark',cb.checked?'1':'0');applyPrefs();};
+  window.accSize=function(s){lsSet('acc_sz',s);applyPrefs();};
+  window.accFont=function(i){lsSet('acc_fi',i);applyPrefs();};
+
+  // Close on outside click
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('acc-panel');
+    var b2=document.getElementById('acc-btn');
+    if(p&&b2&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b2)
+      p.classList.remove('open');
+  });
+
+  // Apply on load (before DOMContentLoaded to avoid flash)
+  applyPrefs();
+  document.addEventListener('DOMContentLoaded',applyPrefs);
+})();
+</script>
+
+<!-- Copyright footer -->
+<footer style="text-align:center;padding:20px 24px;font-family:'DM Mono',monospace;font-size:.72em;color:var(--dim);border-top:1px solid var(--border);margin-top:auto">
+  © 2026 Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
+  <a href="https://github.com/DThornz/website-cv-tools" target="_blank" style="color:var(--dim)">GitHub</a>
+</footer>
+</body>
+</html>
