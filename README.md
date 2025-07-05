@@ -41,6 +41,19 @@ Funding & Awards · Technical Skills · Service & Outreach
 
 ---
 
+## Linked tool repos (separate GitHub Pages)
+
+Each tool lives in its own repository and GitHub Pages deployment.
+
+| Tool | Repo | Live URL |
+|------|------|----------|
+| **HH Neuron Model** | [DThornz/hodgkin-huxley](https://github.com/DThornz/hodgkin-huxley) | [dthornz.github.io/hodgkin-huxley](https://dthornz.github.io/hodgkin-huxley/) |
+| **Maxwell–Boltzmann Simulator** | [DThornz/maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann) | [dthornz.github.io/maxwell-boltzmann](https://dthornz.github.io/maxwell-boltzmann/) |
+| **LBM CFD Simulator** | [DThornz/lbm-cfd](https://github.com/DThornz/lbm-cfd) | [dthornz.github.io/lbm-cfd](https://dthornz.github.io/lbm-cfd/) |
+| **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
+
+---
+
 ## Contact
 
 **Dr. Asad Mirza, PhD**
@@ -53,4 +66,4 @@ Florida International University · Miami, FL 33174
 
 ---
 
-*Last updated: June 2025*
+*Last updated: July 2025*
