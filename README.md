@@ -51,6 +51,7 @@ Each tool lives in its own repository and GitHub Pages deployment.
 | **Maxwell–Boltzmann Simulator** | [DThornz/maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann) | [dthornz.github.io/maxwell-boltzmann](https://dthornz.github.io/maxwell-boltzmann/) |
 | **LBM CFD Simulator** | [DThornz/lbm-cfd](https://github.com/DThornz/lbm-cfd) | [dthornz.github.io/lbm-cfd](https://dthornz.github.io/lbm-cfd/) |
 | **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
+| **Reference Validator** | [DThornz/academic-ref-validator](https://github.com/DThornz/academic-ref-validator) | [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) |
 
 ---
 
@@ -66,4 +67,4 @@ Florida International University · Miami, FL 33174
 
 ---
 
-*Last updated: July 2025*
+*Last updated: September 2025*
