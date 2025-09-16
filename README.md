@@ -52,6 +52,7 @@ Each tool lives in its own repository and GitHub Pages deployment.
 | **LBM CFD Simulator** | [DThornz/lbm-cfd](https://github.com/DThornz/lbm-cfd) | [dthornz.github.io/lbm-cfd](https://dthornz.github.io/lbm-cfd/) |
 | **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
 | **Reference Validator** | [DThornz/academic-ref-validator](https://github.com/DThornz/academic-ref-validator) | [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) |
+| **1D Energy Transport Simulator** | [DThornz/1D-Energy-Transport-Sim](https://github.com/DThornz/1D-Energy-Transport-Sim) | [dthornz.github.io/1D-Energy-Transport-Sim](https://dthornz.github.io/1D-Energy-Transport-Sim/) |
 
 ---
 
@@ -67,4 +68,4 @@ Florida International University · Miami, FL 33174
 
 ---
 
-*Last updated: September 2025*
+*Last updated: October 2025*
