@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asad Mirza — Research & Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060e1c;--bg2:#0a1628;--border:#1c3050;
+  --teal:#2dd4bf;--teal-glow:rgba(45,212,191,.08);
+  --amber:#f59e0b;--text:#e2e8f0;--muted:#7a90ae;--dim:#3d5470;
+  --mono:'DM Mono',monospace;--serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans);background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 45% at 75% 25%, rgba(45,212,191,.055) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 35% at 15% 75%, rgba(245,158,11,.03) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,22,40,.8) 0%, transparent 100%);
+}
+
+/* ── Nav ─────────────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(6,14,28,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 32px;height:52px;gap:8px;
+}
+.nav-logo{font-family:var(--mono);font-size:.85em;color:var(--teal);font-weight:500;letter-spacing:.04em;margin-right:auto}
+.nav-logo span{color:var(--muted)}
+.nav-link{
+  padding:6px 14px;border-radius:6px;font-size:.8em;color:var(--muted);
+  text-decoration:none;transition:all .2s;border:1px solid transparent;
+}
+.nav-link:hover{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.15)}
+.nav-link.active{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.2)}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:80px 24px 60px;
+  position:relative;z-index:1;
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:.72em;color:var(--teal);
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:20px;
+  opacity:.8;
+}
+.hero-name{
+  font-family:var(--serif);font-size:clamp(3em,7vw,5.5em);
+  font-weight:400;line-height:1.05;margin-bottom:12px;
+}
+.hero-name .grad{
+  background:linear-gradient(125deg,#e2e8f0 20%,var(--teal) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-title{
+  font-size:clamp(.95em,2vw,1.15em);color:var(--muted);
+  font-weight:300;margin-bottom:6px;
+}
+.hero-affil{
+  font-size:.85em;color:var(--dim);font-style:italic;margin-bottom:36px;
+}
+.hero-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:48px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 13px;border-radius:99px;
+  background:rgba(28,48,80,.6);border:1px solid var(--border);
+  font-size:.76em;color:var(--muted);font-family:var(--mono);
+  text-decoration:none;transition:all .2s;
+}
+.hero-badge:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;max-width:1060px;width:100%;
+}
+.card{
+  background:rgba(10,22,40,.7);border:1px solid var(--border);
+  border-radius:14px;padding:28px 28px 24px;
+  text-decoration:none;color:inherit;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;gap:0;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 0%, var(--teal-glow) 0%, transparent 70%);
+  transition:opacity .3s;
+}
+.card:hover{border-color:rgba(45,212,191,.35);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.card:hover::before{opacity:1}
+.card-icon{font-size:2em;margin-bottom:14px;position:relative;z-index:1}
+.card-tag{
+  font-family:var(--mono);font-size:.65em;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;position:relative;z-index:1;
+}
+.card-title{
+  font-family:var(--serif);font-size:1.55em;font-weight:400;
+  color:var(--text);margin-bottom:8px;line-height:1.15;position:relative;z-index:1;
+}
+.card-desc{
+  font-size:.85em;color:var(--muted);line-height:1.6;
+  flex:1;position:relative;z-index:1;
+}
+.card-chips{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;position:relative;z-index:1;
+}
+.chip{
+  padding:2px 9px;border-radius:99px;font-size:.68em;font-family:var(--mono);
+  background:rgba(45,212,191,.08);color:var(--teal);border:1px solid rgba(45,212,191,.15);
+}
+.card-arrow{
+  position:absolute;bottom:24px;right:24px;
+  font-size:1.2em;color:var(--dim);transition:all .25s;z-index:1;
+}
+.card:hover .card-arrow{color:var(--teal);transform:translate(3px,-3px)}
+
+/* ── Footer ──────────────────────────────────────────────── */
+footer{
+  text-align:center;padding:20px;font-family:var(--mono);
+  font-size:.7em;color:var(--dim);position:relative;z-index:1;
+  border-top:1px solid rgba(28,48,80,.4);
+}
+footer a{color:var(--dim);text-decoration:none}
+footer a:hover{color:var(--teal)}
+
+@media(max-width:600px){.hero-name{font-size:2.8em}.cards{grid-template-columns:1fr}.nav{padding:0 16px}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-logo">A.Mirza <span>/</span> site</span>
+  <a class="nav-link active" href="index.html">Home</a>
+  <a class="nav-link" href="AsadMirza_CV_v2.html">CV</a>
+  <a class="nav-link" href="projects.html">Projects</a>
+  <a class="nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
+</nav>
+
+<main class="hero">
+  <div class="hero-eyebrow">Research Assistant Professor · FIU BME</div>
+  <h1 class="hero-name"><span class="grad">Asad Mirza</span></h1>
+  <p class="hero-title">Computational Biomedical Engineering</p>
+  <p class="hero-affil">Florida International University · Department of Biomedical Engineering · Miami, FL</p>
+
+  <div class="hero-links">
+    <a class="hero-badge" href="mailto:amirza@fiu.edu">✉ amirza@fiu.edu</a>
+    <a class="hero-badge" href="https://github.com/DThornz" target="_blank">⌥ GitHub</a>
+    <a class="hero-badge" href="https://orcid.org/0000-0003-4515-2203" target="_blank">🔗 ORCID</a>
+    <a class="hero-badge" href="https://scholar.google.com/citations?user=a8fYPM0AAAAJ" target="_blank">📑 Scholar</a>
+    <a class="hero-badge" href="https://www.researchgate.net/profile/Asad_Mirza2" target="_blank">🔬 ResearchGate</a>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="AsadMirza_CV_v2.html">
+      <div class="card-icon">📋</div>
+      <div class="card-tag">Academic Profile</div>
+      <div class="card-title">Curriculum Vitae</div>
+      <div class="card-desc">Interactive academic CV with collapsible sections, publications, teaching history, conference proceedings, and media. Includes print and highlights modes.</div>
+      <div class="card-chips">
+        <span class="chip">Publications</span>
+        <span class="chip">Teaching</span>
+        <span class="chip">Research</span>
+        <span class="chip">Dark / Light</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="projects.html">
+      <div class="card-icon">🔬</div>
+      <div class="card-tag">Research Portfolio</div>
+      <div class="card-title">Project Showcase</div>
+      <div class="card-desc">Detailed write-ups on CFD/FSI simulations, biomedical imaging pipelines, cerebrovascular modeling, and software tools — with images, videos, equations, and publication links.</div>
+      <div class="card-chips">
+        <span class="chip">CAVD / FSI</span>
+        <span class="chip">Cerebrovascular</span>
+        <span class="chip">Image Analysis</span>
+        <span class="chip">MATLAB</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="fea-cfd-calc.html">
+      <div class="card-icon">⚙️</div>
+      <div class="card-tag">Engineering Tools</div>
+      <div class="card-title">FEA / CFD Calculator</div>
+      <div class="card-desc">25+ client-side calculators for fluid mechanics, biomedical CFD, and structural FEA. Includes Y+ estimation, turbulence BCs, non-Newtonian models, WSS/OSI, and unit converters.</div>
+      <div class="card-chips">
+        <span class="chip">Y+ / Wall Dist.</span>
+        <span class="chip">Turbulence BCs</span>
+        <span class="chip">Blood Rheology</span>
+        <span class="chip">FEA</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+  </div>
+</main>
+
+<footer>
+  © 2026 Asad Mirza · <a href="https://github.com/DThornz/website-cv-tools" target="_blank">GitHub</a> · Built with vanilla HTML/JS · No backend required
+</footer>
+
+</body>
+</html>

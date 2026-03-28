@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asad Mirza — Curriculum Vitae</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   CSS VARIABLES — DARK MODE (default)
+============================================================ */
+:root {
+  --bg:         #0d1117;
+  --bg2:        #161b22;
+  --bg3:        #1c2230;
+  --border:     #2a3548;
+  --teal:       #2dd4bf;
+  --teal-dim:   #1a8a7d;
+  --teal-glow:  rgba(45,212,191,0.10);
+  --orange:     #fb8c00;
+  --text:       #e2e8f0;
+  --text-muted: #8b98b0;
+  --text-dim:   #566478;
+  --accent:     #64ffda;
+  --serif:      'DM Serif Display', 'Lora', Georgia, serif;
+  --mono:       'DM Mono', 'Source Code Pro', monospace;
+  --sans:       'DM Sans', system-ui, sans-serif;
+  --base-size:  15px;
+  --radius:     8px;
+  --sp:         28px 32px;
+  --tr:         0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* LIGHT MODE */
+body.light-mode {
+  --bg:         #f5f6f8;
+  --bg2:        #ffffff;
+  --bg3:        #eef0f4;
+  --border:     #d0d6e0;
+  --teal:       #0b7a6e;
+  --teal-dim:   #0b7a6e;
+  --teal-glow:  rgba(11,122,110,0.07);
+  --orange:     #c05a00;
+  --text:       #1a202c;
+  --text-muted: #374151;
+  --text-dim:   #6b7280;
+  --accent:     #0b7a6e;
+}
+
+/* FONT THEMES */
+body.font-classic {
+  --serif: 'Lora', Georgia, serif;
+  --mono:  'Source Code Pro', monospace;
+  --sans:  Georgia, 'Times New Roman', serif;
+}
+body.font-modern {
+  --serif: 'DM Sans', system-ui, sans-serif;
+  --mono:  'DM Mono', monospace;
+  --sans:  'DM Sans', system-ui, sans-serif;
+}
+
+/* FONT SIZES */
+body.size-sm  { --base-size: 13px; }
+body.size-md  { --base-size: 15px; }
+body.size-lg  { --base-size: 17px; }
+
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: var(--base-size);
+  line-height: 1.65;
+  transition: background var(--tr), color var(--tr);
+  min-height: 100vh;
+}
+a { color: var(--teal); text-decoration: none; transition: color var(--tr); }
+a:hover { color: var(--accent); text-decoration: underline; }
+
+/* ============================================================
+   TOP BAR
+============================================================ */
+.top-bar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(13,17,23,0.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 24px;
+  transition: background var(--tr), border-color var(--tr);
+}
+body.light-mode .top-bar { background: rgba(245,246,248,0.92); }
+
+.top-bar-name {
+  font-family: var(--serif);
+  font-size: 1.133em; color: var(--teal);
+}
+.top-bar-right { display: flex; align-items: center; gap: 8px; }
+
+.tb-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text);
+  font-family: var(--mono); font-size: 0.767em;
+  cursor: pointer; white-space: nowrap;
+  transition: all var(--tr);
+}
+.tb-btn:hover { border-color: var(--teal); color: var(--teal); }
+.tb-btn.primary { background: var(--teal); color: #0d1117; border-color: var(--teal); font-weight: 600; }
+body.light-mode .tb-btn.primary { color: #fff; }
+.tb-btn.primary:hover { opacity: 0.88; color: #0d1117; }
+body.light-mode .tb-btn.primary:hover { color: #fff; }
+
+/* ============================================================
+   LAYOUT
+============================================================ */
+.layout-wrapper {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  max-width: 1180px; margin: 0 auto;
+  padding: 0 16px 80px;
+}
+
+#nav-sidebar {
+  position: sticky; top: 48px;
+  height: calc(100vh - 48px); overflow-y: auto;
+  padding: 24px 0 24px 6px;
+  scrollbar-width: none;
+  border-right: 1px solid var(--border);
+}
+#nav-sidebar::-webkit-scrollbar { display: none; }
+
+.nav-label {
+  font-family: var(--mono); font-size: 0.667em;
+  color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 0.12em; padding: 6px 14px 3px;
+}
+.nav-link {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 14px; font-size: 0.833em;
+  color: var(--text-muted); border-radius: 6px 0 0 6px;
+  transition: all var(--tr); cursor: pointer;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-link:hover { color: var(--teal); background: var(--teal-glow); text-decoration: none; }
+.nav-link.active { color: var(--teal); background: var(--teal-glow); border-right: 2px solid var(--teal); }
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+.main-content { padding: 0 0 0 28px; min-width: 0; }
+
+/* ============================================================
+   HERO
+============================================================ */
+.hero-canvas {
+  position: relative; padding: 44px 36px 38px;
+  margin-bottom: 6px; overflow: hidden;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+}
+.hero-canvas::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 90% at 85% 50%, rgba(45,212,191,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 5% 80%, rgba(251,140,0,0.04) 0%, transparent 60%);
+}
+body.light-mode .hero-canvas::before { display: none; }
+
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+.hero-left { flex: 1; min-width: 240px; }
+
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 0.7em;
+  color: var(--teal); letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+h1.hero-name {
+  font-family: var(--serif);
+  font-size: clamp(2.533em, 5vw, 3.6em);
+  line-height: 1.05; margin-bottom: 8px; font-weight: 400;
+}
+.name-gradient {
+  background: linear-gradient(120deg, var(--text) 30%, var(--teal) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+body.light-mode .name-gradient { -webkit-text-fill-color: var(--text); background: none; }
+
+.hero-title { font-size: 1em; color: var(--text-muted); font-weight: 300; margin-bottom: 4px; }
+.hero-affil { font-size: 0.833em; color: var(--text-dim); margin-bottom: 18px; font-style: italic; }
+
+.hero-badges { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 11px; border-radius: 99px;
+  background: var(--bg3); border: 1px solid var(--border);
+  font-size: 0.767em; color: var(--text-muted); font-family: var(--mono);
+  transition: all var(--tr); text-decoration: none;
+}
+.hero-badge:hover { border-color: var(--teal); color: var(--teal); text-decoration: none; }
+
+.hero-right { flex-shrink: 0; }
+.logo-box {
+  width: 108px; height: 108px; border-radius: 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.logo-box img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ============================================================
+   STATS RIBBON
+============================================================ */
+.stats-ribbon {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); margin: 18px 0 22px; overflow: hidden;
+}
+.stat-card {
+  padding: 16px 12px; text-align: center;
+  border-right: 1px solid var(--border);
+  transition: background var(--tr);
+}
+.stat-card:last-child { border-right: none; }
+.stat-card:hover { background: var(--teal-glow); }
+.stat-num { font-family: var(--serif); font-size: 1.733em; color: var(--teal); line-height: 1; margin-bottom: 3px; }
+.stat-label { font-size: 0.667em; color: var(--text-dim); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ============================================================
+   L1 — SECTION WRAPPERS
+============================================================ */
+.section-wrapper {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 10px; overflow: hidden;
+  background: var(--bg2); transition: border-color var(--tr), box-shadow var(--tr);
+}
+.section-wrapper:hover { border-color: var(--teal-dim); }
+
+.section-toggle {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; background: none; border: none; cursor: pointer;
+  transition: background var(--tr); text-align: left;
+}
+.section-toggle:hover { background: var(--teal-glow); }
+
+.section-header-left { display: flex; align-items: center; gap: 11px; }
+.section-icon {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--bg3); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.867em; flex-shrink: 0; transition: border-color var(--tr);
+}
+.section-wrapper:hover .section-icon { border-color: var(--teal-dim); }
+
+.section-title { font-family: var(--serif); font-size: 1.2em; font-weight: 400; color: var(--text); }
+.section-count { font-family: var(--mono); font-size: 0.7em; color: var(--text-dim); margin-top: 1px; }
+
+.chevron { color: var(--text-dim); transition: transform var(--tr), color var(--tr); font-size: 0.867em; }
+.section-wrapper.open > .section-toggle .chevron { transform: rotate(180deg); color: var(--teal); }
+
+/* L1 body */
+.section-body {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+}
+.section-wrapper.open > .section-body { max-height: 99999px; opacity: 1; }
+
+.section-inner { padding: var(--sp); border-top: 1px solid var(--border); }
+
+/* ============================================================
+   L2 — SUBSECTIONS
+============================================================ */
+.subsection-wrapper {
+  border: 1px solid var(--border); border-radius: 6px;
+  margin-bottom: 8px; overflow: hidden; background: var(--bg3);
+  transition: border-color var(--tr);
+}
+.subsection-wrapper:hover { border-color: var(--teal-dim); }
+
+.subsection-toggle {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 18px; background: none; border: none; cursor: pointer;
+  transition: background var(--tr); text-align: left;
+}
+.subsection-toggle:hover { background: var(--teal-glow); }
+
+.subsection-title {
+  font-family: var(--mono); font-size: 0.733em;
+  text-transform: uppercase; letter-spacing: 0.11em; color: var(--teal);
+  display: flex; align-items: center; gap: 8px;
+}
+.subsection-count { font-size: 0.667em; color: var(--text-dim); font-weight: 400; }
+.chevron-sm { font-size: 0.733em; color: var(--text-dim); transition: transform var(--tr), color var(--tr); }
+.subsection-wrapper.open > .subsection-toggle .chevron-sm { transform: rotate(180deg); color: var(--teal); }
+
+.subsection-body {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease;
+}
+.subsection-wrapper.open > .subsection-body { max-height: 99999px; opacity: 1; }
+.subsection-inner { padding: 14px 18px; border-top: 1px solid var(--border); }
+
+/* ============================================================
+   L3 — ENTRY CARDS (individual items)
+============================================================ */
+.entry-card {
+  border: 1px solid rgba(42,53,72,0.7); border-radius: 6px;
+  margin-bottom: 7px; overflow: hidden;
+  background: var(--bg2); transition: border-color var(--tr);
+}
+.entry-card:hover { border-color: var(--teal-dim); }
+.entry-card:last-child { margin-bottom: 0; }
+
+.entry-toggle {
+  width: 100%; display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 14px; background: none; border: none; cursor: pointer;
+  transition: background var(--tr); text-align: left;
+}
+.entry-toggle:hover { background: var(--teal-glow); }
+
+.entry-year {
+  font-family: var(--mono); font-size: 0.7em; color: var(--teal);
+  padding-top: 2px; flex-shrink: 0; min-width: 42px;
+}
+.entry-title-col { flex: 1; min-width: 0; }
+.entry-title { font-size: 0.867em; font-weight: 500; color: var(--text); line-height: 1.45; }
+.entry-subtitle { font-size: 0.767em; color: var(--text-dim); margin-top: 2px; font-style: italic; }
+.entry-badges { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+
+.badge {
+  padding: 2px 7px; border-radius: 99px;
+  font-size: 0.667em; font-family: var(--mono);
+}
+.badge-first { background: rgba(45,212,191,0.1); color: var(--teal); border: 1px solid rgba(45,212,191,0.25); }
+.badge-co    { background: rgba(251,140,0,0.1);  color: var(--orange); border: 1px solid rgba(251,140,0,0.25); }
+.badge-award { background: rgba(250,204,21,0.1); color: #d4a000; border: 1px solid rgba(250,204,21,0.25); }
+
+.chevron-xs { font-size: 0.667em; color: var(--text-dim); transition: transform var(--tr), color var(--tr); flex-shrink: 0; padding-top: 3px; }
+.entry-card.open > .entry-toggle .chevron-xs { transform: rotate(180deg); color: var(--teal); }
+
+.entry-body {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+}
+.entry-card.open > .entry-body { max-height: 99999px; opacity: 1; }
+.entry-inner { padding: 14px 16px 16px 58px; border-top: 1px solid rgba(42,53,72,0.5); }
+
+/* ============================================================
+   ENTRY INNER CONTENT STYLES
+============================================================ */
+.entry-abstract {
+  font-size: 0.867em; color: var(--text-muted); line-height: 1.7;
+  margin-bottom: 12px;
+}
+.entry-meta-row { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 10px; }
+.entry-meta-item { font-size: 0.8em; }
+.entry-meta-label { color: var(--text-dim); font-family: var(--mono); font-size: 0.667em; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1px; }
+.entry-meta-value { color: var(--text-muted); }
+
+.entry-link-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.entry-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 6px;
+  font-size: 0.767em; font-family: var(--mono);
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--teal); transition: all var(--tr);
+}
+.entry-link:hover { border-color: var(--teal); background: var(--teal-glow); text-decoration: none; }
+
+/* Media (images / videos) inside entries */
+.entry-media { margin-top: 14px; }
+.entry-media-label { font-family: var(--mono); font-size: 0.667em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.entry-img {
+  max-width: 100%; border-radius: 6px; border: 1px solid var(--border);
+  margin-bottom: 8px; display: block;
+}
+.entry-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 8px; }
+.video-embed { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 8px; }
+.video-embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.entry-video { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 8px; }
+
+/* Team member photos */
+.team-photos { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.team-member { text-align: center; }
+.team-member img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); margin-bottom: 4px; }
+.team-member-name { font-size: 0.733em; color: var(--text-dim); }
+
+/* ============================================================
+   TIMELINE ENTRIES (non-card style)
+============================================================ */
+.tl-entry {
+  display: grid; grid-template-columns: 120px 1fr;
+  gap: 0 18px; padding: 16px 0;
+  border-bottom: 1px solid rgba(42,53,72,0.5);
+}
+.tl-entry:last-child { border-bottom: none; padding-bottom: 0; }
+.tl-entry:first-child { padding-top: 0; }
+.tl-date { font-family: var(--mono); font-size: 0.7em; color: var(--text-dim); padding-top: 2px; line-height: 1.5; }
+.tl-role { font-weight: 600; color: var(--text); font-size: 0.9em; margin-bottom: 1px; }
+.tl-org { font-size: 0.833em; color: var(--teal); margin-bottom: 3px; font-style: italic; }
+.tl-details { font-size: 0.833em; color: var(--text-muted); line-height: 1.6; }
+
+/* ============================================================
+   SKILLS
+============================================================ */
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.skill-group {}
+.skill-group-title { font-family: var(--mono); font-size: 0.7em; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+.skill-item { margin-bottom: 9px; }
+.skill-name-row { display: flex; justify-content: space-between; font-size: 0.867em; color: var(--text-muted); margin-bottom: 4px; }
+.skill-name-row span:last-child { font-family: var(--mono); font-size: 0.7em; color: var(--text-dim); }
+.skill-bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal-dim), var(--teal)); transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { padding: 3px 9px; border-radius: 6px; background: var(--bg3); border: 1px solid var(--border); font-size: 0.767em; color: var(--text-muted); font-family: var(--mono); }
+
+/* ============================================================
+   AWARD / SERVICE ENTRIES
+============================================================ */
+.award-entry {
+  display: grid; grid-template-columns: 88px 1fr;
+  gap: 0 14px; padding: 9px 0;
+  border-bottom: 1px solid rgba(42,53,72,0.45); align-items: start;
+}
+.award-entry:last-child { border-bottom: none; }
+.award-year { font-family: var(--mono); font-size: 0.7em; color: var(--teal); padding-top: 2px; }
+.award-name { font-size: 0.867em; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.award-org { font-size: 0.767em; color: var(--text-dim); }
+
+/* ============================================================
+   COURSE ROWS
+============================================================ */
+.course-semester { margin-bottom: 18px; }
+.semester-label {
+  font-family: var(--mono); font-size: 0.7em; color: var(--teal);
+  margin-bottom: 7px; display: flex; align-items: center; gap: 8px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.semester-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.course-row {
+  display: grid; grid-template-columns: 150px 1fr 78px;
+  gap: 0 10px; padding: 6px 0; font-size: 0.833em;
+  border-bottom: 1px solid rgba(42,53,72,0.35); align-items: baseline;
+}
+.course-row:last-child { border-bottom: none; }
+.course-code { font-family: var(--mono); font-size: 0.767em; color: var(--teal-dim); }
+.course-name { color: var(--text-muted); }
+.course-students { font-family: var(--mono); font-size: 0.7em; color: var(--text-dim); text-align: right; }
+
+/* ============================================================
+   HIGHLIGHT BOX
+============================================================ */
+.highlight-box {
+  background: linear-gradient(135deg, rgba(45,212,191,0.06) 0%, transparent 60%);
+  border: 1px solid rgba(45,212,191,0.18);
+  border-radius: var(--radius); padding: 16px 20px;
+  margin-bottom: 18px; font-size: 0.9em;
+  color: var(--text-muted); line-height: 1.75;
+}
+body.light-mode .highlight-box { background: rgba(11,122,110,0.05); }
+.highlight-box strong { color: var(--teal); }
+
+/* Subsection divider inside section-inner */
+.sub-divider {
+  font-family: var(--mono); font-size: 0.7em; color: var(--teal);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;
+}
+.sub-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.sub-divider:first-child { margin-top: 0; }
+
+/* ============================================================
+   SETTINGS PANEL
+============================================================ */
+#settings-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--teal); color: #0d1117;
+  border: none; cursor: pointer; font-size: 1.2em;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(45,212,191,0.35);
+  transition: all var(--tr);
+}
+body.light-mode #settings-btn { color: #fff; }
+#settings-btn:hover { transform: scale(1.08); }
+
+#settings-panel {
+  position: fixed; bottom: 78px; right: 24px; z-index: 300;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 22px;
+  width: 250px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  transition: all 0.25s ease;
+  opacity: 0; transform: translateY(10px) scale(0.96);
+  pointer-events: none;
+}
+#settings-panel.open {
+  opacity: 1; transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.sp-title { font-family: var(--serif); font-size: 1em; color: var(--text); margin-bottom: 16px; }
+.sp-label { font-family: var(--mono); font-size: 0.667em; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 8px; }
+.sp-row { margin-bottom: 18px; }
+
+.sp-toggle-row { display: flex; align-items: center; justify-content: space-between; }
+.sp-toggle-label { font-size: 0.867em; color: var(--text-muted); }
+.toggle-switch { position: relative; width: 42px; height: 22px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; border-radius: 99px;
+  background: var(--border); cursor: pointer; transition: background var(--tr);
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 16px; height: 16px; border-radius: 50%;
+  left: 3px; top: 3px; background: var(--text-muted);
+  transition: transform var(--tr), background var(--tr);
+}
+input:checked + .toggle-slider { background: var(--teal); }
+input:checked + .toggle-slider::before { transform: translateX(20px); background: #fff; }
+
+.sp-font-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sp-font-btn {
+  padding: 6px 4px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text-muted);
+  font-size: 0.733em; cursor: pointer; transition: all var(--tr);
+  text-align: center;
+}
+.sp-font-btn:hover, .sp-font-btn.active { border-color: var(--teal); color: var(--teal); background: var(--teal-glow); }
+
+.sp-size-row { display: flex; align-items: center; gap: 8px; }
+.sp-size-btn {
+  flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text-muted);
+  cursor: pointer; transition: all var(--tr); font-size: 0.733em; text-align: center;
+}
+.sp-size-btn:hover, .sp-size-btn.active { border-color: var(--teal); color: var(--teal); background: var(--teal-glow); }
+
+/* ============================================================
+   FOOTER
+============================================================ */
+.cv-footer {
+  margin-top: 36px; padding: 20px 0 0;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+  font-family: var(--mono); font-size: 0.7em; color: var(--text-dim);
+}
+
+/* ============================================================
+   PRINT STYLES — HUTCHESON ACADEMIC FORMAT
+============================================================ */
+@media print {
+  :root {
+    --bg: #fff; --bg2: #fff; --bg3: #f5f5f5; --border: #ccc;
+    --teal: #000; --teal-dim: #000; --teal-glow: transparent;
+    --text: #000; --text-muted: #222; --text-dim: #555;
+    --base-size: 11pt;
+    --serif: 'Times New Roman', Times, serif;
+    --sans: 'Times New Roman', Times, serif;
+    --mono: 'Times New Roman', Times, serif;
+  }
+
+  @page { margin: 1in; size: letter; }
+
+  * { box-shadow: none !important; animation: none !important; transition: none !important; }
+
+  body { background: #fff !important; color: #000 !important; font-family: 'Times New Roman', serif !important; font-size: 11pt !important; }
+
+  /* Hide all UI chrome */
+  .top-bar, #nav-sidebar, #settings-btn, #settings-panel { display: none !important; }
+
+  /* Full width single column */
+  .layout-wrapper { display: block !important; padding: 0 !important; max-width: 100% !important; }
+  .main-content { padding: 0 !important; }
+
+  /* ── PRINT HERO — Hutcheson style: centered block ── */
+  .hero-canvas {
+    text-align: center; background: #fff !important;
+    border: none !important; padding: 0 0 18pt !important;
+  }
+  .hero-canvas::before { display: none !important; }
+  .hero-eyebrow { display: none; }
+  h1.hero-name {
+    font-family: 'Times New Roman', serif !important;
+    font-size: 16pt !important; font-weight: bold; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .name-gradient { -webkit-text-fill-color: #000 !important; background: none !important; }
+  .hero-title { font-size: 12pt; font-style: normal; font-weight: normal; margin-bottom: 2pt; }
+  .hero-affil { font-size: 11pt; font-style: normal; color: #000; }
+  .hero-badges { justify-content: center; margin-bottom: 6pt; }
+  .hero-badge {
+    background: none !important; border: none !important;
+    padding: 0 6pt; color: #000 !important;
+    font-family: 'Times New Roman', serif !important; font-size: 10pt;
+  }
+  .hero-badge::after { content: ' |'; }
+  .hero-badge:last-child::after { content: ''; }
+  .logo-box { display: none; }
+
+  /* Stats ribbon hidden in print */
+  .stats-ribbon { display: none !important; }
+
+  /* Highlight box as plain paragraph */
+  .highlight-box {
+    background: none !important; border: none !important;
+    border-bottom: 1px solid #000; padding: 0 0 8pt !important;
+    margin-bottom: 12pt !important; font-size: 10.5pt;
+    font-family: 'Times New Roman', serif;
+  }
+
+  /* ── L1 SECTIONS — Hutcheson: ALL CAPS bold + rule ── */
+  .section-wrapper {
+    background: #fff !important; border: none !important;
+    border-radius: 0 !important; margin-bottom: 0 !important;
+    page-break-inside: avoid;
+  }
+  .section-toggle {
+    padding: 12pt 0 3pt !important; cursor: default;
+    border-bottom: 2px solid #000; margin-bottom: 6pt;
+    background: none !important;
+  }
+  .section-toggle:hover { background: none !important; }
+  .section-icon, .chevron { display: none !important; }
+  .section-title {
+    font-family: 'Times New Roman', serif !important;
+    font-size: 12pt !important; font-weight: bold;
+    text-transform: uppercase; letter-spacing: 0.05em; color: #000;
+  }
+  .section-count { display: none; }
+
+  /* All L1 bodies expanded */
+  .section-body {
+    max-height: none !important; overflow: visible !important;
+    opacity: 1 !important; display: block !important;
+  }
+  .section-inner { padding: 6pt 0 0 !important; border-top: none !important; }
+
+  /* ── L2 SUBSECTIONS — bold italic header ── */
+  .subsection-wrapper {
+    background: #fff !important; border: none !important;
+    border-radius: 0 !important; margin-bottom: 0 !important;
+  }
+  .subsection-toggle { padding: 6pt 0 2pt !important; cursor: default; background: none !important; }
+  .subsection-toggle:hover { background: none !important; }
+  .subsection-title {
+    font-family: 'Times New Roman', serif !important;
+    font-size: 11pt !important; font-style: italic; font-weight: bold;
+    text-transform: none !important; letter-spacing: 0; color: #000;
+  }
+  .subsection-count, .chevron-sm { display: none !important; }
+  .subsection-body { max-height: none !important; overflow: visible !important; opacity: 1 !important; display: block !important; }
+  .subsection-inner { padding: 4pt 0 !important; border-top: none !important; }
+
+  /* ── L3 ENTRY CARDS — plain text entries ── */
+  .entry-card {
+    background: #fff !important; border: none !important;
+    border-radius: 0 !important; margin-bottom: 0 !important;
+    page-break-inside: avoid;
+  }
+  .entry-toggle { padding: 4pt 0 !important; cursor: default; background: none !important; }
+  .entry-toggle:hover { background: none !important; }
+  .entry-year { font-family: 'Times New Roman', serif !important; font-size: 10pt; color: #000; min-width: 38pt; }
+  .entry-title { font-family: 'Times New Roman', serif !important; font-size: 11pt; font-weight: normal; color: #000; }
+  .entry-subtitle { font-family: 'Times New Roman', serif !important; font-size: 10.5pt; color: #333; }
+  .entry-badges { display: none !important; }
+  .chevron-xs { display: none !important; }
+
+  /* Entry body expanded */
+  .entry-body { max-height: none !important; overflow: visible !important; opacity: 1 !important; display: block !important; }
+  .entry-inner { padding: 3pt 0 4pt 40pt !important; border-top: none !important; }
+  .entry-abstract { font-family: 'Times New Roman', serif !important; font-size: 10.5pt; color: #000; }
+  .entry-meta-row { gap: 16pt; }
+  .entry-meta-label { color: #000; font-family: 'Times New Roman', serif !important; }
+  .entry-meta-value { color: #000; font-family: 'Times New Roman', serif !important; }
+  .entry-link-row, .entry-media, .video-embed, .entry-video { display: none !important; }
+
+  /* TL entries */
+  .tl-entry { border-bottom-color: #ccc; }
+  .tl-date, .tl-role, .tl-org, .tl-details { color: #000; font-family: 'Times New Roman', serif !important; }
+  .tl-org { color: #000; font-style: italic; }
+  .tl-date { font-family: 'Times New Roman', serif !important; }
+
+  /* Sub-dividers */
+  .sub-divider { color: #000; font-family: 'Times New Roman', serif !important; font-size: 10pt; text-transform: none; font-style: italic; }
+  .sub-divider::after { background: #ccc; }
+
+  /* Award entries */
+  .award-year { color: #000; font-family: 'Times New Roman', serif !important; }
+  .award-name, .award-org { color: #000; font-family: 'Times New Roman', serif !important; }
+
+  /* Course rows */
+  .course-code, .course-name, .course-students { color: #000; font-family: 'Times New Roman', serif !important; }
+  .semester-label { color: #000; font-family: 'Times New Roman', serif !important; font-style: italic; }
+  .semester-label::after { background: #ccc; }
+
+  /* Skills */
+  .skill-bar { display: none; }
+  .tag { background: none !important; border-color: #ccc; color: #000 !important; font-family: 'Times New Roman', serif !important; }
+
+  /* Footer */
+  .cv-footer { border-top-color: #000; color: #000; font-family: 'Times New Roman', serif !important; }
+
+  /* Section wrappers no border */
+  .section-wrapper:hover { border: none !important; }
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+  .layout-wrapper { grid-template-columns: 1fr; }
+  #nav-sidebar { display: none; }
+  .main-content { padding: 0; }
+  .tl-entry { grid-template-columns: 1fr; gap: 2px; }
+  .course-row { grid-template-columns: 1fr; gap: 2px; }
+  .award-entry { grid-template-columns: 1fr; }
+  .entry-inner { padding-left: 14px !important; }
+}
+
+/* ── Site-wide nav ── */
+.site-nav{
+  position:sticky;top:0;z-index:9999;
+  background:rgba(6,14,28,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid #1c3050;
+  display:flex;align-items:center;gap:6px;padding:0 24px;height:44px;
+}
+.site-nav-logo{
+  font-family:'DM Mono','JetBrains Mono',monospace;
+  font-size:.8em;color:#2dd4bf;font-weight:500;
+  letter-spacing:.04em;margin-right:auto;white-space:nowrap;
+  text-decoration:none;
+}
+.site-nav-logo span{color:#7a90ae}
+.site-nav-link{
+  padding:5px 12px;border-radius:6px;font-size:.76em;
+  color:#7a90ae;text-decoration:none;transition:all .18s;
+  border:1px solid transparent;font-family:'DM Sans','DM Mono',system-ui,sans-serif;
+  white-space:nowrap;
+}
+.site-nav-link:hover{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15)}
+.site-nav-link.curr{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.2);font-weight:600}
+
+</style>
+</head>
+<body class="size-md">
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link" href="index.html">Home</a>
+  <a class="site-nav-link curr" href="AsadMirza_CV_v2.html">CV</a>
+  <a class="site-nav-link" href="projects.html">Projects</a>
+  <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
+</div>
+
+<!-- ============================================================
+     TOP BAR
+============================================================ -->
+<div class="top-bar">
+  <div class="top-bar-name">Asad Mirza, PhD</div>
+  <div class="top-bar-right">
+    <button class="tb-btn" onclick="toggleAll()" id="all-btn">⊞ Expand All</button>
+    <button class="tb-btn primary" onclick="printCV()">⬇ Download Word CV</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     LAYOUT WRAPPER
+============================================================ -->
+<div class="layout-wrapper">
+
+<!-- ── SIDEBAR NAV ── -->
+<nav id="nav-sidebar">
+  <div class="nav-label">Navigate</div>
+  <a class="nav-link" href="#education">🎓 Education</a>
+  <a class="nav-link" href="#experience">💼 Experience</a>
+  <a class="nav-link" href="#publications">📄 Publications</a>
+  <a class="nav-link" href="#conferences">🎙 Conferences</a>
+  <a class="nav-link" href="#teaching">📚 Teaching</a>
+  <a class="nav-link" href="#supervision">👥 Supervision</a>
+  <a class="nav-link" href="#funding">🏆 Funding & Awards</a>
+  <a class="nav-link" href="#skills">⚙️ Skills</a>
+  <a class="nav-link" href="#service">🌐 Service</a>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main-content">
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<div class="hero-canvas">
+  <div class="hero-top">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Curriculum Vitae · Research Assistant Professor</div>
+      <h1 class="hero-name"><span class="name-gradient">Asad Mirza</span></h1>
+      <div class="hero-title">Department of Biomedical Engineering · Florida International University</div>
+      <div class="hero-affil">10555 West Flagler St, Miami, FL 33174 &nbsp;·&nbsp; ORCID: 0000-0003-4515-2203</div>
+      <div class="hero-badges">
+        <a class="hero-badge" href="/cdn-cgi/l/email-protection#2b4a464259514a6b4d425e054e4f5e">✉ <span class="__cf_email__" data-cfemail="90f1fdf9e2eaf1d0f6f9e5bef5f4e5">[email&#160;protected]</span></a>
+        <a class="hero-badge" href="https://github.com/DThornz" target="_blank">⌥ github/DThornz</a>
+        <a class="hero-badge" href="https://orcid.org/0000-0003-4515-2203" target="_blank">🔗 ORCID</a>
+        <a class="hero-badge" href="https://scholar.google.com/citations?user=a8fYPM0AAAAJ" target="_blank">📑 Scholar</a>
+        <a class="hero-badge" href="https://www.researchgate.net/profile/Asad_Mirza2" target="_blank">🔬 ResearchGate</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <!--
+        LOGO: Loading from GitHub. To use a local copy, change src to:
+          src="src/images/Logo_V1.png"
+        To update the logo, replace Logo_V1.png in your GitHub src/images folder.
+      -->
+      <div class="logo-box">
+        <img
+          src="https://raw.githubusercontent.com/DThornz/CV/refs/heads/gh-pages/Logo_V1.png"
+          alt="Asad Mirza Logo"
+          onerror="this.parentElement.innerHTML='<span style=\'font-family:var(--serif);font-size:2.533em;color:var(--teal)\'>AM</span>'"
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS RIBBON -->
+<div class="stats-ribbon">
+  <div class="stat-card"><div class="stat-num">10+</div><div class="stat-label">Publications</div></div>
+  <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Patent</div></div>
+  <div class="stat-card"><div class="stat-num">30+</div><div class="stat-label">Conf. Abstracts</div></div>
+  <div class="stat-card"><div class="stat-num">8yr</div><div class="stat-label">Teaching</div></div>
+  <div class="stat-card"><div class="stat-num">600+</div><div class="stat-label">Students</div></div>
+  <div class="stat-card"><div class="stat-num">$28K+</div><div class="stat-label">Fellowships</div></div>
+</div>
+
+<!-- STATEMENT -->
+<div class="highlight-box">
+  Biomedical engineer and early-stage investigator specializing in <strong>computational fluid dynamics (CFD)</strong>, <strong>fluid-structure interaction (FSI)</strong>, and <strong>multiscale physiological modeling</strong>. PhD research centered on identifying hemodynamic biomarkers of calcific aortic valve disease (CAVD) using patient-specific FSI simulations. Current work spans cerebrovascular network modeling, stochastic calcium signaling in brain capillary endothelial cells, and biomedical image analysis pipelines. Dedicated educator with 8+ years of MATLAB-intensive teaching across undergraduate and graduate BME curricula.
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: EDUCATION                                          ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper open" id="education">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">🎓</div>
+      <div>
+        <div class="section-title">Education</div>
+        <div class="section-count">2 degrees · Florida International University</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- L3: PhD Entry -->
+      <div class="entry-card open" id="edu-phd">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2018–2024</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Ph.D. — Biomedical Engineering</div>
+            <div class="entry-subtitle">Florida International University · Miami, FL · GPA: 3.84/4.0</div>
+            <div class="entry-badges"><span class="badge badge-award">Dissertation Year Fellowship</span><span class="badge badge-first">McNair Scholar</span></div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-meta-row">
+              <div class="entry-meta-item"><div class="entry-meta-label">Major Professor</div><div class="entry-meta-value">Dr. Sharan Ramaswamy</div></div>
+              <div class="entry-meta-item"><div class="entry-meta-label">Defense Date</div><div class="entry-meta-value">June 26, 2024</div></div>
+              <div class="entry-meta-item"><div class="entry-meta-label">GPA</div><div class="entry-meta-value">3.84 / 4.0</div></div>
+            </div>
+            <div class="entry-meta-label" style="margin-bottom:6px">Dissertation</div>
+            <div class="entry-title" style="font-size:0.933em;margin-bottom:10px">
+              "Computational Model for Aortic Valve Calcification Prediction Through Hemodynamic Biomarkers"
+            </div>
+            <div class="entry-abstract">
+              Cardiovascular disease (CVD) persists as the primary global cause of mortality, with calcific aortic valve disease (CAVD) emerging as a significant subset. Typically, CAVD remains undetected until advanced stages when symptoms appear alongside observable changes in hydrodynamic measurements. Wall shear stress (WSS) and oscillatory shear index (OSI) have been shown to correlate with atherosclerosis in arteries; this dissertation proposed the existence of analogous biomarkers for CAVD detectable before symptomatic onset.
+              <br><br>
+              Wall metrics in fluid simulations depend on the viscosity model (Newtonian vs. non-Newtonian). Results showed lower shear rates on the fibrosa side of severely calcified valves — below the Newtonian threshold, especially in crevice regions — leading to artificially underestimated WSS. Thus, precise FSI modeling of severe CAVD requires a non-Newtonian viscosity model (e.g., Carreau, Quemada) to accurately capture wall metrics.
+              <br><br>
+              PSIS bioscaffolds shaped into valves were used to explore early-stage CAVD dynamics. While hydrodynamic testing showed no significant difference between healthy and mildly calcified groups, nanoindentation revealed significant stiffness differences (p&lt;0.05) and FSI simulation demonstrated marked changes in TAWSS and OSI — supporting these as measurable early-stage, pre-symptomatic biomarkers. Parameterized computational models across multiple valve sizes and calcification levels further validated the trackability of TAWSS and OSI with increasing CAVD severity.
+            </div>
+            <div class="entry-link-row">
+              <a class="entry-link" href="https://doi.org/10.3390/bioengineering11100955" target="_blank">📄 Key Publication</a>
+              <!--
+                ═══════════════════════════════════════════════════════
+                VIDEO PLACEHOLDER — Defense presentation or summary
+                ═══════════════════════════════════════════════════════
+                Option 1 (YouTube):
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+                  </div>
+                Option 2 (GitHub):
+                  <video controls class="entry-video">
+                    <source src="src/videos/phd_defense.mp4" type="video/mp4">
+                  </video>
+                ═══════════════════════════════════════════════════════
+              -->
+            </div>
+            <!--
+              ═══════════════════════════════════════════════════════
+              IMAGE PLACEHOLDER — Dissertation figures
+              ═══════════════════════════════════════════════════════
+              <div class="entry-media">
+                <div class="entry-media-label">Key Figures</div>
+                <div class="entry-img-grid">
+                  <img src="src/images/phd_fig1_valve_geometry.png" class="entry-img" alt="Aortic valve computational geometry">
+                  <img src="src/images/phd_fig2_WSS_results.png" class="entry-img" alt="Wall shear stress results">
+                  <img src="src/images/phd_fig3_OSI_map.png" class="entry-img" alt="Oscillatory shear index map">
+                </div>
+              </div>
+              ═══════════════════════════════════════════════════════
+            -->
+          </div>
+        </div>
+      </div><!-- /PhD -->
+
+      <!-- L3: BS Entry -->
+      <div class="entry-card" id="edu-bs">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2014–2017</span>
+          <div class="entry-title-col">
+            <div class="entry-title">B.S. — Biomedical Engineering</div>
+            <div class="entry-subtitle">Florida International University · Miami, FL · GPA: 3.74/4.0</div>
+            <div class="entry-badges"><span class="badge badge-award">Dean's List (4 years)</span><span class="badge badge-award">Presidential Scholarship</span><span class="badge badge-first">McNair Scholar</span></div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-meta-row">
+              <div class="entry-meta-item"><div class="entry-meta-label">Capstone Project</div><div class="entry-meta-value">System for Wholefield Fluorescent Microscopy Imaging In-Vivo</div></div>
+              <div class="entry-meta-item"><div class="entry-meta-label">GPA</div><div class="entry-meta-value">3.74 / 4.0</div></div>
+              <div class="entry-meta-item"><div class="entry-meta-label">Faculty Advisor</div><div class="entry-meta-value">Dr. Wei-Chiang Lin</div></div>
+            </div>
+            <div class="entry-abstract">
+              <strong>Capstone — "System for Whole Field Fluorescent Microscopy Imaging In-Vivo"</strong> (Team 1, Fall 2017). A novel dual-modality imaging system for studying epilepsy mechanisms in the cerebral cortex. Epilepsy affects roughly 65 million people worldwide with no known cure; the difficulty lies in recording neural activity of cerebral cortical cells where epileptic events occur. Using calcium and voltage sensitive dye imaging (VSDI), the system allows researchers to record action potential and ion dynamics propagated across the cerebral cortex simultaneously.
+              <br><br>
+              The system features a synchronized fast CMOS camera for VSDI paired with a slower CCD for calcium imaging, aimed at a stereotaxic stage holding a rat with a 1 mm² exposed cranial window. A custom-built MATLAB GUI controls the cameras and stage, enabling dynamic spatial imaging across the cranial window — allowing faster and more accurate data acquisition to identify underlying causes of epilepsy.
+              <br><br>
+              <em>Sponsor: Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory</em>
+            </div>
+            <!--
+              ═══════════════════════════════════════════════════════
+              IMAGE PLACEHOLDER — Senior Design capstone device
+              ═══════════════════════════════════════════════════════
+              <div class="entry-media">
+                <div class="entry-media-label">Project Photos</div>
+                <div class="entry-img-grid">
+                  <img src="src/images/senior_design_device.jpg" class="entry-img" alt="Fluorescent microscopy system">
+                  <img src="src/images/senior_design_team.jpg"  class="entry-img" alt="Team photo">
+                </div>
+              </div>
+              VIDEO: <div class="video-embed"><iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe></div>
+              ═══════════════════════════════════════════════════════
+            -->
+          </div>
+        </div>
+      </div><!-- /BS -->
+
+    </div>
+  </div>
+</div><!-- /education -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: WORK EXPERIENCE                                    ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper open" id="experience">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">💼</div>
+      <div>
+        <div class="section-title">Work Experience</div>
+        <div class="section-count">Research · Teaching · Clinical</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- Research Assistant Professor -->
+      <div class="entry-card open">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2024–Now</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Research Assistant Professor</div>
+            <div class="entry-subtitle">Dept. of Biomedical Engineering · Florida International University · also: Vida Engineering LLC</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-abstract">
+              Directing computational and experimental research across Tsoukias Vascular Physiology Lab, Hutcheson Cardiovascular Matrix Remodeling Lab, and Prasad Lab. Research projects include:
+              <br>• Multiscale modeling of nitric oxide (NO) transport in cerebral microvascular networks using Green's Function methods (PI: Dr. Tsoukias)
+              <br>• Patient-specific FSI simulations of asymmetric calcific aortic valve disease (CAVD) progression (PI: Dr. Hutcheson) — NIH-funded
+              <br>• Stochastic modeling of IP₃R-mediated calcium signaling in brain capillary endothelial cells (with N. Khakpour, M.T. Nelson, N. Tsoukias)
+              <br>• Biomedical image analysis pipelines for electrospun fiber characterization (Prasad Lab)
+              <br>• Contributing computational expertise to SBIR/STTR proposals (&gt;$200K combined requested)
+            </div>
+            <!--
+              IMAGE: Research overview figure or lab photo
+              <img src="src/images/research_overview.png" class="entry-img" alt="Research overview">
+            -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Graduate RA -->
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2019–2024</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Graduate Research Assistant</div>
+            <div class="entry-subtitle">Cardiovascular Therapeutics Lab · FIU · PI: Dr. Sharan Ramaswamy</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-abstract">
+              Pioneered computational pipeline for predicting early-stage aortic valve calcification using hemodynamic biomarkers (WSS, OSI) — published in Bioengineering 2024. Engineered parameterized patient-specific aortic valve model enabling high-throughput FSI simulation across 50+ virtual geometries. Validated models against ex-vivo Vivitro Left Heart Pulse Duplicator hydrodynamic data and nanoindentation mechanical data (R² &gt; 0.85). Led CFD analyses in ANSYS Fluent; post-processing and visualization in MATLAB.
+            </div>
+            <!--
+              IMAGE: FSI simulation results, valve geometry
+              <div class="entry-img-grid">
+                <img src="src/images/fsi_valve_mesh.png" class="entry-img" alt="FSI mesh">
+                <img src="src/images/fsi_WSS_contour.png" class="entry-img" alt="WSS contour plot">
+              </div>
+            -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Undergrad RA -->
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2016–2019</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Undergraduate Research Assistant</div>
+            <div class="entry-subtitle">Vascular Physiology & Biotransport Lab · FIU · PI: Dr. Nikolaos Tsoukias</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-abstract">
+              Developed mathematical models of pericyte electrophysiology and neurovascular coupling (systems of ODEs) to investigate neurodegenerative disease mechanisms. Performed FSI simulations in COMSOL Multiphysics of brain arterioles under dilation/constriction. Presented at BMES 2018, World Congress for Microcirculation 2018, and Experimental Biology 2018 — travel funded by McNair Program.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graduate TA -->
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2018–2022</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Graduate Teaching Assistant</div>
+            <div class="entry-subtitle">Department of Biomedical Engineering · FIU · 5 courses, 40–98 students/course</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body">
+          <div class="entry-inner">
+            <div class="entry-abstract">
+              Lead TA for BME 1054L (Introduction to BME Computing) across 6 semesters. Redesigned course modules; created instructional video library for each module with live coding demonstrations. Developed a new <em>Biosignal Processing</em> module covering Fourier analysis, filtering, and biomedical signal applications (ECG, EEG). Supported BME 3632 Biotransport with 2-class MATLAB PDE series; aided BME 6266 by building ANSYS CFD aneurysm analysis module and pre-processing 12 patient-specific geometry files.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /experience -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: PUBLICATIONS                                       ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper open" id="publications">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">📄</div>
+      <div>
+        <div class="section-title">Publications</div>
+        <div class="section-count">1 Patent · 1 Book Chapter · 9 Journal Articles</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- L2: Patent -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Patent <span class="subsection-count">(1)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Production of Enhanced Stem Cell-Based Exosomes and Uses in Scar Tissue Prevention and Treatment</div>
+                  <div class="entry-subtitle">Ramaswamy SD, Nevarez MP, <strong>Mirza AM</strong>, Lin Y-M, Ibarra A, Arman P. · Filed March 6, 2025</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">
+                    Patent covering novel methods for enhancing exosome production from stem cells subjected to oscillatory shear stress conditioning, and the application of these exosomes in preventing and treating scar tissue formation.
+                  </div>
+                  <!--
+                    IMAGE: Patent figure or schematic
+                    <img src="src/images/patent_schematic.png" class="entry-img" alt="Patent figure">
+                  -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /patent subsection -->
+
+      <!-- L2: Book Chapter -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Book Chapter <span class="subsection-count">(1)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Revolutionizing Pediatric Valve Replacement: The Future of Elastin-Rich Tissue-Engineered Solutions</div>
+                  <div class="entry-subtitle">Ponce Aportela C, Alvarado D, Pandya K, Herrera A, <strong>Mirza A</strong>, Ramaswamy S. · Springer, Cham</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">
+                    In: Liao J, Wong JY (eds) <em>Integration and Bridging of Multiscale Bioengineering Designs and Tissue Biomechanics.</em> Springer, Cham. Pp. 291–307. Covers elastin-rich tissue engineering strategies for pediatric heart valve replacement, including scaffold conditioning, decellularization, and ECM remodeling outcomes.
+                  </div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.1007/978-3-031-81743-4_10" target="_blank">📖 doi: 10.1007/978-3-031-81743-4_10</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /book chapter -->
+
+      <!-- L2: Journal Articles -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Journal Articles <span class="subsection-count">(9)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <!-- 2026 - Acta Biomaterialia -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Exploring the Link Between Disturbed Flow and Endothelial Cell Function in an In Vitro Arteriovenous Fistula Model</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Xiao Z, White NA, Wen J, … Rotmans JI. · <em>Acta Biomaterialia</em></div>
+                  <div class="entry-badges"><span class="badge badge-first">First Author</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-meta-row">
+                    <div class="entry-meta-item"><div class="entry-meta-label">Journal</div><div class="entry-meta-value">Acta Biomaterialia, 2026</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">DOI</div><div class="entry-meta-value">10.1016/j.actbio.2026.01.044</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">Role</div><div class="entry-meta-value">First Author + CFD lead</div></div>
+                  </div>
+                  <div class="entry-abstract">
+                    Co-development of a novel in vitro bypass flow model capable of generating spatially localized regions of disturbed, physiological, and stagnant flow within the same device — designed to study endothelial cell mechanotransduction in an arteriovenous fistula context. CFD was used to characterize local flow profiles. High-content imaging revealed ECs exposed to disturbed flow exhibited loss of alignment, disrupted adherens junctions, and increased activation marker expression, validating the model's physiological relevance for intimal hyperplasia research.
+                  </div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.1016/j.actbio.2026.01.044" target="_blank">🔗 Full Paper</a>
+                  </div>
+                  <!--
+                    ═══════════════════════════════════════════════════════
+                    IMAGE: Bypass flow model schematic, CFD results, EC imaging
+                    <div class="entry-media">
+                      <div class="entry-media-label">Figures</div>
+                      <div class="entry-img-grid">
+                        <img src="src/images/avf_model_schematic.png" class="entry-img" alt="Bypass flow model">
+                        <img src="src/images/avf_cfd_velocity.png"    class="entry-img" alt="CFD velocity field">
+                        <img src="src/images/avf_ec_imaging.png"      class="entry-img" alt="Endothelial cell imaging">
+                      </div>
+                    </div>
+                    VIDEO: Simulation animation
+                    <div class="video-embed">
+                      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    ═══════════════════════════════════════════════════════
+                  -->
+                </div>
+              </div>
+            </div><!-- /acta biomateriaia 2026 -->
+
+            <!-- 2024 - Bioengineering -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Computational Model for Early-Stage Aortic Valve Calcification Shows Hemodynamic Biomarkers</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Hsu C-PD, Rodriguez A, … Hutcheson JD, Ramaswamy S. · <em>Bioengineering</em>, 11, 955</div>
+                  <div class="entry-badges"><span class="badge badge-first">First Author</span><span class="badge badge-first">Co-Corresponding</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-meta-row">
+                    <div class="entry-meta-item"><div class="entry-meta-label">Journal</div><div class="entry-meta-value">Bioengineering 2024, 11, 955</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">DOI</div><div class="entry-meta-value">10.3390/bioengineering11100955</div></div>
+                  </div>
+                  <div class="entry-abstract">
+                    Developed FSI simulations of mildly calcified PSIS bioscaffold valves compared to healthy controls. Hydrodynamic testing showed no significant difference between groups, yet mechanical nanoindentation revealed significant stiffness differences (p&lt;0.05). FSI simulation demonstrated marked changes in time-averaged WSS (TAWSS) and oscillatory shear index (OSI) — supporting these metrics as measurable biomarkers for early-stage, pre-symptomatic CAVD when standard hydrodynamics show no indication of disease.
+                  </div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.3390/bioengineering11100955" target="_blank">🔗 Full Paper</a>
+                  </div>
+                  <!--
+                    IMAGE: FSI results, nanoindentation maps, WSS/OSI contours
+                    <div class="entry-img-grid">
+                      <img src="src/images/cavd_fsi_TAWSS.png" class="entry-img" alt="TAWSS contour">
+                      <img src="src/images/cavd_fsi_OSI.png"   class="entry-img" alt="OSI map">
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div><!-- /bioengineering 2024 -->
+
+            <!-- 2024 - Materials Today Bio -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">A Bypass Flow Model to Study Endothelial Cell Mechanotransduction Across Diverse Flow Environments</div>
+                  <div class="entry-subtitle">Xiao Z, <strong>Mirza A</strong>, et al. · <em>Materials Today Bio</em>, p. 101121</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.1016/j.mtbio.2024.101121" target="_blank">🔗 doi: 10.1016/j.mtbio.2024.101121</a>
+                  </div>
+                  <!--
+                    IMAGE: Device schematic and CFD flow profile
+                    <img src="src/images/bypass_model.png" class="entry-img" alt="Bypass flow device">
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 2022 - Bioengineering (Gonzalez) -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2022</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Stem Cell-Secreted Allogeneic Elastin-Rich Matrix with Subsequent Decellularization for the Treatment of Critical Valve Diseases in the Young</div>
+                  <div class="entry-subtitle">Gonzalez BA, Herrera A, …, <strong>Mirza A</strong>, Ramaswamy S. · <em>Bioengineering</em>, 9, 587</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Bioreactor-based two-phase culture system in which hMSCs deposit elastin-rich ECM on PSIS scaffolds. Dynamically cultured scaffolds were decellularized to yield allogeneic ECM with ~8% elastin content, significantly enhancing collagen production by native valve interstitial cells in vitro.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.3390/bioengineering9100587" target="_blank">🔗 doi: 10.3390/bioengineering9100587</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2022 - Bioengineering (Hsu) -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2022</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Valve Endothelial Cell Exposure to High Levels of Flow Oscillations Exacerbates Valve Interstitial Cell Calcification</div>
+                  <div class="entry-subtitle">Hsu C-PD, Tchir A, <strong>Mirza A</strong>, … Hutcheson JD, Ramaswamy S. · <em>Bioengineering</em></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Quantified role of oscillatory shear stress in driving maladaptive crosstalk between valve endothelial cells (VECs) and interstitial cells (VICs). VECs conditioned by highly oscillatory flow enhanced calcific signaling to VICs, underscoring the importance of flow-induced endothelial signaling in valvular disease.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.3390/bioengineering9080393" target="_blank">🔗 doi: 10.3390/bioengineering9080393</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2022 - J Biomech Eng -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2022</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Importance of Non-Newtonian Computational Fluid Modeling on Severely Calcified Aortic Valve Geometries — Insights from Quasi-Steady State Simulations</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Ramaswamy S. · <em>Journal of Biomechanical Engineering</em></div>
+                  <div class="entry-badges"><span class="badge badge-first">First Author</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">
+                    Demonstrated that in severely calcified aortic valves, regions of low shear rates (&lt;100 s⁻¹) on the fibrosa surface invalidate the Newtonian fluid assumption. Only non-Newtonian models (Carreau, Quemada) yield accurate WSS and OSI predictions in these flow regimes — directly relevant to sub-clinical thrombosis risk assessment.
+                  </div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.1115/1.4054630" target="_blank">🔗 doi: 10.1115/1.4054630</a>
+                  </div>
+                  <!--
+                    IMAGE: Non-Newtonian vs Newtonian WSS comparison
+                    <div class="entry-img-grid">
+                      <img src="src/images/newtonian_WSS.png"    class="entry-img" alt="Newtonian WSS">
+                      <img src="src/images/nonnewtonian_WSS.png" class="entry-img" alt="Non-Newtonian WSS">
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 2020 - Front Cardiovasc Med -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2020</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Physiologically Relevant Fluid-Induced Oscillatory Shear Stress Stimulation of Mesenchymal Stem Cells Enhances the Engineered Valve Matrix Phenotype</div>
+                  <div class="entry-subtitle">Gonzalez B, Perez-Nevarez M, <strong>Mirza AM</strong>, … Ramaswamy S. · <em>Frontiers in Cardiovascular Medicine</em></div>
+                  <div class="entry-badges"><span class="badge badge-co">Co-First Author</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">hMSC-seeded constructs exposed to physiologically relevant oscillatory shear stress showed enhanced endothelial marker expression (CD31), reduced smooth muscle marker activation (α-SMA), and suppressed fibronectin secretion — indicating a shift toward a favorable valvular phenotype without pathological remodeling cues.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.3389/fcvm.2020.00069" target="_blank">🔗 doi: 10.3389/fcvm.2020.00069</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2020 - Analytical Chemistry -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2020</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Non-Invasive Plasmonic-Based Real-Time Characterization of Cardiac Drugs on Cardiomyocytes Functional Behavior</div>
+                  <div class="entry-subtitle">Mozneb M, <strong>Mirza AM</strong>, Li CZ. · <em>Analytical Chemistry</em></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Surface plasmon resonance (SPR)-based label-free platform for dynamically measuring cardiomyocyte contraction in response to cardiac drugs. Demonstrated high spatiotemporal resolution for detecting cell motion in real time, offering a low-interference platform for cardiac tissue function analysis and drug screening.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.1021/acs.analchem.9b04956" target="_blank">🔗 doi: 10.1021/acs.analchem.9b04956</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2019 - Bioengineering (Tesfamariam) -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2019</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Elastin-Dependent Aortic Heart Valve Leaflet Curvature Changes During Cyclic Flexure</div>
+                  <div class="entry-subtitle">Tesfamariam MD, <strong>Mirza AM</strong>, Chaparro D, et al. · <em>Bioengineering (Basel)</em></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Linked elastin degradation to altered leaflet curvature under cyclic flexure — revealing a potential structural biomarker for early CAVD remodeling. Curvature mapping methodology developed and applied to both healthy and elastin-depleted tissue strips.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="https://doi.org/10.3390/bioengineering6020039" target="_blank">🔗 doi: 10.3390/bioengineering6020039</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /journal articles -->
+
+    </div>
+  </div>
+</div><!-- /publications -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: CONFERENCES                                        ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="conferences">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">🎙</div>
+      <div>
+        <div class="section-title">Conference Proceedings</div>
+        <div class="section-count">8 Oral · 25+ Poster Presentations</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- L2: Oral -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Oral Presentations <span class="subsection-count">(8)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Code You Can Read: Using MATLAB Live Scripts to Teach Engineering Modeling</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong> · Faculty Innovations for Student Success Showcase 2026, FIU, Miami FL</div>
+                  <div class="entry-badges"><span class="badge badge-award">Invited Talk</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Presented a pedagogical approach to MATLAB Live Scripts as a tool for making computational code readable and approachable for undergraduate biomedical engineering students — showcasing modules from BME 2740 and BME 1054L.</div>
+                  <!--
+                    SLIDES: <a class="entry-link" href="src/slides/matlab_livescript_talk.pdf" target="_blank">📊 Slides</a>
+                    VIDEO: <div class="video-embed"><iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe></div>
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2024</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">FSI Models of Early-Stage Calcified Aortic Valves Show Hemodynamic Biomarkers</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Ramaswamy S · Graduate Research Day 2024, FIU, Miami FL</div>
+                  <div class="entry-badges"><span class="badge badge-award">🥇 1st Place Oral</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Oral presentation of dissertation findings on fluid-structure interaction modeling of early-stage calcified aortic valves. Won 1st place in the oral competition at FIU Graduate Research Day 2024.</div>
+                  <!--
+                    IMAGE: Presentation poster or slide
+                    <img src="src/images/grad_research_day_2024.jpg" class="entry-img" alt="Graduate Research Day 2024">
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Apr 2021</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Importance of Non-Newtonian Modeling of Blood Flow for Calcified Aortic Valves</div>
+                  <div class="entry-subtitle"><strong>Mirza AM</strong>, Barreto A, Boodooram T, Ramaswamy S · Heart Valve Society Annual Meeting 2021 (Virtual)</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Pre-recorded oral presentation at HVS 2021 on non-Newtonian fluid modeling accuracy for severely calcified aortic valve geometries — the foundation of the 2022 J Biomech Eng publication.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Jun 2020</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">The Effect of Pulsatility on Thrombus Risk in Trans-Aortic Stent Geometries</div>
+                  <div class="entry-subtitle"><strong>Mirza AM</strong>, Barreto A, Ramaswamy S · SB3C 2020, Virtual</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">CFD analysis of pulsatile blood flow patterns in transcatheter aortic valve replacement (TAVR) stent geometries and their relationship to thrombosis risk metrics.</div></div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2020</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Hydrodynamic Assessment of a Small Intestinal Submucosa Tubular Mitral Valve</div>
+                  <div class="entry-subtitle">Hsu C-PD, <strong>Mirza A</strong>, Matheny R, Ramaswamy S · ICTEHV / Heart Valve Society 2020, Abu Dhabi, UAE</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">International conference presentation on hydrodynamic performance of cylindrical PSIS-based tissue-engineered mitral valves in pulse duplicator testing.</div></div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Sep 2018</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Requirements for Regenerative Conduction of Hyperpolarization in Cerebral Capillaries: A Model Analysis</div>
+                  <div class="entry-subtitle">Moshkforoush A, <strong>Mirza A</strong>, et al. · World Congress for Microcirculation 2018, Vancouver, CA</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">Mathematical model analysis of the conditions required for electrical hyperpolarization to propagate regeneratively through cerebral capillary networks — relevant to neurovascular coupling mechanisms.</div></div></div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /oral -->
+
+      <!-- L2: Poster -->
+      <div class="subsection-wrapper">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Selected Poster Presentations <span class="subsection-count">(25+)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Asymmetric Onset of Pathological Remodeling of Aortic Valve Disease</div>
+                  <div class="entry-subtitle">Garcia A, Chaparro D, <strong>Mirza A</strong>, Martin M, Hutcheson JD · Miami Heart Day 2026, FIU</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner">
+                <!--
+                  IMAGE: Conference poster
+                  <img src="src/images/poster_asymmetric_cavd_2026.jpg" class="entry-img" alt="Heart Day 2026 poster">
+                -->
+              </div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Oct 2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">A Computational Approach to Tuning Orbital Shaker Conditions for Mechanobiological Experiments</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Munoz E, Alevriadou BR · BMES Annual Meeting 2025, San Diego, CA</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner">
+                <div class="entry-abstract">CFD-based parameter optimization for orbital shaker flow conditions used in endothelial mechanobiology experiments — enabling systematic matching of shear stress magnitudes to physiological targets.</div>
+                <!--
+                  IMAGE: BMES 2025 poster
+                  <img src="src/images/poster_orbital_shaker_BMES2025.jpg" class="entry-img" alt="BMES 2025">
+                -->
+              </div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Oct 2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Multiscale Modeling of Nitric Oxide Transport in Cerebral Microvascular Networks Using Green's Function Methods</div>
+                  <div class="entry-subtitle">Saadat M, <strong>Mirza A</strong>, Tsoukias N · BMES 2025, San Diego, CA &amp; Graduate Research Day 2025, FIU</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner">
+                <div class="entry-abstract">Multiscale simulation framework for NO transport in cerebral microvascular networks using Green's Function method — capturing diffusion, consumption, and production at the vessel wall and tissue scale simultaneously.</div>
+              </div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Stochastic Modeling of IP3R-Mediated Calcium Signaling in Brain Capillary Endothelial Cells</div>
+                  <div class="entry-subtitle">Khakpour N, <strong>Mirza A</strong>, Tsoukias N · Miami Heart Day 2025 &amp; Graduate Research Day 2025, FIU</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner">
+                <div class="entry-abstract">CTMC-based stochastic model of IP₃R calcium channel gating in brain capillary endothelial cells, capturing the stochastic n and h gate dynamics with quasi-steady m gate — enabling simulation of spontaneous and IP₃-triggered calcium events.</div>
+              </div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Feb 2024</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Preliminary FSI Model of a Healthy vs. Severely Calcified Aortic Valve</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Ramaswamy S · Heart Day 2024, FIU</div>
+                  <div class="entry-badges"><span class="badge badge-award">🥇 1st Place Poster</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner">
+                <!--
+                  IMAGE: Heart Day 2024 winning poster
+                  <img src="src/images/poster_heart_day_2024.jpg" class="entry-img" alt="Heart Day 2024 winning poster">
+                -->
+              </div></div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Sep 2018</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Multiscale Modeling of Cerebral Blood Flow: From Neurovascular Coupling to Tissue Perfusion</div>
+                  <div class="entry-subtitle"><strong>Mirza A</strong>, Moshkforoush A, Nelson M, Tsoukias N · 11th World Congress for Microcirculation, Vancouver, CA</div>
+                  <div class="entry-badges"><span class="badge badge-award">Trainee Poster Award</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body"><div class="entry-inner"></div></div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /posters -->
+
+    </div>
+  </div>
+</div><!-- /conferences -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: TEACHING                                           ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="teaching">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">📚</div>
+      <div>
+        <div class="section-title">Teaching</div>
+        <div class="section-count">Primary Instructor (2024–) · Graduate TA (2018–2023)</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- L2: Primary Instructor -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Primary Instructor — Research Assistant Professor</div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <!-- BME 2740 -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024–Now</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">BME 2740 — Biomedical Engineering Modeling and Simulation</div>
+                  <div class="entry-subtitle">~40 students/semester · MATLAB-based ODE/PDE modeling for BME applications</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Core undergraduate BME course covering MATLAB-based numerical methods including ODE solving (Euler, RK4, stiff solvers), PDE discretization, signal processing, and biomedical system simulation. Course features MATLAB Live Scripts for improved readability and student engagement. Topics range from pharmacokinetic compartment models to finite difference heat transfer.</div>
+                  <div class="course-semester" style="margin-top:12px">
+                    <div class="course-row"><div class="course-code">Sp 2026</div><div class="course-name">Modeling and Simulation</div><div class="course-students">39 students</div></div>
+                    <div class="course-row"><div class="course-code">Fa 2025</div><div class="course-name">Modeling and Simulation</div><div class="course-students">40 students</div></div>
+                    <div class="course-row"><div class="course-code">Sp 2025</div><div class="course-name">Modeling and Simulation</div><div class="course-students">40 students</div></div>
+                    <div class="course-row"><div class="course-code">Fa 2024</div><div class="course-name">Modeling and Simulation</div><div class="course-students">46 students</div></div>
+                  </div>
+                  <!--
+                    IMAGE: Sample lecture slide or MATLAB Live Script screenshot
+                    <img src="src/images/BME2740_livescript.png" class="entry-img" alt="BME 2740 MATLAB Live Script">
+                    VIDEO: Lecture recording or demo
+                    <div class="video-embed"><iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe></div>
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <!-- BME 1054L -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024–Now</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">BME 1054L — Introduction to BME Computing</div>
+                  <div class="entry-subtitle">~70 students/semester · Introductory MATLAB for BME freshmen/sophomores</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Introductory computing course for BME students covering MATLAB fundamentals, data visualization, image processing basics, and biomedical signal analysis. Course redesigned with interactive modules and video walkthroughs. Features a custom Biosignal Processing module (ECG, EEG, Fourier/filtering).</div>
+                  <div class="course-semester" style="margin-top:12px">
+                    <div class="course-row"><div class="course-code">Sp 2026</div><div class="course-name">Introduction to BME Computing</div><div class="course-students">76 students</div></div>
+                    <div class="course-row"><div class="course-code">Fa 2025</div><div class="course-name">Introduction to BME Computing</div><div class="course-students">67 students</div></div>
+                    <div class="course-row"><div class="course-code">Sp 2025</div><div class="course-name">Introduction to BME Computing</div><div class="course-students">70 students</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Graduate courses -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024–Now</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Graduate Courses</div>
+                  <div class="entry-subtitle">BME 6715 · BME 6705 — Advanced computational modeling for graduate students</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="course-semester">
+                    <div class="course-row"><div class="course-code">Sp 2026</div><div class="course-name">BME 6705: Nonlinear Systems with Applications to Life Sciences</div><div class="course-students">4 students</div></div>
+                    <div class="course-row"><div class="course-code">Fa 2024</div><div class="course-name">BME 6715: Mathematical Modeling of Physiological Systems</div><div class="course-students">5 students</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /primary instructor -->
+
+      <!-- L2: TA -->
+      <div class="subsection-wrapper">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Graduate Teaching Assistant (2018–2023)</div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2018–2023</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Lead TA — BME 1054L: Introduction to BME Computing (6 semesters)</div>
+                  <div class="entry-subtitle">Dr. Tsoukias · 51–83 students/semester</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Redesigned course modules with accompanying video walkthroughs for each module; created a new <em>Biosignal Processing</em> module covering Fourier analysis, filtering, and BME signal applications (ECG, EEG). Held weekly seminar hours (computer lab), graded assignments, and developed interactive MATLAB demos. Worked with Dr. Tsoukias and Dr. Jung over Summer 2019 to overhaul the entire course structure based on student feedback.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2022–2023</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">TA — BME 2740: Modeling and Simulation (2 semesters)</div>
+                  <div class="entry-subtitle">Dr. Tamames · 34–51 students/semester</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Held weekly remote office hours, graded MATLAB assignments with detailed feedback, wrote lecture codes to supplement instruction, and created interactive MATLAB Live Script demonstrations.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2021</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">TA — BME 3632: Biotransport (PDE module)</div>
+                  <div class="entry-subtitle">Dr. Hutcheson · 43 students</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Developed and delivered a 2-class module on solving PDEs using MATLAB for team transport projects (energy, mass, momentum). Wrote template code distributed to all students for energy/mass/momentum-based projects.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2020</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">TA — BME 6266: Advanced Biofluid Mechanics (ANSYS CFD module)</div>
+                  <div class="entry-subtitle">Dr. Ramaswamy · Graduate course</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Developed an ANSYS Fluent-based arterial aneurysm CFD module: pre-recorded geometry import → mesh → setup → solve → post-processing walkthroughs; pre-processed 12 patient-specific geometry files to simulation-ready state for student use.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /TA -->
+
+      <!-- L2: Guest Lectures -->
+      <div class="subsection-wrapper">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Guest Lectures</div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+            <div class="tags-list">
+              <span class="tag">Introduction to FEA/CFD</span>
+              <span class="tag">MATLAB Basics (I, II, III)</span>
+              <span class="tag">MATLAB to Python</span>
+              <span class="tag">Neural Networks</span>
+              <span class="tag">Image Processing (I, II)</span>
+              <span class="tag">ANSYS CFD</span>
+              <span class="tag">ANSYS FEA</span>
+              <span class="tag">GUI Development</span>
+              <span class="tag">3D Printing</span>
+              <span class="tag">Biosignal Processing</span>
+              <span class="tag">MATLAB Data Presentation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /teaching -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: SUPERVISION                                        ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="supervision">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">👥</div>
+      <div>
+        <div class="section-title">Supervision &amp; Mentorship</div>
+        <div class="section-count">3 Undergraduate Researchers · 15+ Senior Design Teams</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <!-- L2: Undergraduate -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Undergraduate Research Interns</div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2018–2021</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Amanda Barreto</div>
+                  <div class="entry-subtitle">Biomedical Engineering · FIU · Co-authored 2 conference abstracts</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Research intern on the CAVD Hemodynamic Biomarker Project. Co-author on "Importance of Non-Newtonian Modeling of Blood Flow for Calcified Aortic Valves" (Structural Heart 2021) and "Constitutive Properties of Mitral Valve Tissues via Nanoindentation" (Structural Heart 2021). Also contributed to curvature mapping work on elastin-degraded aortic valve tissue strips.</div>
+                  <!--
+                    IMAGE: Mentor/mentee photo or research photo
+                    <img src="src/images/mentor_amanda_barreto.jpg" class="entry-img" alt="Amanda Barreto">
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2020–2021</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Tisha Boodooram</div>
+                  <div class="entry-subtitle">Biomedical Engineering · FIU</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Research intern contributing to non-Newtonian blood flow modeling work in calcified aortic valve geometries. Co-author on conference abstract presented at Graduate Research Day 2021.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2019</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Sergio Rodriguez</div>
+                  <div class="entry-subtitle">Biomedical Engineering · FIU</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Research intern contributing to early CAVD computational model development.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /undergrad interns -->
+
+      <!-- L2: Senior Design -->
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
+          <div class="subsection-title">Senior Design Team Consultation <span class="subsection-count">(15+ teams, 2017–2025)</span></div>
+          <span class="chevron-sm">▼</span>
+        </button>
+        <div class="subsection-body">
+          <div class="subsection-inner">
+
+            <!-- Team 1 Fall 2017 — CAPSTONE PROJECT (detailed) -->
+            <div class="entry-card open">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Fa 2017</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Team 1 — System for Whole Field Fluorescent Microscopy Imaging In-Vivo</div>
+                  <div class="entry-subtitle">Senior Design Capstone · Asad Mirza (team member) · FIU BME Fall 2017</div>
+                  <div class="entry-badges"><span class="badge badge-award">2nd Place Oral Presentation</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-meta-row">
+                    <div class="entry-meta-item"><div class="entry-meta-label">Faculty Advisor</div><div class="entry-meta-value">Dr. Wei-Chiang Lin</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">Company Sponsor</div><div class="entry-meta-value">Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">Award</div><div class="entry-meta-value">2nd Place Oral, Fall 2017 Senior Design Competition</div></div>
+                  </div>
+                  <div class="entry-meta-label" style="margin-bottom:5px">Team Members</div>
+                  <div style="font-size:0.867em;color:var(--text-muted);margin-bottom:12px">
+                    Asad Mirza, Juan Pinzon, Natalia Fuenzalida, Edwin Robledo
+                  </div>
+                  <!--
+                    TEAM MEMBER PHOTOS:
+                    <div class="team-photos">
+                      <div class="team-member">
+                        <img src="src/images/team1_asad.jpg" alt="Asad Mirza">
+                        <div class="team-member-name">Asad Mirza</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_juan.jpg" alt="Juan Pinzon">
+                        <div class="team-member-name">Juan Pinzon</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_natalia.jpg" alt="Natalia Fuenzalida">
+                        <div class="team-member-name">Natalia Fuenzalida</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_edwin.jpg" alt="Edwin Robledo">
+                        <div class="team-member-name">Edwin Robledo</div>
+                      </div>
+                    </div>
+                  -->
+                  <div class="entry-abstract">
+                    Epilepsy affects roughly 65 million people worldwide and has no known cure, largely due to difficulties in recording neural activity of cerebral cortical cells where epileptic events occur. Using the modalities of calcium and voltage sensitive dye imaging (VSDI), researchers can record action potential and ion dynamics propagated across the cerebral cortex simultaneously.
+                    <br><br>
+                    The team designed a novel system featuring a synchronized fast CMOS camera for VSDI paired with a slower CCD camera for calcium imaging. Both cameras are aimed at a stereotaxic stage, attached to a motorized XY stage, holding a rat with a 1 mm² exposed cranial window. A custom-built MATLAB GUI controls the cameras and stage, allowing dynamic spatial imaging across the cranial window — enabling faster and more accurate data acquisition to identify the underlying causes of epilepsy.
+                  </div>
+                  <div class="entry-link-row">
+                    <!--
+                      LINKS: Add GitHub repo, poster PDF, or video link
+                      <a class="entry-link" href="src/docs/senior_design_team1_poster.pdf" target="_blank">📊 Poster PDF</a>
+                      <a class="entry-link" href="https://github.com/your_repo" target="_blank">💾 GitHub</a>
+                    -->
+                  </div>
+                  <!--
+                    IMAGE: Device photo, system schematic
+                    <div class="entry-media">
+                      <div class="entry-media-label">Project Images</div>
+                      <div class="entry-img-grid">
+                        <img src="src/images/senior_design_fa17_device.jpg" class="entry-img" alt="Microscopy system device">
+                        <img src="src/images/senior_design_fa17_setup.jpg"  class="entry-img" alt="Experimental setup">
+                      </div>
+                    </div>
+                    VIDEO: Project demo
+                    <div class="video-embed">
+                      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div><!-- /Team 1 Fa 2017 -->
+
+            <!-- Spring 2025 teams -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Sp 2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Spring 2025 Teams</div>
+                  <div class="entry-subtitle">Team 3: Fully Mechanical Prosthetic Ankle · Team 4: NPCore · Team 6: IUSDRx</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div style="margin-bottom:8px">
+                    <strong>Team 3 — Fully Mechanical Prosthetic Ankle</strong>
+                    <div style="font-size:0.833em;color:var(--text-muted)">Prosthetic ankle joint designed for passive mechanical energy return during gait.</div>
+                  </div>
+                  <div style="margin-bottom:8px">
+                    <strong>Team 4 — NPCore</strong>
+                    <div style="font-size:0.833em;color:var(--text-muted)">Neuropathic pain management device.</div>
+                  </div>
+                  <div>
+                    <strong>Team 6 — IUSDRx</strong>
+                    <div style="font-size:0.833em;color:var(--text-muted)">Intrauterine device drug delivery system.</div>
+                  </div>
+                  <!--
+                    IMAGE: Team photos or device prototypes
+                    <div class="entry-img-grid">
+                      <img src="src/images/sd_sp25_team3.jpg" class="entry-img" alt="Team 3 prototype">
+                      <img src="src/images/sd_sp25_team4.jpg" class="entry-img" alt="Team 4 prototype">
+                      <img src="src/images/sd_sp25_team6.jpg" class="entry-img" alt="Team 6 prototype">
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Fall 2022 teams -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Fa 2022</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Fall 2022 Teams</div>
+                  <div class="entry-subtitle">Team 1: Garrison Gauge · Team 3: Wearable Isoflurane Monitor · Team 7: Tremor Tranquil</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div style="margin-bottom:8px"><strong>Team 1 — Garrison Gauge</strong><div style="font-size:0.833em;color:var(--text-muted)">Force/tension measurement device for gastrointestinal surgical procedures.</div></div>
+                  <div style="margin-bottom:8px"><strong>Team 3 — Wearable Transdermal Isoflurane Monitoring Device</strong><div style="font-size:0.833em;color:var(--text-muted)">Non-invasive sensor for real-time anesthetic gas monitoring.</div></div>
+                  <div><strong>Team 7 — Tremor Tranquil</strong><div style="font-size:0.833em;color:var(--text-muted)">Wearable device for tremor suppression in essential tremor patients.</div></div>
+                  <!--
+                    IMAGE: Device prototypes or team presentations
+                    <div class="entry-img-grid">
+                      <img src="src/images/sd_fa22_tremor.jpg" class="entry-img" alt="Tremor Tranquil device">
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Remaining teams - consolidated -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2017–2022</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Additional Consulting Engagements (12 more teams)</div>
+                  <div class="entry-subtitle">Fall 2021 · Fall 2020 · Spring 2020 · Fall 2019 · Spring 2019 · Spring 2018 · Fall 2017</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="tags-list">
+                    <span class="tag">P.R.O Scan (Fa21)</span>
+                    <span class="tag">Ampoule Scoring Machine (Fa21)</span>
+                    <span class="tag">Heel Pressure Relief Sock (Fa20)</span>
+                    <span class="tag">Dynamic Resistance Orthosis (Fa20)</span>
+                    <span class="tag">FTMS Cable Transport (Fa20)</span>
+                    <span class="tag">Bite Force Recording (Sp20)</span>
+                    <span class="tag">Wireless SA Node Electrode (Fa19)</span>
+                    <span class="tag">Body Sway Quantifier (Fa19)</span>
+                    <span class="tag">Foam Casting Pressure System (Fa19)</span>
+                    <span class="tag">Garrison Gauge (Fa19)</span>
+                    <span class="tag">Wearable Viscous Biologics Injector (Sp19)</span>
+                    <span class="tag">Bone Tracking Registration (Sp19)</span>
+                    <span class="tag">Vein Preservation System (Sp18)</span>
+                    <span class="tag">Inhalable Drug Dose Monitor (Sp18)</span>
+                    <span class="tag">Field Therapy Accelerator (Fa17)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /senior design -->
+
+    </div>
+  </div>
+</div><!-- /supervision -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: FUNDING & AWARDS                                   ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="funding">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">🏆</div>
+      <div>
+        <div class="section-title">Funding, Fellowships &amp; Awards</div>
+        <div class="section-count">3 Fellowships · 2 Grants · 8 Competitive Awards</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+
+      <div class="sub-divider">Fellowships &amp; Grants</div>
+      <div class="award-entry"><div class="award-year">2023</div><div><div class="award-name">Dissertation Year Fellowship — $17,000</div><div class="award-org">University Graduate School, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">2021</div><div><div class="award-name">Koerner Family Foundation Fellowship — $10,000</div><div class="award-org">Koerner Family Foundation</div></div></div>
+      <div class="award-entry"><div class="award-year">2023</div><div><div class="award-name">SGA Graduate Scholarship — $1,000</div><div class="award-org">Student Government Association, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">McNair Undergraduate Fellowship — $1,000</div><div class="award-org">Ronald E. McNair Post-Baccalaureate Achievement Program</div></div></div>
+      <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">Braman Scholars Completion Grant — $1,000</div><div class="award-org">Braman Family Foundation</div></div></div>
+
+      <div class="sub-divider">Competitive Awards</div>
+      <div class="award-entry"><div class="award-year">Feb 2024</div><div><div class="award-name">Oral Competition — 1st Place</div><div class="award-org">Graduate Research Day 2024, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">Feb 2024</div><div><div class="award-name">Poster Competition — 1st Place</div><div class="award-org">Miami Heart Day 2024, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">Feb 2022</div><div><div class="award-name">Poster Competition — 2nd Place</div><div class="award-org">Miami Heart Day 2022, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">Sep 2018</div><div><div class="award-name">Trainee Poster Award</div><div class="award-org">11th World Congress for Microcirculation, Vancouver, CA</div></div></div>
+      <div class="award-entry"><div class="award-year">Dec 2017</div><div><div class="award-name">2nd Place Oral Presentation — Senior Design Competition</div><div class="award-org">FIU Biomedical Engineering Department</div></div></div>
+      <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">McNair Scholar — 14th Cohort</div><div class="award-org">Ronald E. McNair Postbaccalaureate Achievement Program, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">2014–17</div><div><div class="award-name">Dean's List (4 consecutive years)</div><div class="award-org">Florida International University</div></div></div>
+      <div class="award-entry"><div class="award-year">2014</div><div><div class="award-name">FIU Presidential Scholarship</div><div class="award-org">Florida International University</div></div></div>
+
+    </div>
+  </div>
+</div><!-- /funding -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: SKILLS                                             ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="skills">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">⚙️</div>
+      <div>
+        <div class="section-title">Technical Skills</div>
+        <div class="section-count">Computation · Programming · CAD · Experimental</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="skills-grid">
+        <div class="skill-group">
+          <div class="skill-group-title">Simulation &amp; Computation</div>
+          <div class="skill-item"><div class="skill-name-row"><span>MATLAB / Simulink</span><span>Expert</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="96" style="width:0%"></div></div></div>
+          <div class="skill-item"><div class="skill-name-row"><span>ANSYS Fluent &amp; Mechanical</span><span>Expert</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="90" style="width:0%"></div></div></div>
+          <div class="skill-item"><div class="skill-name-row"><span>COMSOL Multiphysics</span><span>Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="82" style="width:0%"></div></div></div>
+          <div class="skill-item"><div class="skill-name-row"><span>LS-DYNA</span><span>Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="58" style="width:0%"></div></div></div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Programming</div>
+          <div class="skill-item"><div class="skill-name-row"><span>Python</span><span>Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="82" style="width:0%"></div></div></div>
+          <div class="skill-item"><div class="skill-name-row"><span>JavaScript / HTML / CSS</span><span>Advanced</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="75" style="width:0%"></div></div></div>
+          <div class="skill-item"><div class="skill-name-row"><span>Processing / p5.js</span><span>Intermediate</span></div><div class="skill-bar"><div class="skill-bar-fill" data-width="60" style="width:0%"></div></div></div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">MATLAB Toolboxes</div>
+          <div class="tags-list">
+            <span class="tag">Neural Network</span><span class="tag">Image Processing</span>
+            <span class="tag">Computer Vision</span><span class="tag">Data Acquisition</span>
+            <span class="tag">Curve Fitting</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">CAD &amp; Design</div>
+          <div class="tags-list">
+            <span class="tag">SolidWorks</span><span class="tag">SpaceClaim</span><span class="tag">Blender</span>
+            <span class="tag">Adobe Photoshop</span><span class="tag">Adobe Illustrator</span><span class="tag">Adobe InDesign</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Experimental</div>
+          <div class="tags-list">
+            <span class="tag">Vivitro Pulse Duplicator</span>
+            <span class="tag">Nanoindentation</span>
+            <span class="tag">Fluorescent Microscopy</span>
+            <span class="tag">Bose ElectroForce</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Languages</div>
+          <div class="tags-list">
+            <span class="tag">English (Native)</span><span class="tag">Urdu (Native)</span><span class="tag">Hindi (Basic)</span>
+          </div>
+          <div class="skill-group-title" style="margin-top:14px">Professional Memberships</div>
+          <div class="tags-list">
+            <span class="tag">Sigma Xi (2024–)</span><span class="tag">BMES (2016–)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /skills -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: SERVICE                                            ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="service">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">🌐</div>
+      <div>
+        <div class="section-title">Service, Outreach &amp; Training</div>
+        <div class="section-count">University Service · Community Outreach · Professional Certification</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="sub-divider">University &amp; Professional Service</div>
+      <div class="award-entry"><div class="award-year">Mar 2026</div><div><div class="award-name">Faculty Judge — Undergraduate Research Practice Presentations</div><div class="award-org">Honors College, FIU (URFIU)</div></div></div>
+      <div class="award-entry"><div class="award-year">Sum 2024</div><div><div class="award-name">BME Senior Design Oral Judge</div><div class="award-org">Biomedical Engineering Society, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">2019–2020</div><div><div class="award-name">BME Senior Design Poster Judge (4 sessions)</div><div class="award-org">Biomedical Engineering Society, FIU</div></div></div>
+      <div class="sub-divider">Community Outreach</div>
+      <div class="award-entry"><div class="award-year">2019</div><div><div class="award-name">EMBS BME Presentation — 3D Printing &amp; Simulation</div><div class="award-org">Pinecrest Cove Preparatory Academy — middle-school outreach on BME simulations and 3D printing</div></div></div>
+      <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">Guest Lecture — MATLAB/Python for BME Simulations</div><div class="award-org">Southwest Miami Senior High School — AP Physics students</div></div></div>
+      <div class="sub-divider">Professional Certification</div>
+      <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">Six Sigma Yellow Belt Certification</div><div class="award-org">Florida International University</div></div></div>
+    </div>
+  </div>
+</div><!-- /service -->
+
+<!-- FOOTER -->
+<div class="cv-footer">
+  <span>Asad Mirza, PhD &nbsp;·&nbsp; Research Assistant Professor, FIU BME &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8feee2e6fdf5eecfe9e6faa1eaebfa">[email&#160;protected]</a></span>
+  <span>Last updated: March 2026</span>
+</div>
+
+</main>
+</div><!-- /layout-wrapper -->
+
+
+<!-- ============================================================
+     SETTINGS PANEL
+============================================================ -->
+<button id="settings-btn" onclick="toggleSettings()" title="Accessibility Settings">⚙</button>
+
+<div id="settings-panel">
+  <div class="sp-title">Display Settings</div>
+
+  <!-- Dark / Light mode -->
+  <div class="sp-row">
+    <div class="sp-label">Color Mode</div>
+    <div class="sp-toggle-row">
+      <span class="sp-toggle-label">Light Mode</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Font family -->
+  <div class="sp-row">
+    <div class="sp-label">Font Style</div>
+    <div class="sp-font-grid">
+      <button class="sp-font-btn active" onclick="setFont('default', this)">Academic<br><small style="opacity:.7">DM Serif</small></button>
+      <button class="sp-font-btn" onclick="setFont('font-modern', this)">Modern<br><small style="opacity:.7">DM Sans</small></button>
+      <button class="sp-font-btn" onclick="setFont('font-classic', this)">Classic<br><small style="opacity:.7">Lora</small></button>
+    </div>
+  </div>
+
+  <!-- Font size -->
+  <div class="sp-row">
+    <div class="sp-label">Font Size</div>
+    <div class="sp-size-row">
+      <button class="sp-size-btn" onclick="setSize('size-sm', this)">Small<br><small>13px</small></button>
+      <button class="sp-size-btn active" onclick="setSize('size-md', this)">Medium<br><small>15px</small></button>
+      <button class="sp-size-btn" onclick="setSize('size-lg', this)">Large<br><small>17px</small></button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── SECTION TOGGLES ─────────────────────────────────────── */
+function toggleSection(btn) {
+  btn.closest('.section-wrapper').classList.toggle('open');
+  updateAllBtn();
+}
+function toggleSubsection(btn) {
+  btn.closest('.subsection-wrapper').classList.toggle('open');
+}
+function toggleEntry(btn) {
+  btn.closest('.entry-card').classList.toggle('open');
+}
+
+/* ── EXPAND / COLLAPSE ALL ───────────────────────────────── */
+let allExpanded = false;
+function toggleAll() {
+  const sections = document.querySelectorAll('.section-wrapper');
+  allExpanded = !allExpanded;
+  sections.forEach(s => {
+    allExpanded ? s.classList.add('open') : s.classList.remove('open');
+  });
+  updateAllBtn();
+}
+function updateAllBtn() {
+  const total  = document.querySelectorAll('.section-wrapper').length;
+  const opened = document.querySelectorAll('.section-wrapper.open').length;
+  allExpanded = opened === total;
+  document.getElementById('all-btn').textContent = allExpanded ? '⊟ Collapse All' : '⊞ Expand All';
+}
+
+/* ── PRINT / PDF ─────────────────────────────────────────── */
+/* Embedded Word document (base64) */
+var _docxB64 = "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";
+
+function printCV() {
+  var bin = atob(_docxB64);
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  var blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'AsadMirza_CV.docx';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+/* ── SETTINGS PANEL ──────────────────────────────────────── */
+function toggleSettings() {
+  document.getElementById('settings-panel').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('settings-panel');
+  var btn   = document.getElementById('settings-btn');
+  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) {
+    panel.classList.remove('open');
+  }
+});
+
+/* ── THEME TOGGLE ────────────────────────────────────────── */
+function toggleTheme(cb) {
+  document.body.classList.toggle('light-mode', cb.checked);
+}
+
+/* ── FONT STYLE ──────────────────────────────────────────── */
+var fontClasses = ['font-classic', 'font-modern'];
+function setFont(cls, btn) {
+  document.body.classList.remove.apply(document.body.classList, fontClasses);
+  if (cls !== 'default') document.body.classList.add(cls);
+  document.querySelectorAll('.sp-font-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+/* ── FONT SIZE ───────────────────────────────────────────── */
+var sizeClasses = ['size-sm', 'size-md', 'size-lg'];
+function setSize(cls, btn) {
+  document.body.classList.remove.apply(document.body.classList, sizeClasses);
+  document.body.classList.add(cls);
+  document.querySelectorAll('.sp-size-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+/* ── ACTIVE NAV HIGHLIGHT ON SCROLL ─────────────────────── */
+var allSections = document.querySelectorAll('.section-wrapper[id]');
+var navLinks    = document.querySelectorAll('#nav-sidebar .nav-link');
+if ('IntersectionObserver' in window) {
+  var sectionObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        navLinks.forEach(function(l) { l.classList.remove('active'); });
+        var al = document.querySelector('#nav-sidebar .nav-link[href="#' + e.target.id + '"]');
+        if (al) al.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-25% 0px -65% 0px' });
+  allSections.forEach(function(s) { sectionObs.observe(s); });
+}
+
+/* ── SKILL BAR ANIMATION ─────────────────────────────────── */
+function animateBars(container) {
+  container.querySelectorAll('.skill-bar-fill[data-width]').forEach(function(bar) {
+    bar.style.width = bar.getAttribute('data-width') + '%';
+  });
+}
+var skillsSection = document.getElementById('skills');
+if (skillsSection && 'IntersectionObserver' in window) {
+  var skillsObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) animateBars(e.target); });
+  }, { threshold: 0.2 });
+  skillsObs.observe(skillsSection);
+  skillsSection.querySelector('.section-toggle').addEventListener('click', function() {
+    setTimeout(function() { animateBars(skillsSection); }, 120);
+  });
+}
+</script>
+
+</body>
+</html>

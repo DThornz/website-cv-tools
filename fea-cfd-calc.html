@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEA / CFD Calculator — Asad Mirza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ROOT / VARIABLES
+═══════════════════════════════════════════════════════════ */
+:root{
+  --bg:       #060e1c;
+  --bg2:      #0a1628;
+  --bg3:      #0f1f38;
+  --bg4:      #132240;
+  --border:   #1c3050;
+  --teal:     #2dd4bf;
+  --teal-dim: #1a8a7d;
+  --teal-glow:rgba(45,212,191,.10);
+  --amber:    #f59e0b;
+  --amber-dim:rgba(245,158,11,.12);
+  --red:      #f87171;
+  --green:    #4ade80;
+  --text:     #e2e8f0;
+  --muted:    #7a90ae;
+  --dim:      #3d5470;
+  --serif:    'Outfit', system-ui, sans-serif;
+  --mono:     'JetBrains Mono', 'Courier New', monospace;
+  --tr:       0.2s cubic-bezier(.4,0,.2,1);
+  --r:        10px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--serif);font-size:15px;line-height:1.6;
+  min-height:100vh;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(45,212,191,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 10% 80%, rgba(245,158,11,.03) 0%, transparent 60%);
+}
+a{color:var(--teal);text-decoration:none}
+a:hover{text-decoration:underline}
+input,select,textarea{font-family:var(--mono)}
+button{cursor:pointer;font-family:var(--serif)}
+
+/* ═══════════════════════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════════════════════ */
+.topbar{margin-top:44px;
+  position:sticky;top:44px;z-index:100;
+  background:rgba(6,14,28,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;padding:0 24px;
+  height:52px;
+}
+.topbar-logo{
+  font-family:var(--mono);font-size:.85em;color:var(--teal);
+  font-weight:500;letter-spacing:.05em;margin-right:24px;white-space:nowrap;
+}
+.topbar-logo span{color:var(--muted)}
+.topbar-nav{display:flex;gap:2px}
+.topbar-link{
+  padding:6px 14px;border-radius:6px;font-size:.8em;
+  color:var(--muted);transition:all var(--tr);white-space:nowrap;
+  border:1px solid transparent;
+}
+.topbar-link:hover{color:var(--teal);background:var(--teal-glow);text-decoration:none}
+.topbar-link.active{color:var(--teal);background:var(--teal-glow);border-color:var(--teal-dim)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar-badge{
+  font-family:var(--mono);font-size:.7em;padding:3px 10px;
+  background:var(--amber-dim);color:var(--amber);
+  border:1px solid rgba(245,158,11,.25);border-radius:99px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════════ */
+.layout{display:flex;position:relative;z-index:1}
+.sidebar{
+  width:220px;flex-shrink:0;
+  position:sticky;top:96px;height:calc(100vh - 96px);overflow-y:auto;
+  padding:20px 0;border-right:1px solid var(--border);
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.content{flex:1;min-width:0;padding:28px 32px 80px}
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR NAV
+═══════════════════════════════════════════════════════════ */
+.nav-section-label{
+  font-family:var(--mono);font-size:.65em;color:var(--dim);
+  text-transform:uppercase;letter-spacing:.14em;
+  padding:8px 18px 4px;margin-top:8px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 18px;font-size:.82em;color:var(--muted);
+  transition:all var(--tr);cursor:pointer;
+  border-left:2px solid transparent;
+  border-right:none;background:none;width:100%;text-align:left;
+}
+.nav-item:hover{color:var(--teal);background:var(--teal-glow);border-left-color:var(--teal-dim)}
+.nav-item.active{color:var(--teal);background:var(--teal-glow);border-left-color:var(--teal);font-weight:500}
+.nav-icon{font-size:14px;flex-shrink:0}
+.nav-count{margin-left:auto;font-family:var(--mono);font-size:.7em;color:var(--dim);background:var(--bg3);padding:1px 6px;border-radius:99px}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION HEADERS
+═══════════════════════════════════════════════════════════ */
+.section{margin-bottom:48px;scroll-margin-top:72px}
+.section-header{margin-bottom:20px}
+.section-tag{
+  font-family:var(--mono);font-size:.68em;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px;
+}
+.section-title{
+  font-size:1.5em;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+}
+.section-title .ico{font-size:1.1em}
+.section-desc{font-size:.88em;color:var(--muted);margin-top:5px;line-height:1.5}
+.section-divider{height:1px;background:linear-gradient(90deg,var(--teal-dim),transparent);margin-top:12px}
+
+/* ═══════════════════════════════════════════════════════════
+   CALCULATOR GRID & CARDS
+═══════════════════════════════════════════════════════════ */
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:18px}
+.calc-grid.wide{grid-template-columns:1fr}
+.calc-grid.two{grid-template-columns:repeat(auto-fill,minmax(500px,1fr))}
+
+.card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;
+  transition:border-color var(--tr),box-shadow var(--tr);
+}
+.card:hover{border-color:var(--teal-dim);box-shadow:0 0 0 1px rgba(45,212,191,.06)}
+
+.card-header{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.card-icon{
+  width:34px;height:34px;border-radius:8px;
+  background:var(--teal-glow);border:1px solid rgba(45,212,191,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.card-title{font-size:.95em;font-weight:600;color:var(--text);margin-bottom:2px}
+.card-subtitle{font-size:.76em;color:var(--muted);line-height:1.4}
+
+.card-body{padding:16px 18px}
+
+/* Formula display */
+.formula{
+  background:var(--bg3);border:1px solid var(--border);
+  border-left:3px solid var(--amber);
+  border-radius:6px;padding:10px 14px;
+  font-family:var(--mono);font-size:.8em;color:var(--amber);
+  margin-bottom:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;
+}
+.formula .comment{color:var(--dim)}
+
+/* Input rows */
+.input-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.input-label{
+  font-size:.78em;color:var(--muted);
+  white-space:nowrap;min-width:120px;flex-shrink:0;
+}
+.input-label sub{color:var(--teal);font-size:.8em}
+.input-wrap{display:flex;gap:4px;align-items:center;flex:1;min-width:140px}
+.field{
+  flex:1;padding:7px 10px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-family:var(--mono);
+  font-size:.85em;outline:none;transition:border-color var(--tr);
+  min-width:0;
+}
+.field:focus{border-color:var(--teal)}
+.field::placeholder{color:var(--dim)}
+.unit-sel{
+  padding:7px 6px;background:var(--bg4);border:1px solid var(--border);
+  border-radius:6px;color:var(--muted);font-family:var(--mono);
+  font-size:.78em;outline:none;cursor:pointer;transition:border-color var(--tr);
+  max-width:90px;
+}
+.unit-sel:focus{border-color:var(--teal)}
+
+/* Section break within card */
+.input-group-label{
+  font-family:var(--mono);font-size:.67em;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.12em;
+  margin:12px 0 8px;border-top:1px solid var(--border);padding-top:10px;
+}
+
+/* Calculate button */
+.btn-calc{
+  width:100%;padding:10px;border-radius:7px;border:none;
+  background:var(--teal);color:#06111f;font-weight:700;
+  font-size:.85em;letter-spacing:.02em;transition:all var(--tr);
+  margin-top:12px;font-family:var(--serif);
+}
+.btn-calc:hover{background:#25b0a0;transform:translateY(-1px)}
+.btn-calc:active{transform:translateY(0)}
+
+/* Output panel */
+.output{
+  margin-top:12px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:7px;overflow:hidden;display:none;
+}
+.output.visible{display:block}
+.output-header{
+  padding:8px 14px;background:rgba(45,212,191,.07);
+  border-bottom:1px solid var(--border);
+  font-family:var(--mono);font-size:.7em;color:var(--teal);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.output-body{padding:12px 14px}
+.out-row{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:5px 0;border-bottom:1px solid rgba(28,48,80,.6);gap:12px;
+}
+.out-row:last-child{border-bottom:none}
+.out-label{font-size:.8em;color:var(--muted);flex:1}
+.out-val{
+  font-family:var(--mono);font-size:.9em;
+  color:var(--teal);font-weight:500;text-align:right;
+}
+.out-val.warn{color:var(--amber)}
+.out-val.bad{color:var(--red)}
+.out-val.good{color:var(--green)}
+.out-note{font-size:.75em;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-style:italic;line-height:1.5}
+.err-msg{color:var(--red);font-size:.8em;font-family:var(--mono);padding:8px 0}
+
+/* Unit converter table */
+.conv-table{width:100%;border-collapse:collapse}
+.conv-table td,.conv-table th{padding:6px 10px;font-size:.82em;border-bottom:1px solid var(--border)}
+.conv-table th{font-family:var(--mono);font-size:.7em;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.conv-table .val-cell{font-family:var(--mono);color:var(--text);text-align:right}
+.conv-table .unit-cell{color:var(--muted)}
+
+/* Tabs (for multi-mode calcs) */
+.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--bg3);border-radius:7px;padding:3px}
+.tab{
+  flex:1;padding:6px 8px;border-radius:5px;border:none;
+  background:none;color:var(--muted);font-size:.78em;
+  transition:all var(--tr);font-family:var(--serif);
+}
+.tab.active{background:var(--teal);color:#06111f;font-weight:600}
+.tab:not(.active):hover{color:var(--teal)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Viscosity curve mini-display */
+.vis-curve{width:100%;height:80px;margin-top:10px}
+
+/* Hero banner */
+.hero-banner{
+  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:28px 32px;margin-bottom:32px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+}
+.hero-title{font-size:1.7em;font-weight:700;color:var(--text);margin-bottom:6px}
+.hero-title span{color:var(--teal)}
+.hero-sub{font-size:.88em;color:var(--muted);max-width:560px;line-height:1.55}
+.hero-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.hero-tag{
+  padding:3px 10px;border-radius:99px;font-size:.72em;font-family:var(--mono);
+  background:var(--teal-glow);color:var(--teal);border:1px solid rgba(45,212,191,.2);
+}
+.hero-stat{text-align:center}
+.hero-stat-num{font-family:var(--mono);font-size:1.8em;color:var(--teal);font-weight:600}
+.hero-stat-label{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .content{padding:16px 14px 60px}
+  .calc-grid,.calc-grid.two{grid-template-columns:1fr}
+  .hero-banner{flex-direction:column}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+/* ── Site-wide nav ── */
+.site-nav{
+  position:sticky;top:0;z-index:9999;
+  background:rgba(6,14,28,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid #1c3050;
+  display:flex;align-items:center;gap:6px;padding:0 24px;height:44px;
+}
+.site-nav-logo{
+  font-family:'DM Mono','JetBrains Mono',monospace;
+  font-size:.8em;color:#2dd4bf;font-weight:500;
+  letter-spacing:.04em;margin-right:auto;white-space:nowrap;
+  text-decoration:none;
+}
+.site-nav-logo span{color:#7a90ae}
+.site-nav-link{
+  padding:5px 12px;border-radius:6px;font-size:.76em;
+  color:#7a90ae;text-decoration:none;transition:all .18s;
+  border:1px solid transparent;font-family:'DM Sans','DM Mono',system-ui,sans-serif;
+  white-space:nowrap;
+}
+.site-nav-link:hover{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15)}
+.site-nav-link.curr{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.2);font-weight:600}
+
+</style>
+</head>
+<body>
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link" href="index.html">Home</a>
+  <a class="site-nav-link" href="AsadMirza_CV_v2.html">CV</a>
+  <a class="site-nav-link" href="projects.html">Projects</a>
+  <a class="site-nav-link curr" href="fea-cfd-calc.html">FEA / CFD</a>
+</div>
+
+<!-- ─── TOP BAR ─────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-logo">A.Mirza <span>/</span> tools</div>
+  <nav class="topbar-nav">
+    <a class="topbar-link" href="interactive-cv.html">← CV</a>
+    <a class="topbar-link active" href="#">FEA / CFD</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="topbar-badge">v1.0 · Client-Side Only</span>
+  </div>
+</div>
+
+<!-- ─── LAYOUT ──────────────────────────────────────────────── -->
+<div class="layout">
+
+<!-- ─── SIDEBAR ─────────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="nav-section-label">Fluid Mechanics</div>
+  <button class="nav-item active" onclick="scrollTo('yplus')"><span class="nav-icon">📐</span> Y+ Estimation <span class="nav-count">1</span></button>
+  <button class="nav-item" onclick="scrollTo('reynolds')"><span class="nav-icon">🌀</span> Dimensionless Numbers <span class="nav-count">5</span></button>
+  <button class="nav-item" onclick="scrollTo('turbulence')"><span class="nav-icon">🌪</span> Turbulence BCs <span class="nav-count">3</span></button>
+  <button class="nav-item" onclick="scrollTo('boundary-layer')"><span class="nav-icon">📊</span> Boundary Layer <span class="nav-count">2</span></button>
+  <button class="nav-item" onclick="scrollTo('pipe-flow')"><span class="nav-icon">🔵</span> Pipe & Channel Flow <span class="nav-count">3</span></button>
+
+  <div class="nav-section-label">Biomedical CFD</div>
+  <button class="nav-item" onclick="scrollTo('non-newt')"><span class="nav-icon">🩸</span> Non-Newtonian Fluids <span class="nav-count">3</span></button>
+  <button class="nav-item" onclick="scrollTo('pulsatile')"><span class="nav-icon">💓</span> Pulsatile & WSS <span class="nav-count">3</span></button>
+
+  <div class="nav-section-label">Structural FEA</div>
+  <button class="nav-item" onclick="scrollTo('elastic')"><span class="nav-icon">🔩</span> Elastic Constants <span class="nav-count">1</span></button>
+  <button class="nav-item" onclick="scrollTo('stress')"><span class="nav-icon">⚡</span> Stress & Failure <span class="nav-count">2</span></button>
+  <button class="nav-item" onclick="scrollTo('beam')"><span class="nav-icon">📏</span> Beam Deflection <span class="nav-count">2</span></button>
+
+  <div class="nav-section-label">Unit Converters</div>
+  <button class="nav-item" onclick="scrollTo('units')"><span class="nav-icon">🔄</span> All Converters <span class="nav-count">7</span></button>
+</nav>
+
+<!-- ─── MAIN CONTENT ─────────────────────────────────────────── -->
+<main class="content">
+
+<!-- HERO -->
+<div class="hero-banner">
+  <div>
+    <div class="hero-title"><span>FEA / CFD</span> Calculator Hub</div>
+    <div class="hero-sub">A comprehensive single-page toolkit for computational fluid dynamics and finite element analysis. All calculations run client-side — no server, no data sent anywhere.</div>
+    <div class="hero-tags">
+      <span class="hero-tag">Y+ Estimation</span>
+      <span class="hero-tag">Turbulence BCs</span>
+      <span class="hero-tag">Non-Newtonian</span>
+      <span class="hero-tag">Womersley</span>
+      <span class="hero-tag">WSS / OSI</span>
+      <span class="hero-tag">Elastic Constants</span>
+      <span class="hero-tag">Beam Deflection</span>
+      <span class="hero-tag">Unit Converters</span>
+    </div>
+  </div>
+  <div style="display:flex;gap:20px;flex-shrink:0">
+    <div class="hero-stat"><div class="hero-stat-num">30+</div><div class="hero-stat-label">Calculators</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">7</div><div class="hero-stat-label">Unit Sets</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §1  Y+ ESTIMATION
+════════════════════════════════════════════════════════ -->
+<div class="section" id="yplus">
+  <div class="section-header">
+    <div class="section-tag">Mesh Sizing</div>
+    <div class="section-title"><span class="ico">📐</span> Y+ Estimation</div>
+    <div class="section-desc">Estimates the first-cell wall distance (Δy) needed to achieve a target y+ value, given flow conditions and geometry type.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid wide">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">y⁺</div>
+        <div><div class="card-title">Wall Distance for Target Y+</div>
+        <div class="card-subtitle">Estimates Δy from flow conditions using skin friction coefficient correlation</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">y⁺ = u_τ · Δy / ν       <span class="comment"># y+ definition</span>
+u_τ = √(τ_w / ρ)         <span class="comment"># friction velocity</span>
+τ_w = Cƒ · (ρ·U²/2)     <span class="comment"># wall shear stress</span>
+Δy  = y⁺ · ν / u_τ       <span class="comment"># solve for wall distance</span></div>
+
+        <div class="tabs" id="yp-tabs">
+          <button class="tab active" onclick="setTab('yp','pipe')">Pipe / Channel</button>
+          <button class="tab" onclick="setTab('yp','plate')">Flat Plate</button>
+          <button class="tab" onclick="setTab('yp','ext')">External Body</button>
+        </div>
+
+        <div class="tab-panel active" id="yp-pipe">
+          <p style="font-size:.77em;color:var(--muted);margin-bottom:10px">Cƒ = 0.079·Re⁻⁰·²⁵ (Petukhov, turbulent pipe)</p>
+        </div>
+        <div class="tab-panel" id="yp-plate">
+          <p style="font-size:.77em;color:var(--muted);margin-bottom:10px">Cƒ = 0.0592·Re⁻⁰·² (Schlichting, turbulent flat plate)</p>
+        </div>
+        <div class="tab-panel" id="yp-ext">
+          <p style="font-size:.77em;color:var(--muted);margin-bottom:10px">Cƒ = 0.074·Re⁻⁰·² (approximate external body)</p>
+        </div>
+
+        <div class="input-row">
+          <div class="input-label">Free-stream velocity U</div>
+          <div class="input-wrap">
+            <input class="field" id="yp-U" type="number" value="1.0" min="0">
+            <select class="unit-sel" id="yp-U-u" onchange="ypCalc()">
+              <option value="1">m/s</option><option value="0.01">cm/s</option>
+              <option value="0.001">mm/s</option><option value="0.3048">ft/s</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-label">Reference length L</div>
+          <div class="input-wrap">
+            <input class="field" id="yp-L" type="number" value="0.01" min="0">
+            <select class="unit-sel" id="yp-L-u" onchange="ypCalc()">
+              <option value="1">m</option><option value="0.01">cm</option>
+              <option value="0.001">mm</option><option value="0.0254">in</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-label">Density ρ</div>
+          <div class="input-wrap">
+            <input class="field" id="yp-rho" type="number" value="1060" min="0">
+            <select class="unit-sel" id="yp-rho-u" onchange="ypCalc()">
+              <option value="1">kg/m³</option><option value="1000">g/cm³</option>
+              <option value="16.018">lb/ft³</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-label">Dyn. viscosity μ</div>
+          <div class="input-wrap">
+            <input class="field" id="yp-mu" type="number" value="0.0035" min="0" step="0.0001">
+            <select class="unit-sel" id="yp-mu-u" onchange="ypCalc()">
+              <option value="1">Pa·s</option><option value="0.001">mPa·s (cP)</option>
+              <option value="1e-6">μPa·s</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-label">Target y⁺</div>
+          <div class="input-wrap">
+            <input class="field" id="yp-yplus" type="number" value="1" min="0.1">
+            <select class="unit-sel" style="visibility:hidden"></select>
+          </div>
+        </div>
+        <button class="btn-calc" onclick="ypCalc()">Calculate Wall Distance</button>
+        <div class="output" id="yp-out">
+          <div class="output-header">Results</div>
+          <div class="output-body" id="yp-out-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §2  DIMENSIONLESS NUMBERS
+════════════════════════════════════════════════════════ -->
+<div class="section" id="reynolds">
+  <div class="section-header">
+    <div class="section-tag">Flow Classification</div>
+    <div class="section-title"><span class="ico">🌀</span> Dimensionless Numbers</div>
+    <div class="section-desc">Reynolds, Mach, Strouhal, Dean, and Péclet numbers with flow regime interpretation.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid two">
+
+    <!-- Reynolds -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">Re</div>
+        <div><div class="card-title">Reynolds Number</div><div class="card-subtitle">Re = ρ·U·L/μ — inertial vs viscous forces</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">Re = ρ·U·L / μ = U·L / ν
+D_h = 4·A / P          <span class="comment"># hydraulic diameter</span></div>
+        <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="re-U" type="number" value="0.3"><select class="unit-sel" id="re-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option><option value="0.01">cm/s</option><option value="0.3048">ft/s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Length/Diameter L</div><div class="input-wrap"><input class="field" id="re-L" type="number" value="0.005"><select class="unit-sel" id="re-L-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option><option value="0.0254">in</option></select></div></div>
+        <div class="input-row"><div class="input-label">Density ρ</div><div class="input-wrap"><input class="field" id="re-rho" type="number" value="1060"><select class="unit-sel" id="re-rho-u"><option value="1">kg/m³</option><option value="1000">g/cm³</option></select></div></div>
+        <div class="input-row"><div class="input-label">Dyn. viscosity μ</div><div class="input-wrap"><input class="field" id="re-mu" type="number" value="0.0035" step="0.0001"><select class="unit-sel" id="re-mu-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <button class="btn-calc" onclick="reCalc()">Calculate</button>
+        <div class="output" id="re-out"><div class="output-header">Results</div><div class="output-body" id="re-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Mach -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">Ma</div>
+        <div><div class="card-title">Mach Number</div><div class="card-subtitle">Ma = U/a — compressibility effects</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">a = √(γ·R·T)    <span class="comment"># speed of sound</span>
+Ma = U / a
+γ_air = 1.4, R = 287 J/(kg·K)</div>
+        <div class="input-row"><div class="input-label">Flow velocity U</div><div class="input-wrap"><input class="field" id="ma-U" type="number" value="100"><select class="unit-sel" id="ma-U-u"><option value="1">m/s</option><option value="0.3048">ft/s</option><option value="0.27778">km/h</option></select></div></div>
+        <div class="input-row"><div class="input-label">Temperature T</div><div class="input-wrap"><input class="field" id="ma-T" type="number" value="293"><select class="unit-sel" id="ma-T-u"><option value="1">K</option><option data-offset="273.15">°C</option><option data-scale="0.5556" data-offset="255.37">°F</option></select></div></div>
+        <div class="input-row"><div class="input-label">Ratio γ (Cp/Cv)</div><div class="input-wrap"><input class="field" id="ma-gamma" type="number" value="1.4" step="0.01"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <button class="btn-calc" onclick="maCalc()">Calculate</button>
+        <div class="output" id="ma-out"><div class="output-header">Results</div><div class="output-body" id="ma-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Strouhal -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">St</div>
+        <div><div class="card-title">Strouhal Number</div><div class="card-subtitle">St = f·L/U — oscillation vs convection</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">St = f · L / U
+<span class="comment"># For vortex shedding: St ≈ 0.2 (cylinder, Re 100–10⁵)</span></div>
+        <div class="input-row"><div class="input-label">Frequency f</div><div class="input-wrap"><input class="field" id="st-f" type="number" value="1.0"><select class="unit-sel" id="st-f-u"><option value="1">Hz</option><option value="0.01667">rpm/60</option></select></div></div>
+        <div class="input-row"><div class="input-label">Char. length L</div><div class="input-wrap"><input class="field" id="st-L" type="number" value="0.01"><select class="unit-sel" id="st-L-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="st-U" type="number" value="0.5"><select class="unit-sel" id="st-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option><option value="0.01">cm/s</option></select></div></div>
+        <button class="btn-calc" onclick="stCalc()">Calculate</button>
+        <div class="output" id="st-out"><div class="output-header">Results</div><div class="output-body" id="st-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Dean -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">De</div>
+        <div><div class="card-title">Dean Number</div><div class="card-subtitle">De = Re·√(r/R) — curved pipe secondary flow</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">De = Re · √(r / R)
+r = pipe radius,  R = curvature radius
+<span class="comment"># De > 36: secondary Dean vortices appear</span></div>
+        <div class="input-row"><div class="input-label">Reynolds number</div><div class="input-wrap"><input class="field" id="de-Re" type="number" value="500"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <div class="input-row"><div class="input-label">Pipe radius r</div><div class="input-wrap"><input class="field" id="de-r" type="number" value="0.005"><select class="unit-sel" id="de-r-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Curvature radius R</div><div class="input-wrap"><input class="field" id="de-R" type="number" value="0.05"><select class="unit-sel" id="de-R-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <button class="btn-calc" onclick="deCalc()">Calculate</button>
+        <div class="output" id="de-out"><div class="output-header">Results</div><div class="output-body" id="de-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Péclet -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">Pe</div>
+        <div><div class="card-title">Péclet Number</div><div class="card-subtitle">Pe = U·L/D — advection vs diffusion</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">Pe = U · L / D_diff = Re · Sc
+Sc = ν / D_diff   <span class="comment"># Schmidt number</span>
+<span class="comment"># D: species/thermal diffusivity [m²/s]</span></div>
+        <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="pe-U" type="number" value="0.01"><select class="unit-sel" id="pe-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option><option value="0.01">cm/s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Length L</div><div class="input-wrap"><input class="field" id="pe-L" type="number" value="0.001"><select class="unit-sel" id="pe-L-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Diffusivity D</div><div class="input-wrap"><input class="field" id="pe-D" type="number" value="1e-9" step="1e-10"><select class="unit-sel" id="pe-D-u"><option value="1">m²/s</option><option value="1e-4">cm²/s</option><option value="1e-6">mm²/s</option></select></div></div>
+        <button class="btn-calc" onclick="peCalc()">Calculate</button>
+        <div class="output" id="pe-out"><div class="output-header">Results</div><div class="output-body" id="pe-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §3  TURBULENCE BCs
+════════════════════════════════════════════════════════ -->
+<div class="section" id="turbulence">
+  <div class="section-header">
+    <div class="section-tag">Turbulence Modeling</div>
+    <div class="section-title"><span class="ico">🌪</span> Turbulence Properties & Boundary Conditions</div>
+    <div class="section-desc">Compute k, ε, ω, and νₜ from turbulence intensity and length scale for k-ε and k-ω SST solvers.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid wide">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">k·ε</div>
+        <div><div class="card-title">Turbulence Inlet BCs — k, ε, ω, νₜ</div>
+        <div class="card-subtitle">For k-ε, k-ω SST, and Spalart-Allmaras solvers from I and ℓ</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">k  = 1.5 · (U · I)²                    <span class="comment"># TKE [m²/s²]</span>
+ε  = C_μ^(3/4) · k^(3/2) / ℓ           <span class="comment"># C_μ = 0.09</span>
+ω  = k^(1/2) / (C_μ^(1/4) · ℓ)        <span class="comment"># specific dissipation [1/s]</span>
+νₜ = C_μ · k² / ε  =  k / ω            <span class="comment"># eddy viscosity [m²/s]</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+          <div>
+            <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="tb-U" type="number" value="1.0"><select class="unit-sel" id="tb-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option><option value="0.01">cm/s</option></select></div></div>
+            <div class="input-row"><div class="input-label">Intensity I (%)</div><div class="input-wrap"><input class="field" id="tb-I" type="number" value="5" min="0" max="100"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+          </div>
+          <div>
+            <div class="input-row"><div class="input-label">Length scale ℓ</div><div class="input-wrap"><input class="field" id="tb-l" type="number" value="0.001"><select class="unit-sel" id="tb-l-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+            <div class="input-row"><div class="input-label">ν (kin. visc.)</div><div class="input-wrap"><input class="field" id="tb-nu" type="number" value="3.3e-6" step="1e-7"><select class="unit-sel" id="tb-nu-u"><option value="1">m²/s</option><option value="1e-6">mm²/s (cSt)</option></select></div></div>
+          </div>
+        </div>
+        <button class="btn-calc" onclick="tbCalc()">Calculate Turbulence BCs</button>
+        <div class="output" id="tb-out"><div class="output-header">Results — Paste into solver inlet</div><div class="output-body" id="tb-out-body"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-grid two" style="margin-top:18px">
+
+    <!-- Intensity from Re -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">I%</div>
+        <div><div class="card-title">Turbulence Intensity Estimate</div><div class="card-subtitle">From Reynolds number (pipe / free-stream)</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">I_pipe = 0.16 · Re⁻¹/⁸      <span class="comment"># fully developed pipe</span>
+I_BL ≈ 0.4 / ln(Re) · 100  <span class="comment"># flat plate BL (approx)</span></div>
+        <div class="input-row"><div class="input-label">Reynolds number</div><div class="input-wrap"><input class="field" id="ti-Re" type="number" value="5000"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <button class="btn-calc" onclick="tiCalc()">Estimate</button>
+        <div class="output" id="ti-out"><div class="output-header">Results</div><div class="output-body" id="ti-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Length scale from geometry -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">ℓ</div>
+        <div><div class="card-title">Turbulent Length Scale Estimate</div><div class="card-subtitle">From geometry type and characteristic dimension</div></div>
+      </div>
+      <div class="card-body">
+        <div class="formula">ℓ_pipe     = 0.07 · D      <span class="comment"># fully developed pipe</span>
+ℓ_BL       = 0.4 · δ_99   <span class="comment"># boundary layer</span>
+ℓ_external ≈ 0.1 · L      <span class="comment"># external body (conservative)</span></div>
+        <div class="input-row"><div class="input-label">Geometry type</div>
+          <select class="unit-sel" id="ls-type" style="max-width:100%;flex:1;font-size:.82em">
+            <option value="0.07">Pipe (fully developed)</option>
+            <option value="0.4">Boundary layer (0.4·δ)</option>
+            <option value="0.1">External body (0.1·L)</option>
+            <option value="0.2">Wake / mixing region</option>
+          </select>
+        </div>
+        <div class="input-row"><div class="input-label">Char. dimension</div><div class="input-wrap"><input class="field" id="ls-L" type="number" value="0.01"><select class="unit-sel" id="ls-L-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <button class="btn-calc" onclick="lsCalc()">Estimate</button>
+        <div class="output" id="ls-out"><div class="output-header">Results</div><div class="output-body" id="ls-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §4  BOUNDARY LAYER
+════════════════════════════════════════════════════════ -->
+<div class="section" id="boundary-layer">
+  <div class="section-header">
+    <div class="section-tag">Boundary Layer</div>
+    <div class="section-title"><span class="ico">📊</span> Boundary Layer Thickness</div>
+    <div class="section-desc">Flat-plate laminar and turbulent boundary layer properties, plus pipe hydrodynamic entry length.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid two">
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">δ</div><div><div class="card-title">Flat Plate BL Thickness</div><div class="card-subtitle">Laminar (Blasius) and turbulent Schlichting correlations</div></div></div>
+      <div class="card-body">
+        <div class="formula">Laminar (Re_x &lt; 5×10⁵):
+  δ    = 5.0·x / √Re_x
+  δ*   = 1.72·x / √Re_x
+  θ    = 0.664·x / √Re_x
+Turbulent (Re_x &gt; 5×10⁵):
+  δ    = 0.37·x / Re_x^0.2
+  Cf   = 0.0592 / Re_x^0.2</div>
+        <div class="input-row"><div class="input-label">Distance x</div><div class="input-wrap"><input class="field" id="bl-x" type="number" value="0.1"><select class="unit-sel" id="bl-x-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option><option value="0.0254">in</option></select></div></div>
+        <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="bl-U" type="number" value="1.0"><select class="unit-sel" id="bl-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Kin. viscosity ν</div><div class="input-wrap"><input class="field" id="bl-nu" type="number" value="1.5e-5" step="1e-6"><select class="unit-sel" id="bl-nu-u"><option value="1">m²/s</option><option value="1e-6">mm²/s</option></select></div></div>
+        <button class="btn-calc" onclick="blCalc()">Calculate</button>
+        <div class="output" id="bl-out"><div class="output-header">Results</div><div class="output-body" id="bl-out-body"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon">L_e</div><div><div class="card-title">Pipe Entry / Development Length</div><div class="card-subtitle">Hydrodynamic and thermal entry lengths</div></div></div>
+      <div class="card-body">
+        <div class="formula">Laminar:  L_e = 0.06 · Re · D
+Turbulent: L_e = 4.4 · Re^(1/6) · D
+Thermal:  L_t = 0.05 · Re · Pr · D  <span class="comment"># laminar</span></div>
+        <div class="input-row"><div class="input-label">Pipe diameter D</div><div class="input-wrap"><input class="field" id="le-D" type="number" value="0.01"><select class="unit-sel" id="le-D-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Reynolds number</div><div class="input-wrap"><input class="field" id="le-Re" type="number" value="1500"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <div class="input-row"><div class="input-label">Prandtl number Pr</div><div class="input-wrap"><input class="field" id="le-Pr" type="number" value="7" step="0.1"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <button class="btn-calc" onclick="leCalc()">Calculate</button>
+        <div class="output" id="le-out"><div class="output-header">Results</div><div class="output-body" id="le-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §5  PIPE & CHANNEL FLOW
+════════════════════════════════════════════════════════ -->
+<div class="section" id="pipe-flow">
+  <div class="section-header">
+    <div class="section-tag">Internal Flow</div>
+    <div class="section-title"><span class="ico">🔵</span> Pipe & Channel Flow</div>
+    <div class="section-desc">Hagen-Poiseuille laminar flow, Darcy-Weisbach pressure drop with Moody friction factor.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid">
+
+    <!-- Hagen-Poiseuille -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">HP</div><div><div class="card-title">Hagen-Poiseuille (Laminar)</div><div class="card-subtitle">Q = πR⁴ΔP / (8μL) — assumes Re &lt; 2300</div></div></div>
+      <div class="card-body">
+        <div class="formula">Q   = π·R⁴·ΔP / (8·μ·L)
+U   = R²·ΔP / (4·μ·L)     <span class="comment"># mean velocity</span>
+τ_w = 4·μ·U / R = R·ΔP/(2·L)</div>
+        <div class="tabs" id="hp-tabs"><button class="tab active" onclick="setTab('hp','Qfrom')">Find Q from ΔP</button><button class="tab" onclick="setTab('hp','dPfrom')">Find ΔP from Q</button></div>
+        <div class="tab-panel active" id="hp-Qfrom">
+          <div class="input-row"><div class="input-label">Pressure drop ΔP</div><div class="input-wrap"><input class="field" id="hp-dP" type="number" value="100"><select class="unit-sel" id="hp-dP-u"><option value="1">Pa</option><option value="133.322">mmHg</option><option value="6894.76">psi</option><option value="101325">atm</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="hp-dPfrom">
+          <div class="input-row"><div class="input-label">Flow rate Q</div><div class="input-wrap"><input class="field" id="hp-Q" type="number" value="1e-6" step="1e-7"><select class="unit-sel" id="hp-Q-u"><option value="1">m³/s</option><option value="1e-6">mL/s</option><option value="1.667e-5">mL/min</option><option value="1e-3">L/s</option></select></div></div>
+        </div>
+        <div class="input-row"><div class="input-label">Pipe radius R</div><div class="input-wrap"><input class="field" id="hp-R" type="number" value="0.001"><select class="unit-sel" id="hp-R-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Pipe length L</div><div class="input-wrap"><input class="field" id="hp-L" type="number" value="0.1"><select class="unit-sel" id="hp-L-u"><option value="1">m</option><option value="0.01">cm</option><option value="0.001">mm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Dyn. viscosity μ</div><div class="input-wrap"><input class="field" id="hp-mu" type="number" value="0.0035" step="0.0001"><select class="unit-sel" id="hp-mu-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <button class="btn-calc" onclick="hpCalc()">Calculate</button>
+        <div class="output" id="hp-out"><div class="output-header">Results</div><div class="output-body" id="hp-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Darcy-Weisbach -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">DW</div><div><div class="card-title">Darcy-Weisbach Pressure Drop</div><div class="card-subtitle">ΔP = f·(L/D)·(ρU²/2) with Moody friction factor</div></div></div>
+      <div class="card-body">
+        <div class="formula">ΔP = f · (L/D) · (ρU²/2)
+Laminar:  f = 64 / Re
+Turbulent (Colebrook-White):
+  1/√f = -2·log(ε/(3.7D) + 2.51/(Re·√f))</div>
+        <div class="input-row"><div class="input-label">Velocity U</div><div class="input-wrap"><input class="field" id="dw-U" type="number" value="1.0"><select class="unit-sel" id="dw-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Pipe diameter D</div><div class="input-wrap"><input class="field" id="dw-D" type="number" value="0.01"><select class="unit-sel" id="dw-D-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Pipe length L</div><div class="input-wrap"><input class="field" id="dw-L" type="number" value="1.0"><select class="unit-sel" id="dw-L-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Density ρ</div><div class="input-wrap"><input class="field" id="dw-rho" type="number" value="1060"><select class="unit-sel" id="dw-rho-u"><option value="1">kg/m³</option></select></div></div>
+        <div class="input-row"><div class="input-label">Dyn. viscosity μ</div><div class="input-wrap"><input class="field" id="dw-mu" type="number" value="0.0035" step="0.0001"><select class="unit-sel" id="dw-mu-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Roughness ε</div><div class="input-wrap"><input class="field" id="dw-eps" type="number" value="0" step="1e-6"><select class="unit-sel" id="dw-eps-u"><option value="1">m</option><option value="0.001">mm</option><option value="1e-6">μm</option></select></div></div>
+        <button class="btn-calc" onclick="dwCalc()">Calculate</button>
+        <div class="output" id="dw-out"><div class="output-header">Results</div><div class="output-body" id="dw-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Hydraulic Diameter -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">D_h</div><div><div class="card-title">Hydraulic Diameter</div><div class="card-subtitle">D_h = 4A/P for non-circular channels</div></div></div>
+      <div class="card-body">
+        <div class="formula">D_h = 4 · A / P   <span class="comment"># area / wetted perimeter</span></div>
+        <div class="tabs" id="dh-tabs"><button class="tab active" onclick="setTab('dh','rect')">Rectangle</button><button class="tab" onclick="setTab('dh','ann')">Annulus</button><button class="tab" onclick="setTab('dh','tri')">Triangle</button></div>
+        <div class="tab-panel active" id="dh-rect">
+          <div class="input-row"><div class="input-label">Width w</div><div class="input-wrap"><input class="field" id="dh-w" type="number" value="0.01"><select class="unit-sel" id="dh-w-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+          <div class="input-row"><div class="input-label">Height h</div><div class="input-wrap"><input class="field" id="dh-h" type="number" value="0.005"><select class="unit-sel" id="dh-h-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="dh-ann">
+          <div class="input-row"><div class="input-label">Outer D_o</div><div class="input-wrap"><input class="field" id="dh-Do" type="number" value="0.02"><select class="unit-sel" id="dh-Do-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+          <div class="input-row"><div class="input-label">Inner D_i</div><div class="input-wrap"><input class="field" id="dh-Di" type="number" value="0.01"><select class="unit-sel" id="dh-Di-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="dh-tri">
+          <div class="input-row"><div class="input-label">Base b</div><div class="input-wrap"><input class="field" id="dh-b" type="number" value="0.01"><select class="unit-sel" id="dh-b-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+          <div class="input-row"><div class="input-label">Height h_t</div><div class="input-wrap"><input class="field" id="dh-ht" type="number" value="0.01"><select class="unit-sel" id="dh-ht-u"><option value="1">m</option><option value="0.001">mm</option></select></div></div>
+        </div>
+        <button class="btn-calc" onclick="dhCalc()">Calculate</button>
+        <div class="output" id="dh-out"><div class="output-header">Results</div><div class="output-body" id="dh-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §6  NON-NEWTONIAN FLUIDS
+════════════════════════════════════════════════════════ -->
+<div class="section" id="non-newt">
+  <div class="section-header">
+    <div class="section-tag">Biomedical CFD</div>
+    <div class="section-title"><span class="ico">🩸</span> Non-Newtonian Viscosity Models</div>
+    <div class="section-desc">Effective viscosity from Power Law, Carreau, and Quemada models. Particularly relevant for blood flow simulation.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid">
+
+    <!-- Power Law -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">PL</div><div><div class="card-title">Power Law (Ostwald-de Waele)</div><div class="card-subtitle">μ_eff = K·γ̇ⁿ⁻¹</div></div></div>
+      <div class="card-body">
+        <div class="formula">τ = K · γ̇ⁿ
+μ_eff = K · γ̇^(n−1)
+n&lt;1: shear-thinning  n&gt;1: shear-thickening</div>
+        <div class="input-row"><div class="input-label">Consistency K</div><div class="input-wrap"><input class="field" id="pl-K" type="number" value="0.01" step="0.001"><select class="unit-sel"><option>Pa·sⁿ</option></select></div></div>
+        <div class="input-row"><div class="input-label">Power index n</div><div class="input-wrap"><input class="field" id="pl-n" type="number" value="0.75" step="0.01"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <div class="input-row"><div class="input-label">Shear rate γ̇</div><div class="input-wrap"><input class="field" id="pl-gd" type="number" value="100"><select class="unit-sel"><option>1/s</option></select></div></div>
+        <button class="btn-calc" onclick="plCalc()">Calculate</button>
+        <div class="output" id="pl-out"><div class="output-header">Results</div><div class="output-body" id="pl-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Carreau -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">Ca</div><div><div class="card-title">Carreau Model (Blood Default)</div><div class="card-subtitle">μ_eff = μ_∞ + (μ₀−μ_∞)·[1+(λγ̇)²]^((n−1)/2)</div></div></div>
+      <div class="card-body">
+        <div class="formula">μ_eff = μ_∞ + (μ₀−μ_∞)·(1+(λγ̇)²)^((n−1)/2)
+<span class="comment"># Blood (Cho & Kensey): μ₀=0.056, μ_∞=0.00345
+# λ=3.313 s, n=0.3568</span></div>
+        <div class="input-row"><div class="input-label">μ₀ (zero-rate)</div><div class="input-wrap"><input class="field" id="ca-mu0" type="number" value="0.056" step="0.001"><select class="unit-sel" id="ca-mu0-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <div class="input-row"><div class="input-label">μ_∞ (inf-rate)</div><div class="input-wrap"><input class="field" id="ca-muinf" type="number" value="0.00345" step="0.0001"><select class="unit-sel" id="ca-muinf-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <div class="input-row"><div class="input-label">λ (time const.)</div><div class="input-wrap"><input class="field" id="ca-lam" type="number" value="3.313"><select class="unit-sel"><option>s</option></select></div></div>
+        <div class="input-row"><div class="input-label">n (power index)</div><div class="input-wrap"><input class="field" id="ca-n" type="number" value="0.3568" step="0.001"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+        <div class="input-row"><div class="input-label">Shear rate γ̇</div><div class="input-wrap"><input class="field" id="ca-gd" type="number" value="100"><select class="unit-sel"><option>1/s</option></select></div></div>
+        <button class="btn-calc" onclick="caCalc()">Calculate</button>
+        <div class="output" id="ca-out"><div class="output-header">Results</div><div class="output-body" id="ca-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Newtonian threshold check -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">γ̇</div><div><div class="card-title">Newtonian Validity Check</div><div class="card-subtitle">Identifies regions where non-Newtonian models are needed</div></div></div>
+      <div class="card-body">
+        <div class="formula">Newtonian valid when γ̇ &gt; ~100 s⁻¹ (blood)
+Low shear (&lt; 100 s⁻¹): use non-Newtonian
+Critical for: CAVD crevices, aneurysm sacs,
+  stented geometries, low-Re bifurcations</div>
+        <div class="input-row"><div class="input-label">Mean velocity U</div><div class="input-wrap"><input class="field" id="nv-U" type="number" value="0.3"><select class="unit-sel" id="nv-U-u"><option value="1">m/s</option><option value="0.001">mm/s</option></select></div></div>
+        <div class="input-row"><div class="input-label">Vessel radius R</div><div class="input-wrap"><input class="field" id="nv-R" type="number" value="0.005"><select class="unit-sel" id="nv-R-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <button class="btn-calc" onclick="nvCalc()">Check Regime</button>
+        <div class="output" id="nv-out"><div class="output-header">Results</div><div class="output-body" id="nv-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §7  PULSATILE FLOW & WSS
+════════════════════════════════════════════════════════ -->
+<div class="section" id="pulsatile">
+  <div class="section-header">
+    <div class="section-tag">Biomedical CFD</div>
+    <div class="section-title"><span class="ico">💓</span> Pulsatile Flow & Wall Metrics</div>
+    <div class="section-desc">Womersley number, wall shear stress, and oscillatory shear index for cardiovascular flow simulations.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid">
+
+    <!-- Womersley -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">Wo</div><div><div class="card-title">Womersley Number</div><div class="card-subtitle">α = R·√(2πf/ν) — pulsatile flow inertia</div></div></div>
+      <div class="card-body">
+        <div class="formula">α = R · √(ω/ν) = R · √(2πf/ν)
+α &lt; 2:   quasi-steady (Poiseuille applies)
+2–10:     transitional pulsatile
+α &gt; 10:  plug flow, inertia dominated</div>
+        <div class="input-row"><div class="input-label">Vessel radius R</div><div class="input-wrap"><input class="field" id="wo-R" type="number" value="0.012"><select class="unit-sel" id="wo-R-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Heart rate / freq.</div><div class="input-wrap"><input class="field" id="wo-f" type="number" value="72"><select class="unit-sel" id="wo-f-u"><option value="0.01667">bpm → Hz</option><option value="1">Hz</option></select></div></div>
+        <div class="input-row"><div class="input-label">Kin. viscosity ν</div><div class="input-wrap"><input class="field" id="wo-nu" type="number" value="3.3e-6" step="1e-7"><select class="unit-sel" id="wo-nu-u"><option value="1">m²/s</option><option value="1e-6">mm²/s (cSt)</option></select></div></div>
+        <button class="btn-calc" onclick="woCalc()">Calculate</button>
+        <div class="output" id="wo-out"><div class="output-header">Results</div><div class="output-body" id="wo-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- WSS -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">τ_w</div><div><div class="card-title">Wall Shear Stress (Pipe)</div><div class="card-subtitle">Laminar: τ_w = 4μQ/(πR³) or from ΔP</div></div></div>
+      <div class="card-body">
+        <div class="formula">τ_w = 4·μ·Q / (π·R³)  <span class="comment"># from flow rate</span>
+τ_w = R·ΔP / (2·L)    <span class="comment"># from pressure drop</span>
+γ̇_w = 4·Q / (π·R³)   <span class="comment"># Newtonian wall shear rate</span></div>
+        <div class="tabs" id="wss-tabs"><button class="tab active" onclick="setTab('wss','Q')">From Flow Rate</button><button class="tab" onclick="setTab('wss','dP')">From ΔP</button></div>
+        <div class="tab-panel active" id="wss-Q">
+          <div class="input-row"><div class="input-label">Flow rate Q</div><div class="input-wrap"><input class="field" id="wss-Q" type="number" value="5e-6" step="1e-7"><select class="unit-sel" id="wss-Q-u"><option value="1">m³/s</option><option value="1e-6">mL/s</option><option value="1.667e-5">mL/min</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="wss-dP">
+          <div class="input-row"><div class="input-label">Pressure drop ΔP</div><div class="input-wrap"><input class="field" id="wss-dP" type="number" value="100"><select class="unit-sel" id="wss-dP-u"><option value="1">Pa</option><option value="133.322">mmHg</option></select></div></div>
+          <div class="input-row"><div class="input-label">Pipe length L</div><div class="input-wrap"><input class="field" id="wss-L" type="number" value="0.1"><select class="unit-sel" id="wss-L-u"><option value="1">m</option><option value="0.01">cm</option><option value="0.001">mm</option></select></div></div>
+        </div>
+        <div class="input-row"><div class="input-label">Radius R</div><div class="input-wrap"><input class="field" id="wss-R" type="number" value="0.005"><select class="unit-sel" id="wss-R-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Dyn. viscosity μ</div><div class="input-wrap"><input class="field" id="wss-mu" type="number" value="0.0035" step="0.0001"><select class="unit-sel" id="wss-mu-u"><option value="1">Pa·s</option><option value="0.001">mPa·s</option></select></div></div>
+        <button class="btn-calc" onclick="wssCalc()">Calculate</button>
+        <div class="output" id="wss-out"><div class="output-header">Results</div><div class="output-body" id="wss-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- OSI -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">OSI</div><div><div class="card-title">Oscillatory Shear Index (OSI)</div><div class="card-subtitle">Quantifies WSS directionality over a cardiac cycle</div></div></div>
+      <div class="card-body">
+        <div class="formula">OSI = 0.5 · (1 − |∫τ dt| / ∫|τ| dt)
+Range: 0 (unidirectional) → 0.5 (purely oscillatory)
+OSI &gt; 0.2: pro-atherogenic / pro-calcific region
+TAWSS = (1/T) · ∫|τ| dt</div>
+        <p style="font-size:.78em;color:var(--muted);margin-bottom:10px">Enter time-series of WSS values (space or comma separated):</p>
+        <div class="input-row" style="flex-direction:column;align-items:stretch">
+          <textarea class="field" id="osi-data" rows="3" placeholder="e.g. 2.1 3.4 -0.5 1.2 -1.8 2.9 0.3 ...  (Pa values over one cycle)" style="resize:vertical;width:100%;font-size:.8em"></textarea>
+        </div>
+        <button class="btn-calc" onclick="osiCalc()">Calculate OSI & TAWSS</button>
+        <div class="output" id="osi-out"><div class="output-header">Results</div><div class="output-body" id="osi-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §8  ELASTIC CONSTANTS
+════════════════════════════════════════════════════════ -->
+<div class="section" id="elastic">
+  <div class="section-header">
+    <div class="section-tag">Structural FEA</div>
+    <div class="section-title"><span class="ico">🔩</span> Elastic Constants Conversion</div>
+    <div class="section-desc">Convert between Young's modulus E, Poisson's ratio ν, shear modulus G, bulk modulus K, and Lamé constants.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid wide">
+    <div class="card">
+      <div class="card-header"><div class="card-icon">E·ν</div><div><div class="card-title">Isotropic Elastic Constants</div><div class="card-subtitle">Given any two independent constants, compute all others</div></div></div>
+      <div class="card-body">
+        <div class="formula">G  = E / (2·(1+ν))                <span class="comment"># Shear modulus</span>
+K  = E / (3·(1−2ν))              <span class="comment"># Bulk modulus</span>
+λ  = E·ν / ((1+ν)·(1−2ν))       <span class="comment"># Lamé's first constant</span>
+M  = E·(1−ν) / ((1+ν)·(1−2ν))  <span class="comment"># P-wave modulus</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+          <div>
+            <div class="input-group-label">Provide two of these</div>
+            <div class="input-row"><div class="input-label">Young's E</div><div class="input-wrap"><input class="field" id="el-E" type="number" value="200000" placeholder="optional"><select class="unit-sel" id="el-E-u"><option value="1e6">MPa</option><option value="1e9">GPa</option><option value="1e3">kPa</option><option value="6894.76">psi</option></select></div></div>
+            <div class="input-row"><div class="input-label">Poisson's ν</div><div class="input-wrap"><input class="field" id="el-nu" type="number" value="0.3" placeholder="optional" step="0.01"><select class="unit-sel" style="visibility:hidden"></select></div></div>
+            <div class="input-row"><div class="input-label">Shear G</div><div class="input-wrap"><input class="field" id="el-G" type="number" placeholder="optional"><select class="unit-sel" id="el-G-u"><option value="1e6">MPa</option><option value="1e9">GPa</option></select></div></div>
+          </div>
+          <div>
+            <div class="input-group-label">&nbsp;</div>
+            <div class="input-row"><div class="input-label">Bulk K</div><div class="input-wrap"><input class="field" id="el-K" type="number" placeholder="optional"><select class="unit-sel" id="el-K-u"><option value="1e6">MPa</option><option value="1e9">GPa</option></select></div></div>
+            <div class="input-row"><div class="input-label">Lamé λ</div><div class="input-wrap"><input class="field" id="el-lam" type="number" placeholder="optional"><select class="unit-sel" id="el-lam-u"><option value="1e6">MPa</option><option value="1e9">GPa</option></select></div></div>
+          </div>
+        </div>
+        <button class="btn-calc" onclick="elCalc()">Compute All Constants</button>
+        <div class="output" id="el-out"><div class="output-header">Results</div><div class="output-body" id="el-out-body"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §9  STRESS & FAILURE
+════════════════════════════════════════════════════════ -->
+<div class="section" id="stress">
+  <div class="section-header">
+    <div class="section-tag">Structural FEA</div>
+    <div class="section-title"><span class="ico">⚡</span> Stress Analysis & Failure Criteria</div>
+    <div class="section-desc">Von Mises equivalent stress, principal stresses, Tresca criterion, and safety factors.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid">
+
+    <!-- Von Mises 2D -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">σ_vm</div><div><div class="card-title">Von Mises Stress (2D / 3D)</div><div class="card-subtitle">Distortion energy failure criterion</div></div></div>
+      <div class="card-body">
+        <div class="formula">2D: σ_vm = √(σx²−σxσy+σy²+3τxy²)
+3D: σ_vm = √(½·[(σ1−σ2)²+(σ2−σ3)²+(σ1−σ3)²])</div>
+        <div class="tabs" id="vm-tabs"><button class="tab active" onclick="setTab('vm','2d')">2D (σx, σy, τ)</button><button class="tab" onclick="setTab('vm','ps')">Principal Stresses</button></div>
+        <div class="tab-panel active" id="vm-2d">
+          <div class="input-row"><div class="input-label">σ_x</div><div class="input-wrap"><input class="field" id="vm-sx" type="number" value="100"><select class="unit-sel" id="vm-sx-u"><option value="1">MPa</option><option value="1e-3">kPa</option><option value="0.006895">psi</option></select></div></div>
+          <div class="input-row"><div class="input-label">σ_y</div><div class="input-wrap"><input class="field" id="vm-sy" type="number" value="50"><select class="unit-sel" id="vm-sy-u"><option value="1">MPa</option><option value="1e-3">kPa</option><option value="0.006895">psi</option></select></div></div>
+          <div class="input-row"><div class="input-label">τ_xy</div><div class="input-wrap"><input class="field" id="vm-txy" type="number" value="30"><select class="unit-sel" id="vm-txy-u"><option value="1">MPa</option><option value="1e-3">kPa</option><option value="0.006895">psi</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="vm-ps">
+          <div class="input-row"><div class="input-label">σ₁</div><div class="input-wrap"><input class="field" id="vm-s1" type="number" value="150"><select class="unit-sel"><option>MPa</option></select></div></div>
+          <div class="input-row"><div class="input-label">σ₂</div><div class="input-wrap"><input class="field" id="vm-s2" type="number" value="50"><select class="unit-sel"><option>MPa</option></select></div></div>
+          <div class="input-row"><div class="input-label">σ₃</div><div class="input-wrap"><input class="field" id="vm-s3" type="number" value="0"><select class="unit-sel"><option>MPa</option></select></div></div>
+        </div>
+        <div class="input-row"><div class="input-label">Yield strength σ_y</div><div class="input-wrap"><input class="field" id="vm-Sy" type="number" value="250"><select class="unit-sel"><option>MPa</option></select></div></div>
+        <button class="btn-calc" onclick="vmCalc()">Calculate</button>
+        <div class="output" id="vm-out"><div class="output-header">Results</div><div class="output-body" id="vm-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Thick-wall pressure vessel -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">P_v</div><div><div class="card-title">Pressure Vessel / Cylinder</div><div class="card-subtitle">Lamé equations for thick/thin-walled vessels</div></div></div>
+      <div class="card-body">
+        <div class="formula">Thin wall (t/r &lt; 0.1):  σ_h = P·r/t,  σ_a = P·r/(2t)
+Thick wall (Lamé):
+  σ_h(r) = A + B/r²,  σ_r(r) = A − B/r²
+  A = P·r_i²/(r_o²−r_i²),  B = P·r_i²·r_o²/(r_o²−r_i²)</div>
+        <div class="input-row"><div class="input-label">Internal pressure P</div><div class="input-wrap"><input class="field" id="pv-P" type="number" value="200"><select class="unit-sel" id="pv-P-u"><option value="1">kPa</option><option value="0.133">mmHg</option><option value="6.895">psi</option><option value="100">bar</option></select></div></div>
+        <div class="input-row"><div class="input-label">Inner radius r_i</div><div class="input-wrap"><input class="field" id="pv-ri" type="number" value="10"><select class="unit-sel" id="pv-ri-u"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></div></div>
+        <div class="input-row"><div class="input-label">Outer radius r_o</div><div class="input-wrap"><input class="field" id="pv-ro" type="number" value="12"><select class="unit-sel" id="pv-ro-u"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></div></div>
+        <div class="input-row"><div class="input-label">Yield strength σ_y</div><div class="input-wrap"><input class="field" id="pv-Sy" type="number" value="250"><select class="unit-sel"><option>MPa</option></select></div></div>
+        <button class="btn-calc" onclick="pvCalc()">Calculate</button>
+        <div class="output" id="pv-out"><div class="output-header">Results</div><div class="output-body" id="pv-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §10  BEAM DEFLECTION
+════════════════════════════════════════════════════════ -->
+<div class="section" id="beam">
+  <div class="section-header">
+    <div class="section-tag">Structural FEA</div>
+    <div class="section-title"><span class="ico">📏</span> Beam Deflection & Second Moment of Area</div>
+    <div class="section-desc">Classical beam deflection formulas and moment of inertia for common cross-sections.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid">
+
+    <!-- Beam deflection -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">δ_b</div><div><div class="card-title">Beam Deflection</div><div class="card-subtitle">Cantilever, simply supported, UDL cases</div></div></div>
+      <div class="card-body">
+        <div class="tabs" id="beam-tabs"><button class="tab active" onclick="setTab('beam','cant')">Cantilever</button><button class="tab" onclick="setTab('beam','ss')">Simply Supported</button><button class="tab" onclick="setTab('beam','udl')">UDL (SS)</button></div>
+        <div class="tab-panel active" id="beam-cant">
+          <div class="formula">δ_max = F·L³/(3·E·I)   σ_max = F·L·c/I</div>
+        </div>
+        <div class="tab-panel" id="beam-ss">
+          <div class="formula">δ_max = F·L³/(48·E·I)  σ_max = F·L·c/(4·I)</div>
+        </div>
+        <div class="tab-panel" id="beam-udl">
+          <div class="formula">δ_max = 5·w·L⁴/(384·E·I)  (w = load/length)</div>
+        </div>
+        <div class="input-row"><div class="input-label">Load F (or w)</div><div class="input-wrap"><input class="field" id="bm-F" type="number" value="100"><select class="unit-sel" id="bm-F-u"><option value="1">N</option><option value="1000">kN</option><option value="4.448">lbf</option></select></div></div>
+        <div class="input-row"><div class="input-label">Length L</div><div class="input-wrap"><input class="field" id="bm-L" type="number" value="1.0"><select class="unit-sel" id="bm-L-u"><option value="1">m</option><option value="0.001">mm</option><option value="0.01">cm</option></select></div></div>
+        <div class="input-row"><div class="input-label">Young's E</div><div class="input-wrap"><input class="field" id="bm-E" type="number" value="200000"><select class="unit-sel" id="bm-E-u"><option value="1e6">MPa</option><option value="1e9">GPa</option></select></div></div>
+        <div class="input-row"><div class="input-label">2nd moment I</div><div class="input-wrap"><input class="field" id="bm-I" type="number" value="8333" step="1"><select class="unit-sel" id="bm-I-u"><option value="1e-12">mm⁴→m⁴</option><option value="1">m⁴</option></select></div></div>
+        <div class="input-row"><div class="input-label">Neutral axis c</div><div class="input-wrap"><input class="field" id="bm-c" type="number" value="50"><select class="unit-sel" id="bm-c-u"><option value="0.001">mm</option><option value="0.01">cm</option><option value="1">m</option></select></div></div>
+        <button class="btn-calc" onclick="bmCalc()">Calculate</button>
+        <div class="output" id="bm-out"><div class="output-header">Results</div><div class="output-body" id="bm-out-body"></div></div>
+      </div>
+    </div>
+
+    <!-- Second moment of area -->
+    <div class="card">
+      <div class="card-header"><div class="card-icon">I</div><div><div class="card-title">Second Moment of Area</div><div class="card-subtitle">I for rectangle, circle, hollow circle, I-beam</div></div></div>
+      <div class="card-body">
+        <div class="tabs" id="sma-tabs"><button class="tab active" onclick="setTab('sma','rect')">Rectangle</button><button class="tab" onclick="setTab('sma','circ')">Circle</button><button class="tab" onclick="setTab('sma','holl')">Hollow</button></div>
+        <div class="tab-panel active" id="sma-rect">
+          <div class="formula">I = b·h³/12    A = b·h</div>
+          <div class="input-row"><div class="input-label">Width b</div><div class="input-wrap"><input class="field" id="sma-b" type="number" value="100"><select class="unit-sel" id="sma-b-u"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></div></div>
+          <div class="input-row"><div class="input-label">Height h</div><div class="input-wrap"><input class="field" id="sma-h" type="number" value="200"><select class="unit-sel" id="sma-h-u"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="sma-circ">
+          <div class="formula">I = π·D⁴/64    A = π·D²/4</div>
+          <div class="input-row"><div class="input-label">Diameter D</div><div class="input-wrap"><input class="field" id="sma-D" type="number" value="50"><select class="unit-sel" id="sma-D-u"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></div></div>
+        </div>
+        <div class="tab-panel" id="sma-holl">
+          <div class="formula">I = π·(D_o⁴−D_i⁴)/64</div>
+          <div class="input-row"><div class="input-label">Outer D_o</div><div class="input-wrap"><input class="field" id="sma-Do" type="number" value="60"><select class="unit-sel" id="sma-Do-u"><option value="1">mm</option><option value="10">cm</option></select></div></div>
+          <div class="input-row"><div class="input-label">Inner D_i</div><div class="input-wrap"><input class="field" id="sma-Di" type="number" value="50"><select class="unit-sel" id="sma-Di-u"><option value="1">mm</option><option value="10">cm</option></select></div></div>
+        </div>
+        <button class="btn-calc" onclick="smaCalc()">Calculate</button>
+        <div class="output" id="sma-out"><div class="output-header">Results</div><div class="output-body" id="sma-out-body"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     §11  UNIT CONVERTERS
+════════════════════════════════════════════════════════ -->
+<div class="section" id="units">
+  <div class="section-header">
+    <div class="section-tag">Unit Converters</div>
+    <div class="section-title"><span class="ico">🔄</span> All Unit Converters</div>
+    <div class="section-desc">Live unit conversion — type a value to see all equivalents instantly.</div>
+    <div class="section-divider"></div>
+  </div>
+  <div class="calc-grid two" id="unit-converters"></div>
+</div>
+
+</main>
+</div><!-- /layout -->
+
+<script>
+/* ════════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════════ */
+function g(id){ return document.getElementById(id); }
+function v(id){ return parseFloat(g(id).value); }
+function su(id){ return parseFloat(g(id)?.value || 1); }
+
+function fmtSci(n, dp=4){
+  if(n===undefined||isNaN(n)) return '—';
+  if(n===0) return '0';
+  const abs=Math.abs(n);
+  if(abs>=0.001&&abs<1e6) return n.toPrecision(dp);
+  return n.toExponential(3);
+}
+function fmtN(n,dp=4){
+  if(isNaN(n)||n===undefined) return '—';
+  return fmtSci(n,dp);
+}
+
+function showOut(id, rows, note){
+  const el = g(id);
+  const body = g(id+'-body');
+  let html = rows.map(r=>{
+    const cls = r.cls ? `class="out-val ${r.cls}"` : 'class="out-val"';
+    return `<div class="out-row"><span class="out-label">${r.label}</span><span ${cls}>${r.val} ${r.unit||''}</span></div>`;
+  }).join('');
+  if(note) html += `<div class="out-note">${note}</div>`;
+  body.innerHTML = html;
+  el.classList.add('visible');
+}
+
+function errOut(id, msg){
+  const el=g(id); const body=g(id+'-body');
+  body.innerHTML=`<div class="err-msg">⚠ ${msg}</div>`;
+  el.classList.add('visible');
+}
+
+/* ── Tab system ──────────────────────────────────────── */
+function setTab(group, tab){
+  const tabs  = document.querySelectorAll(`#${group}-tabs .tab`);
+  const panels= document.querySelectorAll(`[id^="${group}-"]`);
+  tabs.forEach(t=>t.classList.toggle('active', t.onclick.toString().includes(`'${tab}'`)));
+  document.querySelectorAll(`[id^="${group}-"]`).forEach(p=>{
+    if(p.classList.contains('tab-panel')) p.classList.toggle('active', p.id===`${group}-${tab}`);
+  });
+}
+
+/* ── Sidebar nav scrollTo ─────────────────────────────── */
+function scrollTo(id){
+  const el=document.getElementById(id);
+  if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.target.closest('.nav-item').classList.add('active');
+}
+window.addEventListener('scroll',()=>{
+  const sections=['yplus','reynolds','turbulence','boundary-layer','pipe-flow','non-newt','pulsatile','elastic','stress','beam','units'];
+  let current=sections[0];
+  sections.forEach(id=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<200)current=id;});
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const matches=n.onclick&&n.onclick.toString().includes(`'${current}'`);
+    n.classList.toggle('active',matches);
+  });
+},{passive:true});
+
+/* ════════════════════════════════════════════════════════
+   §1  Y+ CALCULATOR
+════════════════════════════════════════════════════════ */
+function ypCalc(){
+  const U   = v('yp-U')  * su('yp-U-u');
+  const L   = v('yp-L')  * su('yp-L-u');
+  const rho = v('yp-rho')* su('yp-rho-u');
+  const mu  = v('yp-mu') * su('yp-mu-u');
+  const yp  = v('yp-yplus');
+  if([U,L,rho,mu,yp].some(x=>!x||x<=0)) return errOut('yp-out','All values must be positive.');
+  const nu  = mu/rho;
+  const Re  = rho*U*L/mu;
+  const geom= document.querySelector('#yp-tabs .tab.active')?.textContent||'Pipe';
+  let Cf;
+  if(geom.includes('Plate')) Cf=0.0592*Math.pow(Re,-0.2);
+  else if(geom.includes('External')) Cf=0.074*Math.pow(Re,-0.2);
+  else Cf=0.079*Math.pow(Re,-0.25); // pipe
+  const tau_w = Cf*0.5*rho*U*U;
+  const u_tau = Math.sqrt(tau_w/rho);
+  const dy    = yp*nu/u_tau;
+  const regime= Re<2300?'Laminar':Re<4000?'Transitional':'Turbulent';
+  const ypCheck= u_tau*dy/nu;
+  showOut('yp-out',[
+    {label:'Reynolds number Re',   val:fmtN(Re,5),     unit:''},
+    {label:'Flow regime',          val:regime,          unit:'', cls:Re<2300?'warn':''},
+    {label:'Skin friction Cƒ',     val:fmtN(Cf),        unit:''},
+    {label:'Wall shear stress τ_w',val:fmtN(tau_w),     unit:'Pa'},
+    {label:'Friction velocity u_τ',val:fmtN(u_tau),     unit:'m/s'},
+    {label:'Δy (SI)',              val:fmtN(dy),         unit:'m',  cls:'good'},
+    {label:'Δy',                   val:fmtN(dy*1000),    unit:'mm', cls:'good'},
+    {label:'Δy',                   val:fmtN(dy*1e6),     unit:'μm'},
+    {label:'Verification y⁺',      val:fmtN(ypCheck),    unit:''},
+  ],'Δy is the first cell wall distance. Recommended: y⁺≈1 for wall-resolving k-ω SST, y⁺≈30–300 for wall functions.');
+}
+
+/* ════════════════════════════════════════════════════════
+   §2  DIMENSIONLESS NUMBERS
+════════════════════════════════════════════════════════ */
+function reCalc(){
+  const U=v('re-U')*su('re-U-u'), L=v('re-L')*su('re-L-u');
+  const rho=v('re-rho')*su('re-rho-u'), mu=v('re-mu')*su('re-mu-u');
+  if([U,L,rho,mu].some(x=>!x||x<=0)) return errOut('re-out','All values required.');
+  const Re=rho*U*L/mu;
+  const regime=Re<2300?'Laminar — Hagen-Poiseuille applies':Re<4000?'Transitional — caution!':'Turbulent — use turbulence model';
+  const cls=Re<2300?'good':Re<4000?'warn':'';
+  showOut('re-out',[
+    {label:'Reynolds number',val:fmtN(Re,5),unit:''},
+    {label:'Flow regime',val:regime,unit:'',cls},
+    {label:'Kinematic viscosity ν',val:fmtN(mu/rho),unit:'m²/s'},
+  ]);
+}
+
+function maCalc(){
+  const U=v('ma-U'); const sel=g('ma-T-u');
+  let T=v('ma-T');
+  const opt=sel.options[sel.selectedIndex];
+  if(opt.dataset.offset) T=T-(-parseFloat(opt.dataset.offset));
+  else if(opt.dataset.scale){ T=T*parseFloat(opt.dataset.scale)+parseFloat(opt.dataset.offset); }
+  const UmS=U*su('ma-U-u'), gam=v('ma-gamma');
+  const R_air=287, a=Math.sqrt(gam*R_air*T), Ma=UmS/a;
+  const regime=Ma<0.3?'Incompressible (Ma<0.3)':Ma<0.8?'Subsonic':Ma<1.2?'Transonic':'Supersonic / Hypersonic';
+  showOut('ma-out',[
+    {label:'Speed of sound a',val:fmtN(a),unit:'m/s'},
+    {label:'Mach number Ma',val:fmtN(Ma),unit:'',cls:Ma<0.3?'good':Ma>1?'bad':'warn'},
+    {label:'Regime',val:regime,unit:''},
+  ],'For Ma<0.3 compressibility effects <1% — incompressible CFD is valid.');
+}
+
+function stCalc(){
+  const f=v('st-f')*su('st-f-u'), L=v('st-L')*su('st-L-u'), U=v('st-U')*su('st-U-u');
+  if([f,L,U].some(x=>!x||x<=0)) return errOut('st-out','All values required.');
+  const St=f*L/U;
+  showOut('st-out',[
+    {label:'Strouhal number St',val:fmtN(St),unit:''},
+    {label:'Period T',val:fmtN(1/f),unit:'s'},
+    {label:'Convection time L/U',val:fmtN(L/U),unit:'s'},
+  ],'St≈0.2 for vortex shedding from a cylinder (100<Re<100000).');
+}
+
+function deCalc(){
+  const Re=v('de-Re'), r=v('de-r')*su('de-r-u'), R=v('de-R')*su('de-R-u');
+  if([Re,r,R].some(x=>!x||x<=0)) return errOut('de-out','All values required.');
+  const De=Re*Math.sqrt(r/R);
+  const regime=De<36?'No secondary vortices':De<64?'Weak Dean vortices':'Strong Dean vortices (4-vortex pattern)';
+  showOut('de-out',[
+    {label:'Dean number De',val:fmtN(De),unit:'',cls:De>36?'warn':'good'},
+    {label:'Curvature ratio r/R',val:fmtN(r/R),unit:''},
+    {label:'Secondary flow regime',val:regime,unit:''},
+  ]);
+}
+
+function peCalc(){
+  const U=v('pe-U')*su('pe-U-u'), L=v('pe-L')*su('pe-L-u'), D=v('pe-D')*su('pe-D-u');
+  if([U,L,D].some(x=>!x||x<=0)) return errOut('pe-out','All values required.');
+  const Pe=U*L/D;
+  showOut('pe-out',[
+    {label:'Péclet number Pe',val:fmtN(Pe),unit:''},
+    {label:'Diffusion time L²/D',val:fmtN(L*L/D),unit:'s'},
+    {label:'Convection time L/U',val:fmtN(L/U),unit:'s'},
+    {label:'Dominant transport',val:Pe>1?'Advection dominated':'Diffusion dominated',unit:''},
+  ]);
+}
+
+/* ════════════════════════════════════════════════════════
+   §3  TURBULENCE BCs
+════════════════════════════════════════════════════════ */
+function tbCalc(){
+  const U=v('tb-U')*su('tb-U-u'), I=v('tb-I')/100;
+  const l=v('tb-l')*su('tb-l-u'), nu=v('tb-nu')*su('tb-nu-u');
+  if([U,I,l,nu].some(x=>!x||x<=0)) return errOut('tb-out','All values required.');
+  const Cmu=0.09;
+  const k  = 1.5*Math.pow(U*I,2);
+  const eps= Math.pow(Cmu,0.75)*Math.pow(k,1.5)/l;
+  const om = Math.sqrt(k)/(Math.pow(Cmu,0.25)*l);
+  const nut= k/om;
+  const muT= nut/nu;
+  showOut('tb-out',[
+    {label:'TKE k',               val:fmtN(k),    unit:'m²/s²', cls:'good'},
+    {label:'Dissipation ε',       val:fmtN(eps),   unit:'m²/s³', cls:'good'},
+    {label:'Spec. dissipation ω', val:fmtN(om),    unit:'1/s',   cls:'good'},
+    {label:'Eddy viscosity νₜ',   val:fmtN(nut),   unit:'m²/s',  cls:'good'},
+    {label:'Viscosity ratio νₜ/ν',val:fmtN(muT),   unit:''},
+    {label:'Turbulent Re_t',      val:fmtN(k*k/(nu*eps)), unit:''},
+  ],'Use k & ε for k-ε solvers. Use k & ω for k-ω SST (ANSYS Fluent, OpenFOAM). νₜ for Spalart-Allmaras.');
+}
+
+function tiCalc(){
+  const Re=v('ti-Re');
+  if(!Re||Re<=0) return errOut('ti-out','Enter Reynolds number.');
+  const Ipipe=0.16*Math.pow(Re,-1/8)*100;
+  const Ibl=0.4/Math.log(Re)*100;
+  showOut('ti-out',[
+    {label:'Intensity I (pipe, fully developed)',val:fmtN(Ipipe)+'%',unit:''},
+    {label:'Intensity I (flat plate BL, approx)',val:fmtN(Ibl)+'%',unit:''},
+    {label:'Typical free-stream',val:'0.1 – 1 %',unit:'(wind tunnel/clin. inlet)'},
+  ],'Higher I = more turbulent mixing. Use measured values when available.');
+}
+
+function lsCalc(){
+  const fac=parseFloat(g('ls-type').value);
+  const L=v('ls-L')*su('ls-L-u');
+  if(!L||L<=0) return errOut('ls-out','Enter dimension.');
+  const ls=fac*L;
+  showOut('ls-out',[
+    {label:'Length scale ℓ',val:fmtN(ls),unit:'m'},
+    {label:'ℓ (mm)',val:fmtN(ls*1000),unit:'mm'},
+  ],'The turbulent length scale sets the size of energy-containing eddies. Multiply by 1/κ≈0.41 for mixing length.');
+}
+
+/* ════════════════════════════════════════════════════════
+   §4  BOUNDARY LAYER
+════════════════════════════════════════════════════════ */
+function blCalc(){
+  const x=v('bl-x')*su('bl-x-u'), U=v('bl-U')*su('bl-U-u'), nu=v('bl-nu')*su('bl-nu-u');
+  if([x,U,nu].some(n=>!n||n<=0)) return errOut('bl-out','All values required.');
+  const Rex=U*x/nu;
+  const lam=Rex<5e5;
+  let rows;
+  if(lam){
+    const d=5*x/Math.sqrt(Rex), ds=1.72*x/Math.sqrt(Rex), th=0.664*x/Math.sqrt(Rex), Cf=0.664/Math.sqrt(Rex);
+    rows=[
+      {label:'Re_x',val:fmtN(Rex,4),unit:'',cls:'good'},
+      {label:'Regime',val:'Laminar (Blasius)',unit:''},
+      {label:'δ (99% thickness)',val:fmtN(d*1000),unit:'mm'},
+      {label:'δ* (displacement)',val:fmtN(ds*1000),unit:'mm'},
+      {label:'θ (momentum)',val:fmtN(th*1000),unit:'mm'},
+      {label:'Cƒ (local skin friction)',val:fmtN(Cf),unit:''},
+      {label:'H = δ*/θ (shape factor)',val:fmtN(ds/th),unit:''},
+    ];
+  } else {
+    const d=0.37*x/Math.pow(Rex,0.2), Cf=0.0592/Math.pow(Rex,0.2);
+    rows=[
+      {label:'Re_x',val:fmtN(Rex,4),unit:'',cls:'warn'},
+      {label:'Regime',val:'Turbulent (Schlichting)',unit:''},
+      {label:'δ (99% thickness)',val:fmtN(d*1000),unit:'mm'},
+      {label:'δ* (approx)',val:fmtN(d/8*1000),unit:'mm'},
+      {label:'Cƒ (local)',val:fmtN(Cf),unit:''},
+    ];
+  }
+  showOut('bl-out',rows,'Transition typically occurs at Re_x ≈ 5×10⁵. Blasius solution is exact for laminar flat plate.');
+}
+
+function leCalc(){
+  const D=v('le-D')*su('le-D-u'), Re=v('le-Re'), Pr=v('le-Pr');
+  if([D,Re].some(n=>!n||n<=0)) return errOut('le-out','D and Re required.');
+  const lam=Re<2300;
+  const Lhyd=lam?0.06*Re*D:4.4*Math.pow(Re,1/6)*D;
+  const Lth=0.05*Re*Pr*D;
+  showOut('le-out',[
+    {label:'Regime',val:lam?'Laminar':'Turbulent',unit:''},
+    {label:'Hydrodynamic entry L_e',val:fmtN(Lhyd),unit:'m'},
+    {label:'L_e / D',val:fmtN(Lhyd/D),unit:''},
+    ...(Pr?[{label:'Thermal entry L_t (lam.)',val:fmtN(Lth),unit:'m'},{label:'L_t / D',val:fmtN(Lth/D),unit:''}]:[]),
+  ],'Ensure pipe is longer than L_e for fully-developed flow assumption in simulations.');
+}
+
+/* ════════════════════════════════════════════════════════
+   §5  PIPE FLOW
+════════════════════════════════════════════════════════ */
+function hpCalc(){
+  const R=v('hp-R')*su('hp-R-u'), L=v('hp-L')*su('hp-L-u'), mu=v('hp-mu')*su('hp-mu-u');
+  const tab=document.querySelector('#hp-tabs .tab.active')?.textContent||'';
+  let Q,dP,U,tau;
+  if(tab.includes('ΔP')){
+    dP=v('hp-dP')*su('hp-dP-u');
+    Q=Math.PI*Math.pow(R,4)*dP/(8*mu*L);
+    U=R*R*dP/(4*mu*L);
+    tau=R*dP/(2*L);
+  } else {
+    Q=v('hp-Q')*su('hp-Q-u');
+    dP=8*mu*L*Q/(Math.PI*Math.pow(R,4));
+    U=Q/(Math.PI*R*R);
+    tau=4*mu*U/R;
+  }
+  const Re=2*rhoHp()*U*R/mu;
+  function rhoHp(){return 1060;}
+  if(Q<=0||dP<=0) return errOut('hp-out','Check inputs.');
+  const Re2=2*1060*U*R/mu;
+  showOut('hp-out',[
+    {label:'Flow rate Q',val:fmtN(Q*1e6),unit:'mL/s'},
+    {label:'Q',val:fmtN(Q),unit:'m³/s'},
+    {label:'Mean velocity U',val:fmtN(U),unit:'m/s'},
+    {label:'Pressure drop ΔP',val:fmtN(dP),unit:'Pa'},
+    {label:'ΔP',val:fmtN(dP/133.322),unit:'mmHg'},
+    {label:'Wall shear stress τ_w',val:fmtN(tau),unit:'Pa'},
+    {label:'Re (blood density est.)',val:fmtN(Re2),unit:'',cls:Re2<2300?'good':'bad'},
+    {label:'Max velocity (centre)',val:fmtN(2*U),unit:'m/s'},
+  ],'Hagen-Poiseuille assumes laminar, steady, Newtonian, fully-developed flow. Verify Re < 2300.');
+}
+
+function dwCalc(){
+  const U=v('dw-U')*su('dw-U-u'), D=v('dw-D')*su('dw-D-u');
+  const L=v('dw-L')*su('dw-L-u'), rho=v('dw-rho')*su('dw-rho-u');
+  const mu=v('dw-mu')*su('dw-mu-u'), eps=v('dw-eps')*su('dw-eps-u');
+  if([U,D,L,rho,mu].some(x=>!x||x<=0)) return errOut('dw-out','All values required.');
+  const Re=rho*U*D/mu;
+  let f;
+  if(Re<2300){ f=64/Re; }
+  else {
+    // Colebrook-White iteration
+    f=0.02;
+    for(let i=0;i<50;i++){
+      const rhs=-2*Math.log10(eps/(3.7*D)+2.51/(Re*Math.sqrt(f)));
+      f=1/(rhs*rhs);
+    }
+  }
+  const dP=f*(L/D)*0.5*rho*U*U;
+  const hf=f*(L/D)*U*U/(2*9.81);
+  showOut('dw-out',[
+    {label:'Reynolds number Re',val:fmtN(Re),unit:''},
+    {label:'Friction factor f',val:fmtN(f),unit:''},
+    {label:'Pressure drop ΔP',val:fmtN(dP),unit:'Pa'},
+    {label:'ΔP',val:fmtN(dP/1000),unit:'kPa'},
+    {label:'ΔP',val:fmtN(dP/133.322),unit:'mmHg'},
+    {label:'Head loss h_f',val:fmtN(hf),unit:'m'},
+    {label:'Dynamic pressure',val:fmtN(0.5*rho*U*U),unit:'Pa'},
+  ],'Colebrook-White equation solved iteratively for turbulent regime. For smooth pipes (ε=0) approaches Blasius correlation.');
+}
+
+function dhCalc(){
+  const tab=document.querySelector('#dh-tabs .tab.active')?.textContent||'';
+  let A,P,Dh;
+  if(tab.includes('Rect')){
+    const w=v('dh-w')*su('dh-w-u'), h=v('dh-h')*su('dh-h-u');
+    A=w*h; P=2*(w+h); Dh=4*A/P;
+    showOut('dh-out',[{label:'Hydraulic diameter D_h',val:fmtN(Dh*1000),unit:'mm'},{label:'D_h (m)',val:fmtN(Dh),unit:'m'},{label:'Area A',val:fmtN(A*1e6),unit:'mm²'},{label:'Wetted perimeter P',val:fmtN(P*1000),unit:'mm'},{label:'Aspect ratio w/h',val:fmtN(w/h),unit:''}]);
+  } else if(tab.includes('Annul')){
+    const Do=v('dh-Do')*su('dh-Do-u'), Di=v('dh-Di')*su('dh-Di-u');
+    Dh=Do-Di;
+    showOut('dh-out',[{label:'Hydraulic diameter D_h',val:fmtN(Dh*1000),unit:'mm'},{label:'D_h = D_o − D_i',val:fmtN(Dh),unit:'m'}]);
+  } else {
+    const b=v('dh-b')*su('dh-b-u'), h=v('dh-ht')*su('dh-ht-u');
+    const hyp=Math.sqrt(b*b/4+h*h);
+    A=0.5*b*h; P=b+2*hyp; Dh=4*A/P;
+    showOut('dh-out',[{label:'Hydraulic diameter D_h',val:fmtN(Dh*1000),unit:'mm'},{label:'Area A',val:fmtN(A*1e6),unit:'mm²'},{label:'Perimeter P',val:fmtN(P*1000),unit:'mm'}]);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   §6  NON-NEWTONIAN
+════════════════════════════════════════════════════════ */
+function plCalc(){
+  const K=v('pl-K'), n=v('pl-n'), gd=v('pl-gd');
+  if([K,n,gd].some(x=>isNaN(x)||x<=0)) return errOut('pl-out','All values required.');
+  const mu=K*Math.pow(gd,n-1), tau=K*Math.pow(gd,n);
+  showOut('pl-out',[
+    {label:'Eff. viscosity μ_eff',val:fmtN(mu*1000),unit:'mPa·s'},
+    {label:'μ_eff (Pa·s)',val:fmtN(mu),unit:'Pa·s'},
+    {label:'Shear stress τ',val:fmtN(tau),unit:'Pa'},
+    {label:'Behaviour',val:n<0.99?'Shear-thinning':n>1.01?'Shear-thickening':'Newtonian',unit:''},
+  ]);
+}
+
+function caCalc(){
+  const mu0=v('ca-mu0')*su('ca-mu0-u'), muinf=v('ca-muinf')*su('ca-muinf-u');
+  const lam=v('ca-lam'), n=v('ca-n'), gd=v('ca-gd');
+  if([mu0,muinf,lam,n,gd].some(x=>isNaN(x)||x<=0)) return errOut('ca-out','All values required.');
+  const mu=muinf+(mu0-muinf)*Math.pow(1+Math.pow(lam*gd,2),(n-1)/2);
+  const tau=mu*gd;
+  const muN=0.0035; // Newtonian blood approx
+  showOut('ca-out',[
+    {label:'Eff. viscosity μ_eff',val:fmtN(mu*1000),unit:'mPa·s',cls:'good'},
+    {label:'μ_eff (Pa·s)',val:fmtN(mu),unit:'Pa·s'},
+    {label:'Shear stress τ',val:fmtN(tau),unit:'Pa'},
+    {label:'vs Newtonian (3.5 mPa·s)',val:fmtN((mu/muN-1)*100)+'%',unit:'difference',cls:Math.abs(mu-muN)/muN>0.05?'warn':'good'},
+    {label:'Low-shear region?',val:gd<100?'⚠ Yes — non-Newtonian significant':'OK — Newtonian valid',unit:'',cls:gd<100?'warn':'good'},
+  ],'Cho & Kensey (1991) blood parameters. At γ̇ > 100 s⁻¹ Carreau converges to ≈3.5 mPa·s.');
+}
+
+function nvCalc(){
+  const U=v('nv-U')*su('nv-U-u'), R=v('nv-R')*su('nv-R-u');
+  if([U,R].some(x=>!x||x<=0)) return errOut('nv-out','All values required.');
+  const gdMean=4*U/(R); // 8U/D = 4U/R for pipe Newtonian
+  const cls=gdMean<100?'bad':gdMean<500?'warn':'good';
+  showOut('nv-out',[
+    {label:'Mean wall shear rate γ̇_w',val:fmtN(gdMean),unit:'s⁻¹',cls},
+    {label:'Newtonian valid?',val:gdMean>=100?'✓ Yes (γ̇ > 100 s⁻¹)':'⚠ No — use Carreau/Quemada',unit:'',cls},
+    {label:'Recommendation',val:gdMean<100?'Use non-Newtonian model':'Newtonian blood acceptable',unit:''},
+  ],'Blood behaves non-Newtonian below ~100 s⁻¹. This is relevant in vessel segments with low flow or recirculation zones.');
+}
+
+/* ════════════════════════════════════════════════════════
+   §7  PULSATILE / WSS
+════════════════════════════════════════════════════════ */
+function woCalc(){
+  const R=v('wo-R')*su('wo-R-u'), f=v('wo-f')*su('wo-f-u'), nu=v('wo-nu')*su('wo-nu-u');
+  if([R,f,nu].some(x=>!x||x<=0)) return errOut('wo-out','All values required.');
+  const omega=2*Math.PI*f, alpha=R*Math.sqrt(omega/nu);
+  const regime=alpha<2?'Quasi-steady — Poiseuille profile applies':alpha<10?'Transitional pulsatile':'Inertia-dominated — plug-like profile';
+  showOut('wo-out',[
+    {label:'Womersley number α',val:fmtN(alpha),unit:'',cls:alpha>2?'warn':'good'},
+    {label:'Angular frequency ω',val:fmtN(omega),unit:'rad/s'},
+    {label:'Flow regime',val:regime,unit:''},
+    {label:'Oscillatory BL thickness δ',val:fmtN(Math.sqrt(2*nu/omega)*1000),unit:'mm'},
+  ],'Reference: Aorta α≈12–22, Coronary α≈3–6, Cerebral artery α≈2–5, Capillary α≪1.');
+}
+
+function wssCalc(){
+  const R=v('wss-R')*su('wss-R-u'), mu=v('wss-mu')*su('wss-mu-u');
+  const tab=document.querySelector('#wss-tabs .tab.active')?.textContent||'';
+  let tau,gd,Q2;
+  if(tab.includes('Flow')){
+    const Q=v('wss-Q')*su('wss-Q-u');
+    tau=4*mu*Q/(Math.PI*Math.pow(R,3));
+    gd=4*Q/(Math.PI*Math.pow(R,3));
+    Q2=Q;
+  } else {
+    const dP=v('wss-dP')*su('wss-dP-u'), L=v('wss-L')*su('wss-L-u');
+    tau=R*dP/(2*L);
+    gd=tau/mu;
+    Q2=Math.PI*Math.pow(R,4)*dP/(8*mu*L);
+  }
+  const Umean=Q2/(Math.PI*R*R);
+  showOut('wss-out',[
+    {label:'Wall shear stress τ_w',val:fmtN(tau),unit:'Pa',cls:'good'},
+    {label:'Wall shear rate γ̇_w',val:fmtN(gd),unit:'s⁻¹'},
+    {label:'Mean velocity U',val:fmtN(Umean),unit:'m/s'},
+    {label:'Physiological range (artery)',val:'0.5 – 4 Pa (1–10 Pa coronary)',unit:''},
+    {label:'WSS status',val:tau<0.4?'Low WSS — atherogenic risk':tau>10?'High WSS — stenosis/calcification':'Normal range',unit:'',cls:tau<0.4?'bad':tau>10?'warn':'good'},
+  ],'Low WSS (<0.5 Pa) correlates with plaque development. High WSS (>10 Pa) associated with vulnerable plaque and calcific remodeling.');
+}
+
+function osiCalc(){
+  const raw=g('osi-data').value.trim();
+  if(!raw) return errOut('osi-out','Enter WSS time series data.');
+  const vals=raw.split(/[\s,]+/).map(Number).filter(x=>!isNaN(x));
+  if(vals.length<3) return errOut('osi-out','Need at least 3 data points.');
+  const intTau=vals.reduce((a,b)=>a+b,0);
+  const intAbsTau=vals.reduce((a,b)=>a+Math.abs(b),0);
+  const OSI=0.5*(1-Math.abs(intTau)/intAbsTau);
+  const TAWSS=intAbsTau/vals.length;
+  const maxWSS=Math.max(...vals.map(Math.abs));
+  const minWSS=Math.min(...vals);
+  showOut('osi-out',[
+    {label:'TAWSS (time-averaged |τ|)',val:fmtN(TAWSS),unit:'Pa',cls:'good'},
+    {label:'OSI',val:fmtN(OSI,4),unit:'',cls:OSI>0.2?'bad':OSI>0.1?'warn':'good'},
+    {label:'OSI interpretation',val:OSI>0.3?'⚠ Highly oscillatory — pro-calcific':OSI>0.1?'Moderate oscillation':'Predominantly unidirectional',unit:''},
+    {label:'|τ|_max',val:fmtN(maxWSS),unit:'Pa'},
+    {label:'Cycle integral ∫τ dt',val:fmtN(intTau),unit:'Pa'},
+    {label:'N data points',val:vals.length,unit:''},
+  ],'OSI→0: unidirectional flow. OSI→0.5: fully reversing flow. OSI>0.2 marks pro-atherosclerotic / pro-calcific regions.');
+}
+
+/* ════════════════════════════════════════════════════════
+   §8  ELASTIC CONSTANTS
+════════════════════════════════════════════════════════ */
+function elCalc(){
+  const Ev=v('el-E'), nuv=v('el-nu'), Gv=v('el-G'), Kv=v('el-K'), lamv=v('el-lam');
+  const EU=su('el-E-u'), GU=su('el-G-u'), KU=su('el-K-u'), lamU=su('el-lam-u');
+  const have={E:!isNaN(Ev)&&Ev>0, nu:!isNaN(nuv)&&nuv>-1&&nuv<0.5, G:!isNaN(Gv)&&Gv>0, K:!isNaN(Kv)&&Kv>0, lam:!isNaN(lamv)};
+  const Esi=have.E?Ev*EU:null, Gsi=have.G?Gv*GU:null, Ksi=have.K?Kv*KU:null, lamsi=have.lam?lamv*lamU:null;
+  let E,nu,G,K,lam;
+  if(have.E&&have.nu){E=Esi;nu=nuv;G=E/(2*(1+nu));K=E/(3*(1-2*nu));lam=E*nu/((1+nu)*(1-2*nu));}
+  else if(have.E&&have.G){E=Esi;G=Gsi;nu=E/(2*G)-1;K=E*G/(3*(3*G-E));lam=G*(E-2*G)/(3*G-E);}
+  else if(have.K&&have.G){K=Ksi;G=Gsi;E=9*K*G/(3*K+G);nu=(3*K-2*G)/(2*(3*K+G));lam=K-2*G/3;}
+  else if(have.E&&have.K){E=Esi;K=Ksi;G=3*K*E/(9*K-E);nu=(3*K-E)/(6*K);lam=K-2*G/3;}
+  else return errOut('el-out','Provide exactly two independent constants (E+ν recommended).');
+  if(nu>=0.5||nu<=-1) return errOut('el-out','Poisson ratio out of physical range (−1 < ν < 0.5).');
+  const M=lam+2*G;
+  showOut('el-out',[
+    {label:"Young's modulus E",val:fmtN(E/1e6),unit:'MPa',cls:'good'},
+    {label:"Poisson's ratio ν",val:fmtN(nu),unit:'',cls:'good'},
+    {label:'Shear modulus G',val:fmtN(G/1e6),unit:'MPa',cls:'good'},
+    {label:'Bulk modulus K',val:fmtN(K/1e6),unit:'MPa',cls:'good'},
+    {label:"Lamé's λ",val:fmtN(lam/1e6),unit:'MPa'},
+    {label:'P-wave modulus M',val:fmtN(M/1e6),unit:'MPa'},
+    {label:'G/E ratio',val:fmtN(G/E),unit:'(0.333 for ν=0)'},
+  ],'Valid isotropic linear elasticity: −1 < ν < 0.5. Incompressible material: ν→0.5 (rubber, soft tissue).');
+}
+
+/* ════════════════════════════════════════════════════════
+   §9  STRESS / FAILURE
+════════════════════════════════════════════════════════ */
+function vmCalc(){
+  const Sy=v('vm-Sy');
+  const tab=document.querySelector('#vm-tabs .tab.active')?.textContent||'';
+  let svm, tresca;
+  if(tab.includes('2D')){
+    const su1=su('vm-sx-u');
+    const sx=v('vm-sx')*su1, sy=v('vm-sy')*su1, txy=v('vm-txy')*su1;
+    svm=Math.sqrt(sx*sx-sx*sy+sy*sy+3*txy*txy);
+    const s1=0.5*(sx+sy)+Math.sqrt(0.25*(sx-sy)*(sx-sy)+txy*txy);
+    const s2=0.5*(sx+sy)-Math.sqrt(0.25*(sx-sy)*(sx-sy)+txy*txy);
+    tresca=Math.max(Math.abs(s1-s2),Math.abs(s1),Math.abs(s2));
+  } else {
+    const s1=v('vm-s1'), s2=v('vm-s2'), s3=v('vm-s3');
+    svm=Math.sqrt(0.5*((s1-s2)*(s1-s2)+(s2-s3)*(s2-s3)+(s1-s3)*(s1-s3)));
+    tresca=Math.max(Math.abs(s1-s2),Math.abs(s2-s3),Math.abs(s1-s3));
+  }
+  const SF=Sy/svm;
+  showOut('vm-out',[
+    {label:'Von Mises σ_vm',val:fmtN(svm),unit:'MPa',cls:'good'},
+    {label:'Tresca σ_T',val:fmtN(tresca),unit:'MPa'},
+    {label:'Safety factor (VM)',val:fmtN(SF),unit:'',cls:SF<1?'bad':SF<2?'warn':'good'},
+    {label:'Status',val:SF>=1?`OK — ${fmtN(SF,3)}× safety`:'⚠ YIELDING — SF < 1',unit:'',cls:SF<1?'bad':'good'},
+  ]);
+}
+
+function pvCalc(){
+  const P=v('pv-P')*su('pv-P-u')/1000, ri=v('pv-ri')*su('pv-ri-u')/1000, ro=v('pv-ro')*su('pv-ro-u')/1000, Sy=v('pv-Sy');
+  if([P,ri,ro].some(x=>!x||x<=0)||ro<=ri) return errOut('pv-out','Check radii (r_o > r_i).');
+  const t=ro-ri, tRatio=t/ri;
+  const Pmpa=P;
+  let s_h,s_a;
+  if(tRatio<0.1){
+    s_h=Pmpa*ri/t*1e-3; s_a=Pmpa*ri/(2*t)*1e-3;
+  } else {
+    const A=Pmpa*ri*ri/(ro*ro-ri*ri)*1e-3;
+    const B=Pmpa*ri*ri*ro*ro/(ro*ro-ri*ri)*1e-3;
+    s_h=A+B/(ri*ri); s_a=A;
+  }
+  const svm=Math.sqrt(s_h*s_h-s_h*s_a+s_a*s_a);
+  const SF=Sy/svm;
+  showOut('pv-out',[
+    {label:'t/r_i (wall ratio)',val:fmtN(tRatio),unit:'',cls:tRatio<0.1?'warn':'good'},
+    {label:'Wall classification',val:tRatio<0.1?'Thin-wall':'Thick-wall (Lamé)',unit:''},
+    {label:'Hoop stress σ_h (inner)',val:fmtN(s_h),unit:'MPa',cls:'good'},
+    {label:'Axial stress σ_a',val:fmtN(s_a),unit:'MPa'},
+    {label:'Von Mises σ_vm',val:fmtN(svm),unit:'MPa'},
+    {label:'Safety factor',val:fmtN(SF),unit:'',cls:SF<1?'bad':SF<2?'warn':'good'},
+  ]);
+}
+
+/* ════════════════════════════════════════════════════════
+   §10  BEAM / SMA
+════════════════════════════════════════════════════════ */
+function bmCalc(){
+  const F=v('bm-F')*su('bm-F-u'), L=v('bm-L')*su('bm-L-u');
+  const E=v('bm-E')*su('bm-E-u'), I=v('bm-I')*su('bm-I-u');
+  const c=v('bm-c')*su('bm-c-u');
+  if([F,L,E,I,c].some(x=>!x||x<=0)) return errOut('bm-out','All values required.');
+  const tab=document.querySelector('#beam-tabs .tab.active')?.textContent||'';
+  let delta, sigma;
+  if(tab.includes('Cantilever')){delta=F*L*L*L/(3*E*I);sigma=F*L*c/I;}
+  else if(tab.includes('Simply')){delta=F*L*L*L/(48*E*I);sigma=F*L*c/(4*I);}
+  else{delta=5*F*L*L*L*L/(384*E*I);sigma=F*L*L*c/(8*I);} // UDL w=F/L
+  showOut('bm-out',[
+    {label:'Max deflection δ',val:fmtN(delta*1000),unit:'mm',cls:'good'},
+    {label:'δ (m)',val:fmtN(delta),unit:'m'},
+    {label:'δ/L ratio',val:fmtN(delta/L),unit:'(L/'+fmtN(L/delta,3)+')'},
+    {label:'Max bending stress σ',val:fmtN(sigma/1e6),unit:'MPa'},
+  ],'δ/L < 1/300 for stiffness-critical structures. σ must be below yield for elastic behavior.');
+}
+
+function smaCalc(){
+  const tab=document.querySelector('#sma-tabs .tab.active')?.textContent||'';
+  let I,A,c;
+  if(tab.includes('Rect')){
+    const b=v('sma-b')*su('sma-b-u'), h=v('sma-h')*su('sma-h-u');
+    I=b*h*h*h/12; A=b*h; c=h/2;
+  } else if(tab.includes('Circle')){
+    const D=v('sma-D')*su('sma-D-u');
+    I=Math.PI*Math.pow(D,4)/64; A=Math.PI*D*D/4; c=D/2;
+  } else {
+    const Do=v('sma-Do')*su('sma-Do-u'), Di=v('sma-Di')*su('sma-Di-u');
+    if(Di>=Do) return errOut('sma-out','D_i must be less than D_o.');
+    I=Math.PI*(Math.pow(Do,4)-Math.pow(Di,4))/64; A=Math.PI*(Do*Do-Di*Di)/4; c=Do/2;
+  }
+  showOut('sma-out',[
+    {label:'Second moment of area I',val:fmtN(I*1e12),unit:'mm⁴',cls:'good'},
+    {label:'I (m⁴)',val:fmtN(I),unit:'m⁴'},
+    {label:'Cross-sectional area A',val:fmtN(A*1e6),unit:'mm²'},
+    {label:'Neutral axis c',val:fmtN(c*1000),unit:'mm'},
+    {label:'Section modulus Z = I/c',val:fmtN(I/c*1e9),unit:'mm³'},
+  ]);
+}
+
+/* ════════════════════════════════════════════════════════
+   §11  UNIT CONVERTERS (generated)
+════════════════════════════════════════════════════════ */
+const CONV_SETS=[
+  {title:'Pressure',icon:'🔴',base:'Pa',
+   units:[['Pa',1],['kPa',1e-3],['MPa',1e-6],['bar',1e-5],['atm',1/101325],['psi',1/6894.76],['mmHg',1/133.322],['cmH₂O',1/98.0665],['inHg',1/3386.39]]},
+  {title:'Dynamic Viscosity',icon:'🟡',base:'Pa·s',
+   units:[['Pa·s',1],['mPa·s (cP)',1000],['μPa·s (μP)',1e6],['kPa·s',1e-3],['lbf·s/ft²',1/47.880],['poise',10]]},
+  {title:'Kinematic Viscosity',icon:'🟠',base:'m²/s',
+   units:[['m²/s',1],['mm²/s (cSt)',1e6],['cm²/s (St)',1e4],['ft²/s',10.7639],['in²/s',1550.0031]]},
+  {title:'Velocity',icon:'🔵',base:'m/s',
+   units:[['m/s',1],['mm/s',1000],['cm/s',100],['km/h',3.6],['ft/s',3.28084],['mph',2.23694],['in/s',39.3701]]},
+  {title:'Length',icon:'⚪',base:'m',
+   units:[['m',1],['cm',100],['mm',1000],['μm',1e6],['nm',1e9],['in',39.3701],['ft',3.28084],['mile',1/1609.34]]},
+  {title:'Force',icon:'🟢',base:'N',
+   units:[['N',1],['kN',0.001],['MN',1e-6],['lbf',0.224809],['kgf',0.101972],['dyne',1e5]]},
+  {title:'Density',icon:'🟣',base:'kg/m³',
+   units:[['kg/m³',1],['g/cm³',0.001],['g/mL',0.001],['kg/L',0.001],['lb/ft³',0.0624280],['lb/gal',0.00834540]]},
+];
+
+function buildConverters(){
+  const wrap=g('unit-converters');
+  CONV_SETS.forEach((cs,ci)=>{
+    const id=`conv${ci}`;
+    const inputRows=cs.units.map((u,ui)=>`
+      <tr>
+        <td class="unit-cell">${u[0]}</td>
+        <td class="val-cell"><input type="number" id="${id}-${ui}" class="field" style="width:100%;padding:4px 8px;font-size:.8em" placeholder="0" oninput="convertUnit(${ci},${ui})"></td>
+      </tr>`).join('');
+    wrap.insertAdjacentHTML('beforeend',`
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">${cs.icon}</div>
+          <div><div class="card-title">${cs.title}</div><div class="card-subtitle">Base unit: ${cs.base}</div></div>
+        </div>
+        <div class="card-body" style="padding:12px 14px">
+          <table class="conv-table"><tbody>${inputRows}</tbody></table>
+        </div>
+      </div>`);
+  });
+}
+
+function convertUnit(ci,srcUi){
+  const cs=CONV_SETS[ci];
+  const srcId=`conv${ci}-${srcUi}`;
+  const srcVal=parseFloat(g(srcId).value);
+  if(isNaN(srcVal)) return;
+  const baseVal=srcVal/cs.units[srcUi][1]; // convert to base unit
+  cs.units.forEach((_,ui)=>{
+    if(ui===srcUi) return;
+    const el=g(`conv${ci}-${ui}`);
+    if(el) el.value=parseFloat((baseVal*cs.units[ui][1]).toPrecision(7));
+  });
+}
+
+// Temperature converter (special — needs offset)
+(function addTempConverter(){
+  const wrap=g('unit-converters');
+  wrap.insertAdjacentHTML('beforeend',`
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🌡</div>
+        <div><div class="card-title">Temperature</div><div class="card-subtitle">°C · °F · K · °R</div></div>
+      </div>
+      <div class="card-body" style="padding:12px 14px">
+        <table class="conv-table"><tbody>
+          <tr><td class="unit-cell">Celsius (°C)</td><td class="val-cell"><input type="number" id="temp-C" class="field" style="width:100%;padding:4px 8px;font-size:.8em" placeholder="0" oninput="convertTemp('C')"></td></tr>
+          <tr><td class="unit-cell">Fahrenheit (°F)</td><td class="val-cell"><input type="number" id="temp-F" class="field" style="width:100%;padding:4px 8px;font-size:.8em" placeholder="32" oninput="convertTemp('F')"></td></tr>
+          <tr><td class="unit-cell">Kelvin (K)</td><td class="val-cell"><input type="number" id="temp-K" class="field" style="width:100%;padding:4px 8px;font-size:.8em" placeholder="273.15" oninput="convertTemp('K')"></td></tr>
+          <tr><td class="unit-cell">Rankine (°R)</td><td class="val-cell"><input type="number" id="temp-R" class="field" style="width:100%;padding:4px 8px;font-size:.8em" placeholder="491.67" oninput="convertTemp('R')"></td></tr>
+        </tbody></table>
+      </div>
+    </div>`);
+})();
+
+function convertTemp(src){
+  let C;
+  if(src==='C') C=parseFloat(g('temp-C').value);
+  else if(src==='F') C=(parseFloat(g('temp-F').value)-32)*5/9;
+  else if(src==='K') C=parseFloat(g('temp-K').value)-273.15;
+  else C=parseFloat(g('temp-R').value)*5/9-273.15;
+  if(isNaN(C)) return;
+  if(src!=='C') g('temp-C').value=C.toPrecision(7);
+  if(src!=='F') g('temp-F').value=(C*9/5+32).toPrecision(7);
+  if(src!=='K') g('temp-K').value=(C+273.15).toPrecision(7);
+  if(src!=='R') g('temp-R').value=((C+273.15)*9/5).toPrecision(7);
+}
+
+/* ════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════ */
+buildConverters();
+// Pre-compute defaults on load for better UX
+window.addEventListener('load',()=>{ ypCalc(); reCalc(); tbCalc(); });
+</script>
+</body>
+</html>
