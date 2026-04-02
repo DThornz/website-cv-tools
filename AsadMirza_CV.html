@@ -753,7 +753,7 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
 
 </style>
 </head>
-<body class="size-md">
+<body class="light-mode size-md">
 <div class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
@@ -1891,6 +1891,23 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
         <div class="subsection-body">
           <div class="subsection-inner">
 
+
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024–2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Divina Campbell</div>
+                  <div class="entry-subtitle">Biomedical Engineering Department, Florida International University, Miami, FL</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Undergraduate research intern in the Department of Biomedical Engineering at FIU (2024–2025).</div>
+                </div>
+              </div>
+            </div>
+
             <div class="entry-card">
               <button class="entry-toggle" onclick="toggleEntry(this)">
                 <span class="entry-year">2018–2021</span>
@@ -2029,6 +2046,41 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
               </div>
             </div><!-- /Team 1 Fa 2017 -->
 
+
+            <!-- Fall 2025 teams -->
+            <div class="entry-card" id="sd-fa25">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Fa 2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Fall 2025 Teams — F2, F3, F4</div>
+                  <div class="entry-subtitle">Low-cost Prosthetic Hand · Mechanical Prosthetic Ankle · Hydraulic Spinal Rod Cutter</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+
+                  <div style="margin-bottom:18px">
+                    <div style="font-size:0.867em;font-weight:600;color:var(--text);margin-bottom:4px">Team F2 — Low-cost EMG-controlled 3D-printed Prosthetic Hand</div>
+                    <div style="font-size:0.767em;color:var(--text-dim);font-style:italic;margin-bottom:6px">Faculty: Dr. Anuradha Godavarty · Sponsor: Bio Engineering Labs, Corp. · Members: Shirel Belilty Benmergui, Anja Mihajlov, Elise Minami Ino</div>
+                    <div class="entry-abstract" style="margin-bottom:0">Upper-limb amputees frequently abandon prosthetic devices due to discomfort, limited functionality, and the high cost of commercial systems. This project presents a low-cost, fully 3D-printed EMG-controlled prosthetic hand designed to improve comfort, affordability, and ease of adoption. The design incorporates a single EMG sensor for reliable open–close activation, a lightweight structure under 1 kg, and an internal string-driven actuation system able to generate sufficient grip force for daily objects. Verification goals included keeping motor and shell temperatures below ~40 °C, ensuring structural durability under minor impacts, and maintaining a total prototype cost under $1,000.</div>
+                  </div>
+
+                  <div style="margin-bottom:18px">
+                    <div style="font-size:0.867em;font-weight:600;color:var(--text);margin-bottom:4px">Team F3 — Fully Mechanical Prosthetic Ankle: A Mobility Lifeline for Transtibial Amputees in Low Resource Environments</div>
+                    <div style="font-size:0.767em;color:var(--text-dim);font-style:italic;margin-bottom:6px">Faculty Mentor: Dr. Asad Mirza · Sponsor: Bio Engineering Labs, Corp. · Members: Giuliana Mesa, Laura Guerrero, Nicholas Mohammed</div>
+                    <div class="entry-abstract" style="margin-bottom:0">Lower limb amputees in low-resource environments face significant mobility limitations due to the high cost, limited availability, and maintenance needs of conventional prosthetic ankle technologies. This project develops a fully mechanical, low-cost prosthetic ankle using a ball-and-socket mechanism — an aluminum ball articulating within a TPU-lined socket — to deliver controlled multiaxial motion that better reflects natural ankle biomechanics. A mechanical range-of-motion limiter integrated into the socket rim restricts excessive rotation, ensuring predictable and safe joint behavior across varied terrains. By combining structural simplicity with deliberate material selection, the system reduces manufacturing complexity and cost, making it suitable for production in low-resource clinics.</div>
+                  </div>
+
+                  <div>
+                    <div style="font-size:0.867em;font-weight:600;color:var(--text);margin-bottom:4px">Team F4 — Novel Hydraulic Spinal Rod Cutter for Use in Lumbar Spine Revision Surgery</div>
+                    <div style="font-size:0.767em;color:var(--text-dim);font-style:italic;margin-bottom:6px">Faculty: Valentina Dargam · Sponsor: Shukla Medical · Members: Mia Roman, Ivan Page, Jose Acosta, Samy Mudholker, Gian-Marco Montero</div>
+                    <div class="entry-abstract" style="margin-bottom:0">Lumbar spine revision surgery often requires removal of titanium spinal rods, but existing tools are bulky, difficult to maneuver, and require high user-applied force (up to 364 N). This project developed a compact hydraulic spinal rod cutter designed specifically for safe, controlled in-situ cutting during lumbar revision procedures. The device integrates a cutting head under 20 mm in thickness with a hydraulic amplification mechanism delivering more than 28 kN of cutting force while reducing user input by over 10%. Blades are 440C stainless steel; handle is 17-4 PH stainless steel for sterilizability and corrosion resistance. Enables precise, low-effort rod cutting within constrained anatomy.</div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- /Fall 2025 -->
             <!-- Spring 2025 teams -->
             <div class="entry-card">
               <button class="entry-toggle" onclick="toggleEntry(this)">
@@ -2258,6 +2310,9 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
   <div class="section-body">
     <div class="section-inner">
       <div class="sub-divider">University &amp; Professional Service</div>
+      <div class="award-entry"><div class="award-year">Apr–Jul 2026</div><div><div class="award-name">PhD Qualifying Exam Committee</div><div class="award-org">Biomedical Engineering Department, Florida International University, Miami, FL</div></div></div>
+      <div class="award-entry"><div class="award-year">Mar 2026–</div><div><div class="award-name">Graduate Program Committee</div><div class="award-org">Biomedical Engineering Department, Florida International University, Miami, FL</div></div></div>
+      <div class="award-entry"><div class="award-year">Mar 2026</div><div><div class="award-name">Abstract Reviewer — Undergraduate Research at FIU (URFIU) Conference</div><div class="award-org">Florida International University, Miami, FL</div></div></div>
       <div class="award-entry"><div class="award-year">Mar 2026</div><div><div class="award-name">Faculty Judge — Undergraduate Research Practice Presentations</div><div class="award-org">Honors College, FIU (URFIU)</div></div></div>
       <div class="award-entry"><div class="award-year">Sum 2024</div><div><div class="award-name">BME Senior Design Oral Judge</div><div class="award-org">Biomedical Engineering Society, FIU</div></div></div>
       <div class="award-entry"><div class="award-year">2019–2020</div><div><div class="award-name">BME Senior Design Poster Judge (4 sessions)</div><div class="award-org">Biomedical Engineering Society, FIU</div></div></div>
@@ -2292,9 +2347,9 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
   <div class="sp-row">
     <div class="sp-label">Color Mode</div>
     <div class="sp-toggle-row">
-      <span class="sp-toggle-label">Light Mode</span>
+      <span class="sp-toggle-label">Dark Mode</span>
       <label class="toggle-switch">
-        <input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)">
+        <input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)" checked>
         <span class="toggle-slider"></span>
       </label>
     </div>

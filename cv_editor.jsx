@@ -222,6 +222,13 @@ const INITIAL_DATA = {
         {
           id: uid(), title: "Undergraduate Research Interns", defaultOpen: true,
           entries: [
+            {
+              id: uid(), year: "2024–2025", title: "Divina Campbell",
+              subtitle: "Biomedical Engineering Department, Florida International University, Miami, FL",
+              badges: [],
+              abstract: "Undergraduate research intern in the Department of Biomedical Engineering at FIU (2024–2025).",
+              metaItems: [], links: [], images: [], videos: [], notes: ""
+            },
             { id: uid(), year: "2018–2021", title: "Amanda Barreto", subtitle: "Biomedical Engineering · FIU · Co-authored 2 conference abstracts", badges: [], abstract: "Research on CAVD hemodynamic modeling. Co-authored 'Importance of Non-Newtonian Modeling' and 'Constitutive Properties of Mitral Valve Tissues via Nanoindentation' (both Structural Heart 2021).", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2020–2021", title: "Tisha Boodooram", subtitle: "Biomedical Engineering · FIU", badges: [], abstract: "Contributed to non-Newtonian blood flow modeling in calcified aortic valve geometries. Co-author on Graduate Research Day 2021 abstract.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2019", title: "Sergio Rodriguez", subtitle: "Biomedical Engineering · FIU", badges: [], abstract: "Early-stage CAVD computational model development.", metaItems: [], links: [], images: [], videos: [], notes: "" },
@@ -231,6 +238,13 @@ const INITIAL_DATA = {
           id: uid(), title: "Senior Design Consultation", defaultOpen: false,
           entries: [
             { id: uid(), year: "Fa 2017", title: "Team 1 — System for Whole Field Fluorescent Microscopy Imaging In-Vivo", subtitle: "Senior Design Capstone · Asad Mirza (team member) · FIU BME Fall 2017", badges: [{ id: uid(), text: "2nd Place Oral", type: "award" }], abstract: "Epilepsy affects ~65 million people worldwide with no known cure. The team designed a novel dual-modality system using a synchronized CMOS camera (VSDI) and CCD camera (calcium imaging), aimed at a stereotaxic stage with a motorized XY stage. Custom MATLAB GUI enables dynamic spatial imaging across a 1 mm² cranial window.\n\nTeam: Asad Mirza, Juan Pinzon, Natalia Fuenzalida, Edwin Robledo\nFaculty Advisor: Dr. Wei-Chiang Lin\nSponsor: Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory", metaItems: [{ id: uid(), label: "Faculty Advisor", value: "Dr. Wei-Chiang Lin" }, { id: uid(), label: "Sponsor", value: "Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory" }], links: [], images: [], videos: [], notes: "" },
+            {
+              id: uid(), year: "Fa 2025", title: "Fall 2025 Teams — F2, F3, F4",
+              subtitle: "Low-cost Prosthetic Hand · Mechanical Prosthetic Ankle · Hydraulic Spinal Rod Cutter",
+              badges: [],
+              abstract: "<strong>Team F2 — Low-cost EMG-controlled 3D-printed Prosthetic Hand</strong><br><em>Faculty: Dr. Godavarty · Sponsor: Bio Engineering Labs, Corp. · Members: Shirel Belilty Benmergui, Anja Mihajlov, Elise Minami Ino</em><br>Upper-limb amputees frequently abandon prosthetics due to discomfort, limited functionality, and high cost. This project presents a low-cost, fully 3D-printed EMG-controlled prosthetic hand featuring a single EMG sensor for open–close activation, a lightweight structure under 1 kg, and internal string-driven actuation. Total prototype cost under $1,000.<br><br><strong>Team F3 — Fully Mechanical Prosthetic Ankle: A Mobility Lifeline for Transtibial Amputees in Low Resource Environments</strong><br><em>Faculty Mentor: Dr. Asad Mirza · Sponsor: Bio Engineering Labs, Corp. · Members: Giuliana Mesa, Laura Guerrero, Nicholas Mohammed</em><br>Develops a fully mechanical, low-cost prosthetic ankle using a ball-and-socket mechanism (aluminum ball in TPU-lined socket) to deliver controlled multiaxial motion reflecting natural ankle biomechanics. A ROM limiter restricts excessive rotation for predictable, safe behavior on varied terrains without electronics or specialized components.<br><br><strong>Team F4 — Novel Hydraulic Spinal Rod Cutter for Use in Lumbar Spine Revision Surgery</strong><br><em>Faculty: Valentina Dargam · Sponsor: Shukla Medical · Members: Mia Roman, Ivan Page, Jose Acosta, Samy Mudholker, Gian-Marco Montero</em><br>Compact hydraulic spinal rod cutter with a cutting head under 20 mm in thickness delivering &gt;28 kN of cutting force while reducing user input by over 10%. Blades: 440C stainless steel; handle: 17-4 PH stainless steel. Enables precise, low-effort in-situ rod cutting within the 20 mm interpedicular space.",
+              metaItems: [], links: [], images: [], videos: [], notes: ""
+            },
             { id: uid(), year: "Sp 2025", title: "Spring 2025 Teams", subtitle: "Team 3: Fully Mechanical Prosthetic Ankle · Team 4: NPCore · Team 6: IUSDRx", badges: [], abstract: "Consulting across 3 senior design teams on computational and experimental design.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "Fa 2022", title: "Fall 2022 Teams", subtitle: "Team 1: Garrison Gauge · Team 3: Wearable Isoflurane Monitor · Team 7: Tremor Tranquil", badges: [], abstract: "Consulting across 3 senior design teams.", metaItems: [], links: [], images: [], videos: [], notes: "" },
           ]
@@ -273,6 +287,9 @@ const INITIAL_DATA = {
       subsections: [{
         id: uid(), title: "", defaultOpen: true,
         entries: [
+          { id: uid(), year: "Apr–6Jul 2026", title: "PhD Qualifying Exam Committee", subtitle: "Biomedical Engineering Department, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
+          { id: uid(), year: "Mar 2026–", title: "Graduate Program Committee", subtitle: "Biomedical Engineering Department, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
+          { id: uid(), year: "Mar 2026", title: "Abstract Reviewer — URFIU Conference", subtitle: "Undergraduate Research at FIU Conference, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Mar 2026", title: "Faculty Judge — Undergraduate Research Practice Presentations", subtitle: "Honors College, FIU (URFIU)", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Sum 2024", title: "BME Senior Design Oral Judge", subtitle: "Biomedical Engineering Society, FIU", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "2019", title: "EMBS BME Presentation — 3D Printing & Simulation", subtitle: "Pinecrest Cove Preparatory Academy, Miami, FL", badges: [], abstract: "Taught middle school students about 3D printing and BME-oriented simulations (hip implants, computer cooling).", metaItems: [], links: [], images: [], videos: [], notes: "" },
@@ -559,7 +576,7 @@ input:checked+.toggle-slider::before{transform:translateX(20px);background:#fff}
 @media print{@page{margin:1in;size:letter}*{box-shadow:none!important;animation:none!important;transition:none!important}body{background:#fff!important;color:#000!important;font-family:'Times New Roman',serif!important;font-size:11pt!important}.top-bar,#nav-sidebar,#settings-btn,#settings-panel{display:none!important}.layout-wrapper{display:block!important;padding:0!important;max-width:100%!important}.main-content{padding:0!important}.hero-canvas{text-align:center;background:#fff!important;border:none!important;padding:0 0 18pt!important}.hero-canvas::before{display:none!important}h1.hero-name{font-family:'Times New Roman',serif!important;font-size:16pt!important;font-weight:bold;text-transform:uppercase}.name-gradient{-webkit-text-fill-color:#000!important;background:none!important}.stats-ribbon{display:none!important}.section-wrapper{background:#fff!important;border:none!important;border-radius:0!important;margin-bottom:0!important}.section-toggle{padding:12pt 0 3pt!important;border-bottom:2px solid #000;margin-bottom:6pt;background:none!important}.section-icon,.chevron{display:none!important}.section-title{font-family:'Times New Roman',serif!important;font-size:12pt!important;font-weight:bold;text-transform:uppercase;color:#000}.section-body,.subsection-body,.entry-body{max-height:none!important;overflow:visible!important;opacity:1!important;display:block!important}.section-inner{padding:6pt 0 0!important;border-top:none!important}.subsection-wrapper{background:#fff!important;border:none!important}.subsection-toggle{padding:6pt 0 2pt!important;background:none!important}.subsection-title{font-family:'Times New Roman',serif!important;font-size:11pt!important;font-style:italic;font-weight:bold;text-transform:none!important;color:#000}.chevron-sm,.chevron-xs{display:none!important}.subsection-inner{padding:4pt 0!important;border-top:none!important}.entry-card{background:#fff!important;border:none!important}.entry-toggle{padding:4pt 0!important;background:none!important}.entry-year,.entry-title,.entry-subtitle{color:#000;font-family:'Times New Roman',serif!important}.entry-title{font-size:11pt;font-weight:normal}.entry-badges{display:none!important}.entry-inner{padding:3pt 0 4pt 40pt!important;border-top:none!important}.entry-abstract{font-family:'Times New Roman',serif!important;font-size:10.5pt;color:#000}.entry-link-row,.entry-media,.video-embed,.entry-video{display:none!important}.highlight-box{background:none!important;border:none!important;border-bottom:1px solid #000;padding:0 0 8pt!important;font-family:'Times New Roman',serif}.cv-footer{border-top-color:#000;color:#000;font-family:'Times New Roman',serif!important}}
 </style>
 </head>
-<body class="size-md">
+<body class="light-mode size-md">
 <div class="top-bar">
   <div class="top-bar-name">${escHtml(h.name)}, ${escHtml(h.degrees)}</div>
   <div class="top-bar-right">
@@ -604,8 +621,8 @@ ${data.sections.map(section).join("\n")}
   <div class="sp-row">
     <div class="sp-label">Color Mode</div>
     <div class="sp-toggle-row">
-      <span class="sp-toggle-label">Light Mode</span>
-      <label class="toggle-switch"><input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)"><span class="toggle-slider"></span></label>
+      <span class="sp-toggle-label">Dark Mode</span>
+      <label class="toggle-switch"><input type="checkbox" id="theme-toggle" onchange="toggleTheme(this)" checked><span class="toggle-slider"></span></label>
     </div>
   </div>
   <div class="sp-row">
@@ -635,7 +652,7 @@ function updateAllBtn(){var t=document.querySelectorAll('.section-wrapper').leng
 function printCV(){document.querySelectorAll('.section-wrapper,.subsection-wrapper,.entry-card').forEach(function(el){el.classList.add('open')});setTimeout(function(){window.print()},300)}
 function toggleSettings(){document.getElementById('settings-panel').classList.toggle('open')}
 document.addEventListener('click',function(e){var p=document.getElementById('settings-panel'),b=document.getElementById('settings-btn');if(p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b)p.classList.remove('open')});
-function toggleTheme(cb){document.body.classList.toggle('light-mode',cb.checked)}
+function toggleTheme(cb){document.body.classList.toggle('light-mode',!cb.checked)}
 var fontClasses=['font-classic','font-modern'];
 function setFont(cls,btn){document.body.classList.remove.apply(document.body.classList,fontClasses);if(cls!=='default')document.body.classList.add(cls);document.querySelectorAll('.sp-font-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
 var sizeClasses=['size-sm','size-md','size-lg'];
