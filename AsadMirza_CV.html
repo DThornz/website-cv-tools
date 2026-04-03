@@ -751,9 +751,15 @@ input:checked + .toggle-slider::before { transform: translateX(20px); background
 .site-nav-link:hover{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15)}
 .site-nav-link.curr{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.2);font-weight:600}
 
+
+body.size-sm{font-size:13px!important}
+body.size-md{font-size:15px!important}
+body.size-lg{font-size:17px!important}
+body.font-serif *:not(.acc-panel *):not(code):not(pre){font-family:'DM Serif Display',Georgia,serif!important}
+body.font-mono *:not(.acc-panel *):not(code):not(pre){font-family:'DM Mono',monospace!important}
 </style>
 </head>
-<body class="size-md">
+<body class="light-mode size-md">
 <div class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
@@ -2410,7 +2416,8 @@ document.addEventListener('click', function(e) {
 
 /* ── THEME TOGGLE ────────────────────────────────────────── */
 function toggleTheme(cb) {
-  document.body.classList.toggle('light-mode', cb.checked);
+  document.body.classList.toggle('dark-mode', cb.checked);
+  document.body.classList.toggle('light-mode', !cb.checked);
 }
 
 /* ── FONT STYLE ──────────────────────────────────────────── */
