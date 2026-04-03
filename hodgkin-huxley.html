@@ -86,7 +86,7 @@ sub,sup{font-size:.72em;line-height:1}
 .circuit-wrap svg{max-width:100%;height:auto}
 
 /* ─── SIMULATOR ──────────────────────────────────────────── */
-.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px calc(-1*(max(0px,50vw - 520px) + 28px));box-shadow:var(--shadow-lg);position:relative;}
+.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px -60px;box-shadow:var(--shadow-lg);position:relative;}
 .sim-header{padding:18px 24px;background:linear-gradient(135deg,var(--teal) 0%,#0d8a7c 100%);color:#fff;display:flex;align-items:center;gap:12px}
 .sim-title{font-family:var(--serif);font-size:1.3em;font-weight:400}
 .sim-subtitle{font-size:.8em;opacity:.85;margin-top:2px}
@@ -95,18 +95,18 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:340px 1fr;gap:0;align-items:start}
+.sim-body{display:grid;grid-template-columns:240px 1fr;gap:0;align-items:stretch}
 
 /* Controls panel */
-.sim-controls{padding:16px 16px 20px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:visible;height:auto}
+.sim-controls{padding:14px 12px 16px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;height:100%;box-sizing:border-box}
 .ctrl-group{margin-bottom:13px}
 .ctrl-group-label{font-family:var(--mono);font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .ctrl-group-label::after{content:'';flex:1;height:1px;background:var(--border2)}
-.ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.ctrl-label{font-size:.78em;color:var(--muted);flex-shrink:0;width:108px}
+.ctrl-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.ctrl-label{font-size:.75em;color:var(--muted);flex-shrink:0;width:72px;line-height:1.3}
 .ctrl-label sub{color:var(--teal)}
 .ctrl-slider{flex:1;accent-color:var(--teal);height:4px;cursor:pointer}
-.ctrl-val{font-family:var(--mono);font-size:.75em;color:var(--text);width:52px;text-align:right;flex-shrink:0}
+.ctrl-val{font-family:var(--mono);font-size:.73em;color:var(--text);width:42px;text-align:right;flex-shrink:0}
 .ctrl-select{flex:1;padding:5px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);color:var(--text);font-size:.8em;font-family:var(--sans);cursor:pointer;outline:none}
 .ctrl-select:focus{border-color:var(--teal)}
 .ctrl-check-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;cursor:pointer}
@@ -127,12 +127,12 @@ sub,sup{font-size:.72em;line-height:1}
 
 /* Plots panel */
 .sim-plots{display:flex;flex-direction:column;background:var(--bg2);overflow:hidden;min-width:0}
-.plot-wrap{position:relative;border-bottom:1px solid var(--border);overflow:hidden;min-width:0}
+.plot-wrap{display:flex;flex-direction:column;border-bottom:1px solid var(--border);overflow:hidden;min-width:0}
 .plot-wrap:last-child{border-bottom:none}
-.plot-label{position:absolute;top:6px;left:10px;font-family:var(--mono);font-size:.63em;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;z-index:2}
-.plot-legend{position:absolute;top:5px;right:10px;display:flex;gap:10px;z-index:2}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:.65em;color:var(--muted);font-family:var(--mono)}
-.legend-dot{width:10px;height:3px;border-radius:2px}
+.plot-label{display:block;padding:5px 12px 3px;font-family:var(--mono);font-size:.63em;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;background:var(--bg3);border-bottom:1px solid var(--border);flex-shrink:0}
+/* legend moved to block row above canvas */
+
+
 canvas{display:block;width:100%;image-rendering:crisp-edges}
 
 /* AP stats bar */
@@ -176,7 +176,7 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
   .two-col{grid-template-columns:1fr}
   .page-wrap{padding:0 16px 60px}
   .hero{padding:32px 0 28px}
-  .sim-section{margin:24px 0!important}
+  .sim-section{margin:20px 0!important;border-radius:8px}
 }
 
 
@@ -400,6 +400,16 @@ body.dark-mode .callout-title{color:#7a90ae!important}
 body.dark-mode .callout-amber .callout-title{color:#f59e0b!important}
 body.dark-mode .hero{border-color:#1c3050!important}
 
+
+
+.plot-wrap:nth-child(1){height:246px}
+.plot-wrap:nth-child(2){height:190px}
+.plot-wrap:nth-child(3){height:190px}
+.plot-wrap canvas{display:block;width:100%;flex:1;min-height:0}
+
+.plot-legend{display:flex;gap:10px;padding:3px 12px 3px;background:var(--bg3);border-bottom:1px solid var(--border);flex-shrink:0}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:.65em;color:var(--muted);font-family:var(--mono)}
+.legend-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0}
 </style>
 </head>
 <body class="light-mode">
@@ -720,22 +730,22 @@ body.dark-mode .hero{border-color:#1c3050!important}
             </select>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">I<sub>ext</sub> (µA/cm²)</span>
+            <span class="ctrl-label">I<sub>ext</sub></span>
             <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="40" step="0.5" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim()">
             <span class="ctrl-val" id="sl-I0-val">10</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">Delay (ms)</span>
+            <span class="ctrl-label">Delay</span>
             <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="10" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim()">
             <span class="ctrl-val" id="sl-tStart-val">10</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">Duration (ms)</span>
+            <span class="ctrl-label">Dur.</span>
             <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="150" step="0.5" value="40" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim()">
             <span class="ctrl-val" id="sl-dur-val">40</span>
           </div>
           <div class="ctrl-row" id="freq-row" style="display:none">
-            <span class="ctrl-label">Freq (Hz)</span>
+            <span class="ctrl-label">Freq</span>
             <input class="ctrl-slider" type="range" id="sl-freq" min="1" max="200" step="1" value="40" oninput="slUpdate('freq',this.value,'sl-freq-val');updateStim()">
             <span class="ctrl-val" id="sl-freq-val">40</span>
           </div>
@@ -765,17 +775,17 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Reversal Potentials</div>
           <div class="ctrl-row">
-            <span class="ctrl-label">E<sub>Na</sub> (mV)</span>
+            <span class="ctrl-label">E<sub>Na</sub></span>
             <input class="ctrl-slider" type="range" id="sl-ENa" min="0" max="100" step="1" value="50" oninput="slUpdate('ENa',this.value,'sl-ENa-val')">
             <span class="ctrl-val" id="sl-ENa-val">50</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">E<sub>K</sub> (mV)</span>
+            <span class="ctrl-label">E<sub>K</sub></span>
             <input class="ctrl-slider" type="range" id="sl-EK" min="-100" max="-40" step="1" value="-77" oninput="slUpdate('EK',this.value,'sl-EK-val')">
             <span class="ctrl-val" id="sl-EK-val">-77</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">E<sub>L</sub> (mV)</span>
+            <span class="ctrl-label">E<sub>L</sub></span>
             <input class="ctrl-slider" type="range" id="sl-EL" min="-80" max="-40" step="0.1" value="-54.4" oninput="slUpdate('EL',this.value,'sl-EL-val')">
             <span class="ctrl-val" id="sl-EL-val">-54.4</span>
           </div>
@@ -785,17 +795,17 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Physical Parameters</div>
           <div class="ctrl-row">
-            <span class="ctrl-label">T (°C)</span>
+            <span class="ctrl-label">Temp</span>
             <input class="ctrl-slider" type="range" id="sl-T" min="0" max="42" step="0.5" value="6.3" oninput="slUpdate('T',this.value,'sl-T-val')">
             <span class="ctrl-val" id="sl-T-val">6.3</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">C<sub>m</sub> (µF)</span>
+            <span class="ctrl-label">C<sub>m</sub></span>
             <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val')">
             <span class="ctrl-val" id="sl-Cm-val">1.0</span>
           </div>
           <div class="ctrl-row">
-            <span class="ctrl-label">Window (ms)</span>
+            <span class="ctrl-label">Window</span>
             <input class="ctrl-slider" type="range" id="sl-win" min="50" max="500" step="10" value="200" oninput="slUpdate('win',this.value,'sl-win-val');updateWindow()">
             <span class="ctrl-val" id="sl-win-val">200</span>
           </div>
@@ -855,31 +865,31 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
       <!-- Plots -->
       <div class="sim-plots">
-        <div class="plot-wrap" style="flex:1.6">
+        <div class="plot-wrap">
           <div class="plot-label">Membrane Potential (mV)</div>
           <div class="plot-legend">
             <div class="legend-item"><div class="legend-dot" style="background:#0b7a6e"></div>V<sub>m</sub></div>
             <div class="legend-item"><div class="legend-dot" style="background:#9ca3af;width:14px;border-top:2px dashed #9ca3af;height:0;margin-top:1px"></div>I<sub>ext</sub></div>
           </div>
-          <canvas id="cv-V" height="210"></canvas>
+          <canvas id="cv-V" height="194"></canvas>
         </div>
-        <div class="plot-wrap" style="flex:1">
+        <div class="plot-wrap">
           <div class="plot-label">Gating Variables</div>
           <div class="plot-legend">
             <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>m</div>
             <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>h</div>
             <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div>n</div>
           </div>
-          <canvas id="cv-gates" height="155"></canvas>
+          <canvas id="cv-gates" height="138"></canvas>
         </div>
-        <div class="plot-wrap" style="flex:1">
+        <div class="plot-wrap">
           <div class="plot-label">Ionic Currents (µA/cm²)</div>
           <div class="plot-legend">
             <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div>I<sub>Na</sub></div>
             <div class="legend-item"><div class="legend-dot" style="background:#1d4ed8"></div>I<sub>K</sub></div>
             <div class="legend-item"><div class="legend-dot" style="background:#15803d"></div>I<sub>L</sub></div>
           </div>
-          <canvas id="cv-currents" height="155"></canvas>
+          <canvas id="cv-currents" height="138"></canvas>
         </div>
       </div>
     </div><!-- /sim-body -->
@@ -1038,7 +1048,7 @@ let winMs      = 200;     // display window width
 
 // Stability / auto-pause
 const STAB_THRESH = 0.3;  // mV — consider stable if |V - Vrest| < this
-const STAB_DUR    = 30;   // ms — must be stable for this long
+const STAB_DUR    = 8;   // ms — must be stable for this long
 let stabTimer     = 0;    // ms spent stable post-stimulus
 let stimEnded     = false;
 let postStimStart = -1;
@@ -1259,30 +1269,16 @@ function setupCanvas(id){
   const canvas=document.getElementById(id);
   const dpr=window.devicePixelRatio||1;
 
-  // Lock logical height from the HTML attribute (read ONCE, stored in data-lh)
+  // Store logical height ONCE from HTML attribute — never re-read from canvas property
+  // (canvas.height = N reflects back to the attribute and would grow on each call)
   if(!canvas.dataset.lh){
     canvas.dataset.lh=canvas.getAttribute('height')||'160';
   }
-  const H=parseInt(canvas.dataset.lh);
+  const minH=parseInt(canvas.dataset.lh);
+  // Use rendered height from CSS if flex container has expanded the canvas
+  const H=Math.max(minH, canvas.clientHeight||minH);
+  const W=Math.max(100, canvas.parentElement.clientWidth||600);
 
-  // Lock logical width from parent ONCE (stored in data-lw).
-  // Re-check only if window was explicitly resized (tracked via data-lastW).
-  // This prevents the feedback loop where canvas.width expands parentElement.clientWidth.
-  const parentW=canvas.parentElement.offsetWidth||canvas.parentElement.clientWidth||600;
-  const prevW=parseInt(canvas.dataset.lw||'0');
-  const windowW=window.innerWidth;
-  const prevWindowW=parseInt(canvas.dataset.lastWindow||'0');
-  let W;
-  if(!prevW || Math.abs(windowW-prevWindowW)>10){
-    // First call or genuine window resize — update stored width
-    W=Math.max(200,parentW);
-    canvas.dataset.lw=W;
-    canvas.dataset.lastWindow=windowW;
-  } else {
-    W=prevW;
-  }
-
-  // Set pixel dimensions exactly once per resize event
   canvas.width=Math.round(W*dpr);
   canvas.height=Math.round(H*dpr);
   canvas.style.width=W+'px';
@@ -1422,8 +1418,14 @@ function renderGates(tMin,tMax){
 
 function renderCurrents(tMin,tMax){
   const {ctx,W,H}=setupCanvas('cv-currents');
-  // Use a stable y-axis based on gNa (dominant) — no reflow from dynamic scaling
-  const mxI=Math.max(10, P.gNa * 0.45, P.gK * 0.4) * 1.15;
+  // Scale y-axis to the visible window only — prevents flatline from full-history extremes
+  let mxI=5;
+  for(let i=0;i<hist.t.length;i++){
+    if(hist.t[i]<tMin-0.5||hist.t[i]>tMax+0.5) continue;
+    const mx=Math.max(Math.abs(hist.INa[i]),Math.abs(hist.IK[i]),Math.abs(hist.IL[i]));
+    if(mx>mxI) mxI=mx;
+  }
+  mxI=Math.max(5, mxI*1.12);
   drawAxes(ctx,W,H,-mxI,mxI,tMin,tMax,'µA/cm²');
   drawStimulusShade(ctx,W,H,tMin,tMax);
   plotTrace(ctx,hist.t,hist.INa,W,H,-mxI,mxI,tMin,tMax,'#dc2626',1.5);
