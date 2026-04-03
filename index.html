@@ -82,7 +82,7 @@ body::before{
 /* ── Cards ───────────────────────────────────────────────── */
 .cards{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:20px;max-width:1060px;width:100%;
+  gap:20px;max-width:1200px;width:100%;
 }
 .card{
   background:rgba(10,22,40,.7);border:1px solid var(--border);
@@ -142,8 +142,9 @@ footer a:hover{color:var(--teal)}
 <nav class="nav">
   <span class="nav-logo">A.Mirza <span>/</span> site</span>
   <a class="nav-link active" href="index.html">Home</a>
-  <a class="nav-link" href="AsadMirza_CV.html">CV</a>
+  <a class="nav-link" href="AsadMirza_CV_v2.html">CV</a>
   <a class="nav-link" href="projects.html">Projects</a>
+  <a class="nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
 </nav>
 
@@ -162,7 +163,7 @@ footer a:hover{color:var(--teal)}
   </div>
 
   <div class="cards">
-    <a class="card" href="AsadMirza_CV.html">
+    <a class="card" href="AsadMirza_CV_v2.html">
       <div class="card-icon">📋</div>
       <div class="card-tag">Academic Profile</div>
       <div class="card-title">Curriculum Vitae</div>
@@ -186,6 +187,20 @@ footer a:hover{color:var(--teal)}
         <span class="chip">Cerebrovascular</span>
         <span class="chip">Image Analysis</span>
         <span class="chip">MATLAB</span>
+      </div>
+      <span class="card-arrow">↗</span>
+    </a>
+
+    <a class="card" href="hodgkin-huxley.html">
+      <div class="card-icon">🧠</div>
+      <div class="card-tag">Computational Neuroscience</div>
+      <div class="card-title">Hodgkin–Huxley Model</div>
+      <div class="card-desc">Interactive 1952 Nobel Prize neuron model — real-time RK4 simulation of action potentials with parameter controls, gating kinetics, phase portraits, and channel blocker experiments (TTX/TEA).</div>
+      <div class="card-chips">
+        <span class="chip">Action Potentials</span>
+        <span class="chip">Gate Kinetics</span>
+        <span class="chip">Phase Plane</span>
+        <span class="chip">Live Plots</span>
       </div>
       <span class="card-arrow">↗</span>
     </a>

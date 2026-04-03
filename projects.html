@@ -256,8 +256,9 @@ a:hover{color:var(--teal);text-decoration:underline}
 <div class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
-  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
+  <a class="site-nav-link" href="AsadMirza_CV_v2.html">CV</a>
   <a class="site-nav-link curr" href="projects.html">Projects</a>
+  <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
 </div>
 
@@ -279,6 +280,45 @@ a:hover{color:var(--teal);text-decoration:underline}
 <!-- ── Projects Grid ─────────────────────────────────────── -->
 <div class="projects-wrap">
 <div class="projects-grid" id="grid">
+
+  <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
+  <div class="proj-card" data-tags="code bio"
+    data-title="Hodgkin–Huxley Interactive Neuron Model"
+    data-subtitle="Educational tool · hodgkin-huxley.html · 2024–2025"
+    data-year="2024–2025"
+    data-desc="A fully interactive, browser-based implementation of the landmark 1952 Hodgkin–Huxley neuron model — the quantitative framework for action potential generation that won the Nobel Prize in Physiology or Medicine in 1963. Built as an educational tool for biomedical engineering students studying computational neuroscience and membrane biophysics."
+    data-desc2="The page integrates a 4th-order Runge–Kutta solver (dt=0.01 ms) with real-time Canvas API plots showing membrane potential, gating variables (m, h, n), ionic currents (INa, IK, IL), steady-state curves (m∞, h∞, n∞), time constants (τm, τh, τn), and a V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), change temperature (Q10 scaling), switch stimulus types (step/pulse/ramp/sinusoidal), and observe threshold phenomena, refractory periods, and tonic firing."
+    data-metrics='[["4","ODEs (RK4)"],["1952","Nobel model"],["6","Live plots"]]' 
+    data-equations="Cm·dV/dt = Iext − gNa·m³h·(V−ENa) − gK·n⁴·(V−EK) − gL·(V−EL)
+dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
+φ(T) = 3^((T−6.3)/10)    # Q10 temperature scaling"
+    data-links='[{"text":"🧠 Open Interactive Model","url":"hodgkin-huxley.html"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🧠</span>
+        <span class="ph-text">Live simulator — click to open</span>
+      </div>
+      <span class="proj-media-badge">Interactive · JS · Canvas</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag bio">Neuroscience</span>
+        <span class="proj-tag code">Simulation</span>
+        <span class="proj-tag code">Educational</span>
+      </div>
+      <div class="proj-title">Hodgkin–Huxley Neuron Model</div>
+      <div class="proj-desc">Interactive RK4 simulator of the Nobel Prize-winning 1952 action potential model with real-time plots, parameter controls, channel blockers, and phase portraits.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2024 – 2025</span>
+        <div class="proj-links">
+          <a class="proj-link" href="hodgkin-huxley.html" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- ══ PROJECT 1: CAVD Biomarkers ═══════════════════════════════ -->
   <!--
