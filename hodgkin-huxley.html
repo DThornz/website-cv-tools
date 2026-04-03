@@ -95,15 +95,15 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:268px 1fr;gap:0}
+.sim-body{display:grid;grid-template-columns:310px 1fr;gap:0}
 
 /* Controls panel */
-.sim-controls{padding:18px 16px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;max-height:600px}
+.sim-controls{padding:18px 16px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;max-height:650px}
 .ctrl-group{margin-bottom:16px}
 .ctrl-group-label{font-family:var(--mono);font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .ctrl-group-label::after{content:'';flex:1;height:1px;background:var(--border2)}
 .ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.ctrl-label{font-size:.78em;color:var(--muted);flex-shrink:0;width:90px}
+.ctrl-label{font-size:.78em;color:var(--muted);flex-shrink:0;width:108px}
 .ctrl-label sub{color:var(--teal)}
 .ctrl-slider{flex:1;accent-color:var(--teal);height:4px;cursor:pointer}
 .ctrl-val{font-family:var(--mono);font-size:.75em;color:var(--text);width:52px;text-align:right;flex-shrink:0}
@@ -177,6 +177,66 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
   .page-wrap{padding:0 16px 60px}
   .hero{padding:32px 0 28px}
 }
+
+/* ── Shared Accessibility Panel ── */
+.acc-btn{
+  position:fixed;bottom:24px;right:24px;z-index:9000;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--teal,#0b7a6e);color:#fff;border:none;
+  cursor:pointer;font-size:1.05em;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 3px 16px rgba(0,0,0,.18);
+  transition:transform .2s,box-shadow .2s;
+}
+.acc-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.22)}
+.acc-panel{
+  position:fixed;bottom:74px;right:24px;z-index:9000;
+  background:#fff;border:1px solid #d4d9e8;border-radius:12px;
+  padding:18px 20px 14px;width:230px;
+  box-shadow:0 8px 40px rgba(0,0,0,.14);
+  opacity:0;transform:translateY(10px) scale(.96);
+  pointer-events:none;transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+body.dark-mode .acc-panel{background:#0f1f38;border-color:#1c3050;color:#e2e8f0}
+.acc-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+.acc-panel-title{font-size:.78em;font-weight:600;margin-bottom:14px;
+  color:#1a202c;letter-spacing:.02em}
+body.dark-mode .acc-panel-title{color:#e2e8f0}
+.acc-row{margin-bottom:14px}
+.acc-row-label{font-size:.68em;text-transform:uppercase;letter-spacing:.1em;
+  color:#718096;margin-bottom:7px;font-family:'DM Mono',monospace}
+.acc-toggle-row{display:flex;align-items:center;justify-content:space-between}
+.acc-toggle-label{font-size:.82em;color:#4a5568}
+body.dark-mode .acc-toggle-label{color:#94a3b8}
+.acc-switch{position:relative;width:40px;height:21px}
+.acc-switch input{opacity:0;width:0;height:0}
+.acc-slider{position:absolute;inset:0;background:#d1d5db;border-radius:99px;cursor:pointer;transition:background .2s}
+.acc-slider::before{content:'';position:absolute;width:15px;height:15px;border-radius:50%;left:3px;top:3px;background:#fff;transition:transform .2s}
+.acc-switch input:checked + .acc-slider{background:var(--teal,#0b7a6e)}
+.acc-switch input:checked + .acc-slider::before{transform:translateX(19px)}
+.acc-btn-group{display:flex;gap:5px}
+.acc-opt{flex:1;padding:5px 4px;border:1px solid #d4d9e8;border-radius:6px;
+  background:#f0f2f7;color:#718096;font-size:.72em;cursor:pointer;
+  text-align:center;transition:all .15s;font-family:inherit}
+body.dark-mode .acc-opt{background:#132240;border-color:#1c3050;color:#7a90ae}
+.acc-opt.active,.acc-opt:hover{border-color:var(--teal,#0b7a6e);
+  color:var(--teal,#0b7a6e);background:rgba(11,122,110,.08)}
+
+/* ── Dark mode vars (accessibility panel) ── */
+body.dark-mode{
+  --bg:#060e1c;--bg2:#0a1628;--bg3:#0f1f38;--bg4:#132240;
+  --border:#1c3050;--border2:#243858;
+  --text:#e2e8f0;--muted:#7a90ae;--dim:#3d5470;--dimmer:#2a3d58;
+  color:var(--text);background:var(--bg);
+}
+body.dark-mode .site-nav{background:rgba(6,14,28,.95);border-color:var(--border)}
+body.dark-mode .card{background:var(--bg2);border-color:var(--border)}
+body.dark-mode .card:hover{border-color:#1a8a7d}
+/* Font variants */
+body.font-serif{font-family:'DM Serif Display',Georgia,serif!important}
+body.font-mono *:not(code):not(pre):not(.acc-panel *){font-family:'DM Mono',monospace!important}
+/* Size variants */
+body.size-sm{font-size:13px}body.size-md{font-size:15px}body.size-lg{font-size:17px}
+
 </style>
 </head>
 <body class="light-mode">
@@ -185,7 +245,7 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
 <div class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
-  <a class="site-nav-link" href="AsadMirza_CV_v2.html">CV</a>
+  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
   <a class="site-nav-link" href="projects.html">Projects</a>
   <a class="site-nav-link curr" href="hodgkin-huxley.html">HH Model</a>
   <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
@@ -578,6 +638,25 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
           </div>
         </div>
 
+
+        <!-- Speed & Display -->
+        <div class="ctrl-group">
+          <div class="ctrl-group-label">Playback Speed</div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Speed</span>
+            <input class="ctrl-slider" type="range" id="sl-speed" min="1" max="8" step="1" value="3" oninput="setSpeed(this.value)">
+            <span class="ctrl-val" id="sl-speed-val">3×</span>
+          </div>
+          <div style="font-size:.68em;color:var(--dim);margin:-4px 0 8px;line-height:1.4">Lower = slower scroll, easier to read AP shape</div>
+          <div class="ctrl-check-row">
+            <input type="checkbox" id="auto-pause" checked onchange="P.autoPause=this.checked">
+            <label for="auto-pause">Auto-pause after activity</label>
+          </div>
+          <div class="ctrl-check-row">
+            <input type="checkbox" id="show-full" checked onchange="P.showFull=this.checked">
+            <label for="show-full">Show full trace (don't scroll)</label>
+          </div>
+        </div>
         <!-- Channel Blocks -->
         <div class="ctrl-group">
           <div class="ctrl-group-label">Ion Channel Blockers</div>
@@ -601,11 +680,12 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
         <!-- Presets -->
         <div style="margin-top:10px">
           <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:6px">Quick Presets</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px">
-            <button onclick="applyPreset('standard')" style="flex:1;padding:4px 6px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Standard</button>
-            <button onclick="applyPreset('body')" style="flex:1;padding:4px 6px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">37°C</button>
-            <button onclick="applyPreset('burst')" style="flex:1;padding:4px 6px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst</button>
-            <button onclick="applyPreset('subthresh')" style="flex:1;padding:4px 6px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Sub-thresh</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+            <button onclick="applyPreset('standard')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Standard</button>
+            <button onclick="applyPreset('body')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">37°C Body</button>
+            <button onclick="applyPreset('burst')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst (15µA)</button>
+            <button onclick="applyPreset('subthresh')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Sub-threshold</button>
+            <button onclick="applyPreset('phasedemo')" style="padding:5px 4px;border:1px solid var(--teal);border-radius:5px;background:rgba(11,122,110,.08);font-size:.7em;cursor:pointer;color:var(--teal);font-weight:600;transition:all .15s;grid-column:1/-1" title="Auto-runs tonic firing to populate the phase portrait">▶ Phase Demo (auto-run)</button>
           </div>
         </div>
       </div><!-- /controls -->
@@ -702,7 +782,10 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
     <div class="phase-header" style="display:flex;align-items:baseline;gap:10px">
       <span style="font-size:.85em;font-weight:600;color:var(--text)">V vs n Phase Portrait</span>
       <span style="font-size:.73em;color:var(--dim)">— trajectory trails last 200 ms</span>
-      <button onclick="clearPhase()" style="margin-left:auto;padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:var(--bg3);font-size:.72em;cursor:pointer;color:var(--muted)">Clear</button>
+      <div style="margin-left:auto;display:flex;gap:6px">
+      <button onclick="applyPreset('phasedemo')" style="padding:3px 10px;border:1px solid var(--teal);border-radius:5px;background:rgba(11,122,110,.08);font-size:.72em;cursor:pointer;color:var(--teal);font-weight:600">▶ Phase Demo</button>
+      <button onclick="clearPhase()" style="padding:3px 10px;border:1px solid var(--border2);border-radius:5px;background:var(--bg3);font-size:.72em;cursor:pointer;color:var(--muted)">Clear trail</button>
+    </div>
     </div>
     <canvas id="cv-phase" height="280"></canvas>
   </div>
@@ -755,68 +838,78 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
 </div><!-- /page-wrap -->
 
 <!-- ══════════════════════════════════════════════════════════
-     JAVASCRIPT — HH SIMULATION
+     JAVASCRIPT — HH SIMULATION (improved)
 ══════════════════════════════════════════════════════════ -->
 <script>
 'use strict';
 
-// ─────────────────────────────────────────────────────────────
-//  HH MODEL PARAMETERS
-// ─────────────────────────────────────────────────────────────
+// ─── PARAMETERS ──────────────────────────────────────────
 const P = {
   gNa:120, gK:36, gL:0.3,
   ENa:50,  EK:-77, EL:-54.387,
   Cm:1, T:6.3,
-  blockNa:false, blockK:false
+  blockNa:false, blockK:false,
+  autoPause:true, showFull:true
 };
-
 const STIM = { type:'step', I0:10, tStart:10, dur:40, freq:40 };
 
-// ─────────────────────────────────────────────────────────────
-//  SIMULATION STATE
-// ─────────────────────────────────────────────────────────────
-let t=0, y=[-65,0.053,0.596,0.318];
-const DT=0.01, STORE_EVERY=5;
-let stepCnt=0, running=false, animId=null;
-let HIST_MAX=4000, winMs=200;
+// ─── SIM STATE ────────────────────────────────────────────
+let t=0, y=[-65, 0.053, 0.596, 0.318];
+const DT = 0.01;
+let running=false, animId=null, stepCnt=0;
 
-const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
+// Speed: steps per animation frame (lower = slower display)
+const SPEED_LEVELS = [10, 25, 50, 100, 200, 350, 500, 800];
+let speedIdx = 2; // default index → 50 steps/frame = 0.5 ms sim/frame
+
+// History: full accumulated trace
+const hist = { t:[], V:[], m:[], h:[], n:[], INa:[], IK:[], IL:[], Iext:[] };
+const STORE_EVERY = 2;   // store every N steps
+const MAX_HIST = 50000;  // cap at 500 ms worth
+
+// View control
+let viewLocked = false;   // when true, don't advance view window
+let viewStart  = 0;
+let viewEnd    = 200;
+let winMs      = 200;     // display window width
+
+// Stability / auto-pause
+const STAB_THRESH = 0.3;  // mV — consider stable if |V - Vrest| < this
+const STAB_DUR    = 30;   // ms — must be stable for this long
+let stabTimer     = 0;    // ms spent stable post-stimulus
+let stimEnded     = false;
+let postStimStart = -1;
 
 // AP detection
 let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH=0;
+const AP_THRESH = 0;
 
-// Phase plane trail
-const phase_trail_len=3000;
-const phaseV=new Float32Array(phase_trail_len);
-const phaseN=new Float32Array(phase_trail_len);
-let phasePtr=0, phaseCount=0, phaseFull=false;
+// Phase portrait trail
+const TRAIL_LEN = 6000;
+const phaseV = new Float32Array(TRAIL_LEN);
+const phaseN = new Float32Array(TRAIL_LEN);
+let phasePtr=0, phaseCount=0;
 
-// ─────────────────────────────────────────────────────────────
-//  RATE FUNCTIONS (absolute membrane potential convention)
-// ─────────────────────────────────────────────────────────────
-function am(V){ const x=V+40; return Math.abs(x)<1e-7 ? 1.0 : 0.1*x/(1-Math.exp(-x/10)); }
+// ─── RATE FUNCTIONS ──────────────────────────────────────
+function am(V){ const x=V+40; return Math.abs(x)<1e-7?1.0:0.1*x/(1-Math.exp(-x/10)); }
 function bm(V){ return 4*Math.exp(-(V+65)/18); }
 function ah(V){ return 0.07*Math.exp(-(V+65)/20); }
 function bh(V){ return 1/(1+Math.exp(-(V+35)/10)); }
-function an(V){ const x=V+55; return Math.abs(x)<1e-7 ? 0.1 : 0.01*x/(1-Math.exp(-x/10)); }
+function an(V){ const x=V+55; return Math.abs(x)<1e-7?0.1:0.01*x/(1-Math.exp(-x/10)); }
 function bn(V){ return 0.125*Math.exp(-(V+65)/80); }
 function phi(){ return Math.pow(3,(P.T-6.3)/10); }
 
-function ss(V){ // steady states [m∞, h∞, n∞]
-  const AM=am(V),BM=bm(V),AH=ah(V),BH=bh(V),AN=an(V),BN=bn(V);
-  return [AM/(AM+BM), AH/(AH+BH), AN/(AN+BN)];
+function ss(V){
+  return [am(V)/(am(V)+bm(V)), ah(V)/(ah(V)+bh(V)), an(V)/(an(V)+bn(V))];
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STIMULUS
-// ─────────────────────────────────────────────────────────────
+// ─── STIMULUS ─────────────────────────────────────────────
 function iext(t){
   const {type,I0,tStart,dur,freq}=STIM;
   const tEnd=tStart+dur;
   if(t<tStart) return 0;
-  if(type==='step') return t<=tEnd ? I0 : 0;
-  if(type==='ramp'){ if(t>tEnd) return 0; return I0*(t-tStart)/dur; }
+  if(type==='step')  return t<=tEnd ? I0 : 0;
+  if(type==='ramp')  return t>tEnd  ? 0  : I0*(t-tStart)/dur;
   if(type==='pulse'){
     if(t>tEnd) return 0;
     const period=1000/freq, pw=Math.min(1,period*0.4);
@@ -829,16 +922,14 @@ function iext(t){
   return 0;
 }
 
-// ─────────────────────────────────────────────────────────────
-//  ODE DERIVATIVES
-// ─────────────────────────────────────────────────────────────
-function dydt(y,t){
-  const [V,m,h,n]=y;
-  const ph=phi();
-  const INa=P.blockNa ? 0 : P.gNa*m*m*m*h*(V-P.ENa);
-  const IK =P.blockK  ? 0 : P.gK *n*n*n*n*(V-P.EK);
-  const IL =P.gL*(V-P.EL);
-  const Ie =iext(t);
+// ─── ODE ─────────────────────────────────────────────────
+function dydt(y, t){
+  const [V,m,h,n] = y;
+  const ph = phi();
+  const INa = P.blockNa ? 0 : P.gNa*m*m*m*h*(V-P.ENa);
+  const IK  = P.blockK  ? 0 : P.gK *n*n*n*n*(V-P.EK);
+  const IL  = P.gL*(V-P.EL);
+  const Ie  = iext(t);
   return [
     (Ie-INa-IK-IL)/P.Cm,
     ph*(am(V)*(1-m)-bm(V)*m),
@@ -847,9 +938,7 @@ function dydt(y,t){
   ];
 }
 
-// ─────────────────────────────────────────────────────────────
-//  RK4 STEP
-// ─────────────────────────────────────────────────────────────
+// ─── RK4 ─────────────────────────────────────────────────
 function rk4(){
   const dt=DT;
   const k1=dydt(y,t);
@@ -860,18 +949,15 @@ function rk4(){
   const y4=y.map((v,i)=>v+dt*k3[i]);
   const k4=dydt(y4,t+dt);
   y=y.map((v,i)=>v+dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]));
-  t+=dt;
-  stepCnt++;
+  t+=dt; stepCnt++;
 }
 
-// ─────────────────────────────────────────────────────────────
-//  HISTORY STORE & AP DETECTION
-// ─────────────────────────────────────────────────────────────
+// ─── STORE & DETECT ──────────────────────────────────────
 function storeAndDetect(){
   const [V,m,h,n]=y;
   const Ie=iext(t);
-  const INa=P.blockNa ? 0 : P.gNa*m*m*m*h*(V-P.ENa);
-  const IK =P.blockK  ? 0 : P.gK *n*n*n*n*(V-P.EK);
+  const INa=P.blockNa?0:P.gNa*m*m*m*h*(V-P.ENa);
+  const IK =P.blockK ?0:P.gK *n*n*n*n*(V-P.EK);
   const IL =P.gL*(V-P.EL);
 
   hist.t.push(t); hist.V.push(V); hist.m.push(m);
@@ -879,31 +965,116 @@ function storeAndDetect(){
   hist.INa.push(INa); hist.IK.push(IK);
   hist.IL.push(IL); hist.Iext.push(Ie);
 
-  if(hist.t.length>HIST_MAX){
-    const excess=hist.t.length-HIST_MAX;
-    for(const k of Object.keys(hist)) hist[k].splice(0,excess);
+  // Cap history
+  if(hist.t.length>MAX_HIST){
+    const ex=hist.t.length-MAX_HIST;
+    for(const k of Object.keys(hist)) hist[k].splice(0,ex);
   }
 
   // Phase trail
   phaseV[phasePtr]=V; phaseN[phasePtr]=n;
-  phasePtr=(phasePtr+1)%phase_trail_len;
-  if(phaseCount<phase_trail_len) phaseCount++;
-  else phaseFull=true;
+  phasePtr=(phasePtr+1)%TRAIL_LEN;
+  if(phaseCount<TRAIL_LEN) phaseCount++;
 
-  // Spike detection (simple threshold crossing, upward)
+  // Spike detection
   const prev=hist.V.length>=2?hist.V[hist.V.length-2]:V;
   if(prev<AP_THRESH && V>=AP_THRESH && t-apLastSpike>5){
-    apSpikes++;
-    if(apSpikes>1) apSpikeTs.push(t-apLastSpike); // ISI
-    apLastSpike=t;
-    apPeakV=V;
+    apSpikes++; 
+    if(apSpikes>1) apSpikeTs.push(t-apLastSpike);
+    apLastSpike=t; apPeakV=V;
   }
-  if(V>apPeakV) apPeakV=V;
+  if(V>apPeakV && apSpikes>0) apPeakV=V;
+
+  // Stability tracking for auto-pause
+  const Vrest=-65;
+  const stimDone=t > STIM.tStart+STIM.dur+2;
+  if(stimDone){
+    if(postStimStart<0) postStimStart=t;
+    if(Math.abs(V-Vrest)<STAB_THRESH && Math.abs(m-0.053)<0.01 && Math.abs(n-0.318)<0.01)
+      stabTimer+=DT;
+    else
+      stabTimer=0;
+  }
+
+  // Update view window
+  updateViewWindow();
 }
 
-// ─────────────────────────────────────────────────────────────
-//  SIMULATION INIT
-// ─────────────────────────────────────────────────────────────
+// ─── VIEW WINDOW LOGIC ────────────────────────────────────
+// "showFull": start at 0, grow to winMs, then scroll.
+// "auto-pause": when stable, lock the view so the interesting part stays visible.
+function updateViewWindow(){
+  if(viewLocked) return;
+
+  const tCur=t;
+  if(P.showFull){
+    viewStart = Math.max(0, tCur - winMs);
+    viewEnd   = Math.max(winMs, tCur);
+  } else {
+    viewStart = Math.max(0, tCur - winMs);
+    viewEnd   = viewStart + winMs;
+  }
+}
+
+// ─── AUTO-PAUSE DECISION ─────────────────────────────────
+function shouldAutoPause(){
+  if(!P.autoPause) return false;
+  if(stabTimer >= STAB_DUR) return true;
+  return false;
+}
+
+// ─── SIMULATION LOOP ──────────────────────────────────────
+function animate(){
+  if(!running) return;
+  const steps = SPEED_LEVELS[speedIdx];
+  for(let i=0;i<steps;i++){
+    rk4();
+    if(stepCnt%STORE_EVERY===0) storeAndDetect();
+    if(shouldAutoPause()){
+      // Lock view so the AP stays centered in the window
+      const apT = apLastSpike>0 ? apLastSpike : STIM.tStart;
+      const halfWin = winMs/2;
+      viewStart = Math.max(0, apT - halfWin*0.4);
+      viewEnd   = viewStart + winMs;
+      viewLocked = true;
+      stopSim();
+      document.getElementById('sim-status-text').textContent='Stable — auto-paused';
+      document.getElementById('sim-dot').classList.add('paused');
+      renderAll(); updateStats();
+      return;
+    }
+  }
+  renderAll(); updateStats();
+  animId = requestAnimationFrame(animate);
+}
+
+function startSim(){
+  if(running) return;
+  viewLocked = false;
+  running = true;
+  document.getElementById('sim-dot').classList.remove('paused');
+  document.getElementById('sim-status-text').textContent='Running';
+  animId = requestAnimationFrame(animate);
+}
+
+function stopSim(){
+  running=false;
+  if(animId){ cancelAnimationFrame(animId); animId=null; }
+  document.getElementById('sim-dot').classList.add('paused');
+  if(document.getElementById('sim-status-text').textContent==='Running')
+    document.getElementById('sim-status-text').textContent='Paused';
+}
+
+function resetSim(){
+  stopSim();
+  initState();
+  viewLocked=false;
+  viewStart=0; viewEnd=winMs;
+  renderAll(); updateStats();
+  document.getElementById('sim-status-text').textContent='Ready';
+}
+
+// ─── INIT ─────────────────────────────────────────────────
 function initState(){
   const V0=-65;
   const ph=phi();
@@ -914,162 +1085,114 @@ function initState(){
   t=0; stepCnt=0;
   for(const k of Object.keys(hist)) hist[k]=[];
   apSpikes=0; apLastSpike=-1e9; apPeakV=-Infinity; apSpikeTs=[];
-  phasePtr=0; phaseCount=0; phaseFull=false;
+  phasePtr=0; phaseCount=0;
+  stabTimer=0; postStimStart=-1;
 }
 
-// ─────────────────────────────────────────────────────────────
-//  SIMULATION LOOP
-// ─────────────────────────────────────────────────────────────
-const STEPS_PER_FRAME=300; // 3 ms sim per frame @ 60fps
-
-function animate(){
-  if(!running) return;
-  for(let i=0;i<STEPS_PER_FRAME;i++){
-    rk4();
-    if(stepCnt%STORE_EVERY===0) storeAndDetect();
-  }
-  renderAll();
-  updateStats();
-  animId=requestAnimationFrame(animate);
-}
-
-function startSim(){
-  if(running) return;
-  running=true;
-  document.getElementById('sim-dot').classList.remove('paused');
-  document.getElementById('sim-status-text').textContent='Running';
-  animId=requestAnimationFrame(animate);
-}
-
-function stopSim(){
-  running=false;
-  if(animId){ cancelAnimationFrame(animId); animId=null; }
-  document.getElementById('sim-dot').classList.add('paused');
-  document.getElementById('sim-status-text').textContent='Paused';
-}
-
-function resetSim(){
-  stopSim();
-  initState();
-  renderAll();
-  updateStats();
-  document.getElementById('sim-status-text').textContent='Ready';
-}
-
-// ─────────────────────────────────────────────────────────────
-//  CANVAS UTILITIES
-// ─────────────────────────────────────────────────────────────
-const PAD={top:14,right:12,bottom:30,left:46};
+// ─── CANVAS UTILITIES ─────────────────────────────────────
+const PAD={top:14,right:12,bottom:30,left:50};
 
 function setupCanvas(id){
   const canvas=document.getElementById(id);
   const W=canvas.parentElement.clientWidth||600;
-  const H=canvas.height; // use CSS height as pixel height
-  canvas.width=W*window.devicePixelRatio||W;
-  canvas.height=H*window.devicePixelRatio||H;
-  canvas.style.width=W+'px';
-  canvas.style.height=H+'px';
+  const H=parseInt(canvas.getAttribute('height')||canvas.height)||160;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
-  ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+  ctx.scale(dpr,dpr);
   return {ctx,W,H};
 }
 
-function drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,yLabel,tLabel){
-  const p=PAD;
-  const pw=W-p.left-p.right, ph=H-p.top-p.bottom;
-
+function drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,yLabel){
+  const p=PAD, pw=W-p.left-p.right, ph=H-p.top-p.bottom;
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#f9fafb';
-  ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#ffffff';
-  ctx.fillRect(p.left,p.top,pw,ph);
+  ctx.fillStyle='#f9fafb'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff'; ctx.fillRect(p.left,p.top,pw,ph);
 
   // Grid
   ctx.strokeStyle='#f3f4f6'; ctx.lineWidth=1;
-  const yTicks=5, xTicks=6;
-  for(let i=0;i<=yTicks;i++){
-    const y=p.top+ph*i/yTicks;
-    ctx.beginPath(); ctx.moveTo(p.left,y); ctx.lineTo(p.left+pw,y); ctx.stroke();
+  for(let i=0;i<=5;i++){
+    const y=p.top+ph*i/5;
+    ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(p.left+pw,y);ctx.stroke();
   }
-  for(let i=0;i<=xTicks;i++){
-    const x=p.left+pw*i/xTicks;
-    ctx.beginPath(); ctx.moveTo(x,p.top); ctx.lineTo(x,p.top+ph); ctx.stroke();
+  for(let i=0;i<=6;i++){
+    const x=p.left+pw*i/6;
+    ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,p.top+ph);ctx.stroke();
   }
 
-  // Axes
+  // Border
   ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1;
   ctx.strokeRect(p.left,p.top,pw,ph);
 
   // Zero line
-  if(yMin<0 && yMax>0){
+  if(yMin<0&&yMax>0){
     const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));
-    ctx.strokeStyle='rgba(0,0,0,.12)'; ctx.lineWidth=1;
-    ctx.setLineDash([3,3]);
-    ctx.beginPath(); ctx.moveTo(p.left,y0); ctx.lineTo(p.left+pw,y0); ctx.stroke();
+    ctx.strokeStyle='rgba(0,0,0,.1)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();
     ctx.setLineDash([]);
   }
 
-  // Labels
+  // Y labels
   ctx.fillStyle='#6b7280'; ctx.font="10px 'DM Mono',monospace"; ctx.textAlign='right';
-  for(let i=0;i<=yTicks;i++){
-    const val=yMin+(yMax-yMin)*(1-i/yTicks);
-    ctx.fillText(val.toFixed(Math.abs(val)>=10?0:1),p.left-4,p.top+ph*i/yTicks+4);
+  for(let i=0;i<=5;i++){
+    const val=yMin+(yMax-yMin)*(1-i/5);
+    const y=p.top+ph*i/5;
+    ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1),p.left-4,y+4);
   }
 
+  // X labels
   ctx.textAlign='center';
-  for(let i=0;i<=xTicks;i++){
-    const val=tMin+(tMax-tMin)*i/xTicks;
-    ctx.fillText(Math.round(val),p.left+pw*i/xTicks,H-8);
+  for(let i=0;i<=6;i++){
+    const val=tMin+(tMax-tMin)*i/6;
+    ctx.fillText(Math.round(val),p.left+pw*i/6,H-8);
   }
 
-  // Axis labels
-  ctx.save(); ctx.translate(9,p.top+ph/2); ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center'; ctx.fillStyle='#9ca3af'; ctx.font="10px 'DM Sans',sans-serif";
-  ctx.fillText(yLabel,0,0); ctx.restore();
-
-  return {pw,ph};
+  // Y axis label
+  ctx.save();ctx.translate(9,p.top+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle='#9ca3af';
+  ctx.font="10px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
 }
 
-function dataToCanvas(v,W,H,vMin,vMax,t_,tMin,tMax){
-  const p=PAD;
-  const pw=W-p.left-p.right, ph=H-p.top-p.bottom;
-  const x=p.left+pw*(t_-tMin)/(tMax-tMin);
-  const y=p.top+ph*(1-(v-vMin)/(vMax-vMin));
-  return {x,y};
-}
-
-function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lineW=1.5,dashed=false){
-  if(ts.length<2) return;
-  const p=PAD; const pw=W-p.left-p.right; const ph=H-p.top-p.bottom;
+function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw,dashed){
+  if(!ts||ts.length<2) return;
+  const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
   ctx.save();
-  ctx.strokeStyle=color; ctx.lineWidth=lineW;
+  ctx.strokeStyle=color; ctx.lineWidth=lw||1.5;
   if(dashed) ctx.setLineDash([4,3]);
   ctx.beginPath();
   let first=true;
   for(let i=0;i<ts.length;i++){
-    if(ts[i]<tMin||ts[i]>tMax) continue;
+    if(ts[i]<tMin-0.5||ts[i]>tMax+0.5) continue;
     const x=p.left+pw*(ts[i]-tMin)/(tMax-tMin);
-    const y=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
-    const yc=Math.max(p.top-2,Math.min(p.top+ph+2,y));
-    if(first){ ctx.moveTo(x,yc); first=false; } else ctx.lineTo(x,yc);
+    const yc=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
+    const ycc=Math.max(p.top-2,Math.min(p.top+ph+2,yc));
+    if(first){ctx.moveTo(x,ycc);first=false;}else ctx.lineTo(x,ycc);
   }
   ctx.stroke();
   if(dashed) ctx.setLineDash([]);
   ctx.restore();
 }
 
-// ─────────────────────────────────────────────────────────────
-//  RENDER ALL PLOTS
-// ─────────────────────────────────────────────────────────────
-let currentVline=-65;
+// Stimulus shading
+function drawStimulusShade(ctx,W,H,tMin,tMax){
+  const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
+  const tS=Math.max(tMin,STIM.tStart);
+  const tE=Math.min(tMax,STIM.tStart+STIM.dur);
+  if(tS>=tE) return;
+  const x1=p.left+pw*(tS-tMin)/(tMax-tMin);
+  const x2=p.left+pw*(tE-tMin)/(tMax-tMin);
+  ctx.fillStyle='rgba(11,122,110,.06)';
+  ctx.fillRect(x1,p.top,x2-x1,ph);
+}
+
+// ─── RENDER ───────────────────────────────────────────────
+let currentV=-65;
 
 function renderAll(){
-  if(hist.t.length===0) return;
-  const tEnd=hist.t[hist.t.length-1];
-  const tMin=Math.max(0,tEnd-winMs);
-  const tMax=tEnd;
-  currentVline=hist.V[hist.V.length-1];
-
+  if(!hist.t.length) return;
+  const tMin=viewStart, tMax=viewEnd;
+  currentV=hist.V[hist.V.length-1];
   renderV(tMin,tMax);
   renderGates(tMin,tMax);
   renderCurrents(tMin,tMax);
@@ -1080,23 +1203,30 @@ function renderAll(){
 
 function renderV(tMin,tMax){
   const {ctx,W,H}=setupCanvas('cv-V');
-  drawAxes(ctx,W,H,-90,55,tMin,tMax,'mV','time (ms)');
-  // Iext (normalized to show on V plot as dashed gray)
+  drawAxes(ctx,W,H,-90,55,tMin,tMax,'mV');
+  drawStimulusShade(ctx,W,H,tMin,tMax);
+
+  // Iext scaled to fit
   const maxI=Math.max(1,...hist.Iext.map(Math.abs));
-  const iScaled=hist.Iext.map(v=>-90+v/maxI*20);
-  plotTrace(ctx,hist.t,iScaled,W,H,-90,55,tMin,tMax,'#9ca3af',1.2,true);
+  const iScaled=hist.Iext.map(v=>-90+v/maxI*18);
+  plotTrace(ctx,hist.t,iScaled,W,H,-90,55,tMin,tMax,'#94a3b8',1,true);
   plotTrace(ctx,hist.t,hist.V,W,H,-90,55,tMin,tMax,'#0b7a6e',2);
-  // Current V marker
-  const p=PAD, pw=W-p.left-p.right;
-  const xNow=p.left+pw; // right edge = current time
-  const yNow=p.top+(H-p.top-p.bottom)*(1-(hist.V[hist.V.length-1]+90)/(55+90));
-  ctx.fillStyle='#0b7a6e';
-  ctx.beginPath(); ctx.arc(xNow,yNow,3,0,Math.PI*2); ctx.fill();
+
+  // Current V dot at right edge
+  if(!viewLocked){
+    const p=PAD,ph2=H-p.top-p.bottom,pw=W-p.left-p.right;
+    const xNow=p.left+pw;
+    const vNow=hist.V[hist.V.length-1];
+    const yNow=p.top+ph2*(1-(vNow+90)/145);
+    ctx.fillStyle='#0b7a6e';
+    ctx.beginPath();ctx.arc(xNow,yNow,3.5,0,Math.PI*2);ctx.fill();
+  }
 }
 
 function renderGates(tMin,tMax){
   const {ctx,W,H}=setupCanvas('cv-gates');
-  drawAxes(ctx,W,H,0,1,tMin,tMax,'','time (ms)');
+  drawAxes(ctx,W,H,0,1,tMin,tMax,'');
+  drawStimulusShade(ctx,W,H,tMin,tMax);
   plotTrace(ctx,hist.t,hist.m,W,H,0,1,tMin,tMax,'#dc2626',1.5);
   plotTrace(ctx,hist.t,hist.h,W,H,0,1,tMin,tMax,'#f59e0b',1.5);
   plotTrace(ctx,hist.t,hist.n,W,H,0,1,tMin,tMax,'#7c3aed',1.5);
@@ -1105,143 +1235,140 @@ function renderGates(tMin,tMax){
 function renderCurrents(tMin,tMax){
   const {ctx,W,H}=setupCanvas('cv-currents');
   const allI=[...hist.INa,...hist.IK,...hist.IL];
-  const maxAbs=Math.max(1,...allI.map(v=>Math.abs(v)));
-  const vMax=maxAbs*1.1, vMin=-maxAbs*1.1;
-  drawAxes(ctx,W,H,vMin,vMax,tMin,tMax,'µA/cm²','time (ms)');
-  plotTrace(ctx,hist.t,hist.INa,W,H,vMin,vMax,tMin,tMax,'#dc2626',1.5);
-  plotTrace(ctx,hist.t,hist.IK,W,H,vMin,vMax,tMin,tMax,'#1d4ed8',1.5);
-  plotTrace(ctx,hist.t,hist.IL,W,H,vMin,vMax,tMin,tMax,'#15803d',1);
+  const mxI=Math.max(1,...allI.map(v=>Math.abs(v)))*1.1;
+  drawAxes(ctx,W,H,-mxI,mxI,tMin,tMax,'µA/cm²');
+  drawStimulusShade(ctx,W,H,tMin,tMax);
+  plotTrace(ctx,hist.t,hist.INa,W,H,-mxI,mxI,tMin,tMax,'#dc2626',1.5);
+  plotTrace(ctx,hist.t,hist.IK,W,H,-mxI,mxI,tMin,tMax,'#1d4ed8',1.5);
+  plotTrace(ctx,hist.t,hist.IL,W,H,-mxI,mxI,tMin,tMax,'#15803d',1);
 }
 
 function renderSS(){
   const {ctx,W,H}=setupCanvas('cv-ss');
-  const Vrange=[];
-  for(let V=-100;V<=60;V+=0.5) Vrange.push(V);
+  const Vs=[];for(let V=-100;V<=60;V+=0.5)Vs.push(V);
+  const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
+  drawAxes(ctx,W,H,0,1,-100,60,'x∞');
 
-  const p=PAD; const pw=W-p.left-p.right; const ph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,1,-100,60,'x∞','V (mV)');
-
-  const traceColors=['#dc2626','#f59e0b','#7c3aed'];
-  const traceLabels=['m∞','h∞','n∞'];
-  const yIdx=[0,1,2];
-
+  const cols=['#dc2626','#f59e0b','#7c3aed'];
+  const lbls=['m∞','h∞','n∞'];
   for(let c=0;c<3;c++){
-    ctx.beginPath(); ctx.strokeStyle=traceColors[c]; ctx.lineWidth=2;
-    Vrange.forEach((V,i)=>{
+    ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
+    Vs.forEach((V,i)=>{
       const s=ss(V);
-      const xc=p.left+pw*(V+100)/160;
-      const yc=p.top+ph*(1-s[yIdx[c]]);
-      i===0?ctx.moveTo(xc,yc):ctx.lineTo(xc,yc);
+      const x=p.left+pw*(V+100)/160;
+      const y=p.top+ph*(1-s[c]);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     });
     ctx.stroke();
-    // Label
-    const midV=-100+160*0.65+c*18;
-    const s=ss(midV);
-    ctx.fillStyle=traceColors[c]; ctx.font="10px 'DM Mono',monospace"; ctx.textAlign='left';
-    ctx.fillText(traceLabels[c],p.left+pw*(midV+100)/160+3,p.top+ph*(1-s[yIdx[c]])-3);
   }
 
-  // Current V marker
-  const xV=p.left+pw*(currentVline+100)/160;
-  ctx.strokeStyle='rgba(11,122,110,.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(xV,p.top); ctx.lineTo(xV,p.top+ph); ctx.stroke();
+  // Current Vm marker
+  const xV=p.left+pw*(currentV+100)/160;
+  ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+ph);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='#0b7a6e'; ctx.font="9px 'DM Mono',monospace"; ctx.textAlign='center';
+  ctx.fillStyle='#0b7a6e';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='center';
   ctx.fillText('Vm',xV,p.top-2);
+
+  // Labels
+  const lpos=[{V:-20,i:0},{V:-72,i:1},{V:-50,i:2}];
+  lpos.forEach(({V,i})=>{
+    const s=ss(V);
+    ctx.fillStyle=cols[i];ctx.font="10px 'DM Mono',monospace";ctx.textAlign='left';
+    ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+ph*(1-s[i])-3);
+  });
 }
 
 function renderTau(){
   const {ctx,W,H}=setupCanvas('cv-tau');
   const ph=phi();
-  const Vrange=[];
-  for(let V=-100;V<=60;V+=0.5) Vrange.push(V);
-
-  // Compute max tau for scaling
-  const taus=Vrange.map(V=>[
+  const Vs=[];for(let V=-100;V<=60;V+=0.5)Vs.push(V);
+  const taus=Vs.map(V=>[
     1/((am(V)+bm(V))*ph),
     1/((ah(V)+bh(V))*ph),
     1/((an(V)+bn(V))*ph)
   ]);
-  const maxTau=Math.max(...taus.flat())*1.1;
+  const mxT=Math.max(...taus.flat())*1.1;
+  const p=PAD,pw=W-p.left-p.right,pph=H-p.top-p.bottom;
+  drawAxes(ctx,W,H,0,mxT,-100,60,'τ (ms)');
 
-  const p=PAD; const pw=W-p.left-p.right; const pph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,maxTau,-100,60,'τ (ms)','V (mV)');
-
-  const colors=['#dc2626','#f59e0b','#7c3aed'];
-  const labels=['τm','τh','τn'];
-
+  const cols=['#dc2626','#f59e0b','#7c3aed'];
+  const lbls=['τm','τh','τn'];
   for(let c=0;c<3;c++){
-    ctx.beginPath(); ctx.strokeStyle=colors[c]; ctx.lineWidth=2;
-    Vrange.forEach((V,i)=>{
-      const τ=taus[i][c];
-      const xc=p.left+pw*(V+100)/160;
-      const yc=p.top+pph*(1-τ/maxTau);
-      i===0?ctx.moveTo(xc,yc):ctx.lineTo(xc,yc);
+    ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
+    Vs.forEach((V,i)=>{
+      const x=p.left+pw*(V+100)/160;
+      const y=p.top+pph*(1-taus[i][c]/mxT);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     });
     ctx.stroke();
   }
-
-  // Labels for each τ
-  const lPos=[{V:-20,c:0},{V:-70,c:1},{V:-55,c:2}];
-  lPos.forEach(({V:Vl,c})=>{
-    const τ=taus[Math.round((Vl+100)/0.5)][c];
-    ctx.fillStyle=colors[c]; ctx.font="10px 'DM Mono',monospace"; ctx.textAlign='left';
-    ctx.fillText(labels[c],p.left+pw*(Vl+100)/160+3,p.top+pph*(1-τ/maxTau)-3);
+  const lpos=[{V:-15,i:0},{V:-68,i:1},{V:-53,i:2}];
+  lpos.forEach(({V,i})=>{
+    const idx=Math.round((V+100)/0.5);
+    if(idx<0||idx>=taus.length) return;
+    const τ=taus[idx][i];
+    ctx.fillStyle=cols[i];ctx.font="10px 'DM Mono',monospace";ctx.textAlign='left';
+    ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+pph*(1-τ/mxT)-3);
   });
 
-  // Current V marker
-  const xV=p.left+pw*(currentVline+100)/160;
-  ctx.strokeStyle='rgba(11,122,110,.4)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(xV,p.top); ctx.lineTo(xV,p.top+pph); ctx.stroke();
+  // Vm marker
+  const xV=p.left+pw*(currentV+100)/160;
+  ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+pph);ctx.stroke();
   ctx.setLineDash([]);
 }
 
 function renderPhase(){
   const {ctx,W,H}=setupCanvas('cv-phase');
-  const p={top:20,right:20,bottom:36,left:50};
+  const p={top:20,right:20,bottom:36,left:54};
   const pw=W-p.left-p.right, ph=H-p.top-p.bottom;
 
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#f9fafb'; ctx.fillRect(p.left,p.top,pw,ph);
-
-  const vMin=-90,vMax=55,nMin=0,nMax=1;
+  ctx.fillStyle='#f9fafb';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff';ctx.fillRect(p.left,p.top,pw,ph);
 
   // Grid
-  ctx.strokeStyle='#f3f4f6'; ctx.lineWidth=1;
+  ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){
     ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();
     ctx.beginPath();ctx.moveTo(p.left+pw*i/5,p.top);ctx.lineTo(p.left+pw*i/5,p.top+ph);ctx.stroke();
   }
-  ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1;
-  ctx.strokeRect(p.left,p.top,pw,ph);
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
 
-  // V nullcline (dV/dt=0 — not easy to draw analytically; skip)
+  const vMin=-90,vMax=55,nMin=0,nMax=1;
+  const xp=(n)=>p.left+pw*(n-nMin)/(nMax-nMin);
+  const yp=(v)=>p.top+ph*(1-(v-vMin)/(vMax-vMin));
+
   // Draw trajectory
-  const count=phaseFull?phase_trail_len:phaseCount;
-  if(count>1){
-    ctx.lineWidth=1.5;
+  const count=Math.min(phaseCount,TRAIL_LEN);
+  if(count>2){
     for(let i=1;i<count;i++){
-      const idx=(phasePtr-count+i+phase_trail_len)%phase_trail_len;
-      const idxP=(phasePtr-count+i-1+phase_trail_len)%phase_trail_len;
-      const alpha=i/count;
-      ctx.strokeStyle=`rgba(11,122,110,${alpha*0.85})`;
+      const a=((phasePtr-count+i-1+TRAIL_LEN)%TRAIL_LEN);
+      const b=((phasePtr-count+i+TRAIL_LEN)%TRAIL_LEN);
+      const alpha=Math.pow(i/count,0.6);
+      ctx.strokeStyle=`rgba(11,122,110,${alpha*0.9})`;
+      ctx.lineWidth=1.5;
       ctx.beginPath();
-      ctx.moveTo(p.left+pw*(phaseN[idxP]-nMin)/(nMax-nMin), p.top+ph*(1-(phaseV[idxP]-vMin)/(vMax-vMin)));
-      ctx.lineTo(p.left+pw*(phaseN[idx]-nMin)/(nMax-nMin),   p.top+ph*(1-(phaseV[idx]-vMin)/(vMax-vMin)));
+      ctx.moveTo(xp(phaseN[a]),yp(phaseV[a]));
+      ctx.lineTo(xp(phaseN[b]),yp(phaseV[b]));
       ctx.stroke();
     }
     // Current point
-    const ci=(phasePtr-1+phase_trail_len)%phase_trail_len;
+    const ci=(phasePtr-1+TRAIL_LEN)%TRAIL_LEN;
     ctx.fillStyle='#0b7a6e';
-    ctx.beginPath();
-    ctx.arc(p.left+pw*(phaseN[ci]-nMin)/(nMax-nMin),p.top+ph*(1-(phaseV[ci]-vMin)/(vMax-vMin)),5,0,Math.PI*2);
-    ctx.fill();
+    ctx.beginPath();ctx.arc(xp(phaseN[ci]),yp(phaseV[ci]),5,0,Math.PI*2);ctx.fill();
+  } else {
+    // No data yet — show placeholder text
+    ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans',sans-serif";
+    ctx.textAlign='center';
+    ctx.fillText('Run the simulation to see the phase portrait',p.left+pw/2,p.top+ph/2-10);
+    ctx.font="11px 'DM Sans',sans-serif";
+    ctx.fillText('or click "Phase Demo" below',p.left+pw/2,p.top+ph/2+12);
   }
 
-  // Axes labels
-  ctx.fillStyle='#6b7280'; ctx.font="10px 'DM Mono',monospace";
-  ctx.textAlign='right';
+  // Axes
+  ctx.fillStyle='#6b7280';ctx.font="10px 'DM Mono',monospace";ctx.textAlign='right';
   for(let i=0;i<=5;i++){
     ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
   }
@@ -1249,16 +1376,14 @@ function renderPhase(){
   for(let i=0;i<=5;i++){
     ctx.fillText((nMin+(nMax-nMin)*i/5).toFixed(2),p.left+pw*i/5,H-8);
   }
-  ctx.save(); ctx.translate(11,p.top+ph/2); ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center'; ctx.fillStyle='#9ca3af'; ctx.font="10px 'DM Sans',sans-serif";
-  ctx.fillText('V (mV)',0,0); ctx.restore();
-  ctx.textAlign='center'; ctx.fillStyle='#9ca3af'; ctx.font="10px 'DM Sans',sans-serif";
+  ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";
+  ctx.fillText('V (mV)',0,0);ctx.restore();
+  ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';
   ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  STATS UPDATE
-// ─────────────────────────────────────────────────────────────
+// ─── STATS ────────────────────────────────────────────────
 function updateStats(){
   document.getElementById('stat-spikes').textContent=apSpikes;
   document.getElementById('stat-peak').textContent=apSpikes>0?apPeakV.toFixed(1):'—';
@@ -1268,20 +1393,20 @@ function updateStats(){
   document.getElementById('stat-phi').textContent=phi().toFixed(2)+'×';
 }
 
-// ─────────────────────────────────────────────────────────────
-//  UI HELPERS
-// ─────────────────────────────────────────────────────────────
-function slUpdate(param,val,valId){
-  document.getElementById(valId).textContent=parseFloat(val).toFixed(param==='EL'?1:param==='gL'?2:0);
-  P[param]=parseFloat(val);
-  if(param==='T'){
-    document.getElementById('stat-phi').textContent=phi().toFixed(2)+'×';
-    renderSS(); renderTau();
-  }
-  if(param==='win'){ winMs=parseFloat(val); }
+// ─── UI HELPERS ───────────────────────────────────────────
+function setSpeed(v){
+  speedIdx=parseInt(v)-1;
+  const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
+  document.getElementById('sl-speed-val').textContent=labels[speedIdx]||v+'×';
 }
 
-function updateWindow(){ winMs=parseFloat(document.getElementById('sl-win').value); }
+function slUpdate(param,val,valId){
+  const dp=param==='EL'?1:param==='gL'?2:param==='Cm'?1:param==='T'?1:0;
+  document.getElementById(valId).textContent=parseFloat(val).toFixed(dp);
+  P[param]=parseFloat(val);
+  if(param==='T'){ document.getElementById('stat-phi').textContent=phi().toFixed(2)+'×'; renderSS();renderTau(); }
+  if(param==='win'){ winMs=parseFloat(val); if(!viewLocked){viewStart=Math.max(0,t-winMs);viewEnd=Math.max(winMs,t);} }
+}
 
 function updateStim(){
   STIM.type=document.getElementById('stim-type').value;
@@ -1294,55 +1419,73 @@ function updateStim(){
 }
 
 function clearPhase(){
-  phasePtr=0; phaseCount=0; phaseFull=false;
+  phasePtr=0;phaseCount=0;
   renderPhase();
 }
 
-// ─────────────────────────────────────────────────────────────
-//  PRESETS
-// ─────────────────────────────────────────────────────────────
+// ─── PRESETS ──────────────────────────────────────────────
+const PRESETS = {
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:10,tStart:10,dur:40, type:'step',freq:40, win:160,speed:3},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:37,  I0:10,tStart:5, dur:2,  type:'step',freq:40, win:60, speed:2},
+  burst:     {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:15,tStart:10,dur:200,type:'step',freq:40, win:250,speed:4},
+  subthresh: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:5, tStart:10,dur:40, type:'step',freq:40, win:160,speed:3},
+  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:12,tStart:5, dur:120,type:'step',freq:40, win:160,speed:6,autoStart:true,keepPhase:true},
+};
+
 function applyPreset(name){
-  const presets={
-    standard:{ gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:10,tStart:10,dur:40,type:'step',freq:40,win:200 },
-    body:     { gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:37,  I0:10,tStart:5,dur:2,type:'step',freq:40,win:50 },
-    burst:    { gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:15,tStart:10,dur:200,type:'step',freq:40,win:300 },
-    subthresh:{ gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:5,tStart:10,dur:40,type:'step',freq:40,win:200 },
-  };
-  const pr=presets[name]; if(!pr) return;
-  // Apply params
+  const pr=PRESETS[name]; if(!pr) return;
   P.gNa=pr.gNa; P.gK=pr.gK; P.gL=pr.gL;
   P.ENa=pr.ENa; P.EK=pr.EK; P.EL=pr.EL;
   P.Cm=pr.Cm; P.T=pr.T;
   STIM.I0=pr.I0; STIM.tStart=pr.tStart; STIM.dur=pr.dur;
-  STIM.type=pr.type; STIM.freq=pr.freq; winMs=pr.win;
-  // Update sliders
-  const setSlider=(id,val,displayId,dp)=>{
-    const el=document.getElementById(id); if(el){ el.value=val; }
-    const dl=document.getElementById(displayId); if(dl){ dl.textContent=parseFloat(val).toFixed(dp??0); }
+  STIM.type=pr.type; STIM.freq=pr.freq;
+  winMs=pr.win; speedIdx=(pr.speed||3)-1;
+
+  // Update all sliders
+  const sl=(id,val,dp)=>{
+    const e=document.getElementById(id);if(e)e.value=val;
+    const d=document.getElementById(id+'-val');if(d)d.textContent=parseFloat(val).toFixed(dp??0);
   };
-  setSlider('sl-gNa',pr.gNa,'sl-gNa-val');setSlider('sl-gK',pr.gK,'sl-gK-val');
-  setSlider('sl-gL',pr.gL,'sl-gL-val',2);setSlider('sl-ENa',pr.ENa,'sl-ENa-val');
-  setSlider('sl-EK',pr.EK,'sl-EK-val');setSlider('sl-EL',pr.EL,'sl-EL-val',1);
-  setSlider('sl-Cm',pr.Cm,'sl-Cm-val',1);setSlider('sl-T',pr.T,'sl-T-val',1);
-  setSlider('sl-I0',pr.I0,'sl-I0-val');setSlider('sl-tStart',pr.tStart,'sl-tStart-val');
-  setSlider('sl-dur',pr.dur,'sl-dur-val');setSlider('sl-freq',pr.freq,'sl-freq-val');
-  setSlider('sl-win',pr.win,'sl-win-val');
+  sl('sl-gNa',pr.gNa);sl('sl-gK',pr.gK);sl('sl-gL',pr.gL,2);
+  sl('sl-ENa',pr.ENa);sl('sl-EK',pr.EK);sl('sl-EL',pr.EL,1);
+  sl('sl-Cm',pr.Cm,1);sl('sl-T',pr.T,1);
+  sl('sl-I0',pr.I0);sl('sl-tStart',pr.tStart);sl('sl-dur',pr.dur);
+  sl('sl-freq',pr.freq);sl('sl-win',pr.win);
+  document.getElementById('sl-speed').value=pr.speed||3;
+  const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
+  document.getElementById('sl-speed-val').textContent=labels[speedIdx]||'—';
   document.getElementById('stim-type').value=pr.type;
   const showFreq=['pulse','sine'].includes(pr.type);
   document.getElementById('freq-row').style.display=showFreq?'flex':'none';
-  resetSim();
+
+  // For phase demo: keep phase trail, reset sim state only
+  if(pr.keepPhase){
+    stopSim();
+    // Reset sim but preserve phase trail for continuity
+    const savedV=phaseV.slice(); const savedN=phaseN.slice();
+    const savedPtr=phasePtr; const savedCount=phaseCount;
+    initState();
+    phaseV.set(savedV); phaseN.set(savedN); phasePtr=savedPtr; phaseCount=savedCount;
+  } else {
+    resetSim();
+  }
+
+  viewStart=0; viewEnd=winMs; viewLocked=false;
+  renderSS(); renderTau();
+  if(pr.autoStart) setTimeout(startSim, 150);
 }
 
-// ─────────────────────────────────────────────────────────────
-//  INIT ON LOAD
-// ─────────────────────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   initState();
+  // Set initial speed label
+  const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
+  document.getElementById('sl-speed-val').textContent=labels[speedIdx];
   renderSS(); renderTau(); renderPhase();
-  // Draw empty plots
+
   const empty=(id,ymin,ymax,yl)=>{
     const {ctx,W,H}=setupCanvas(id);
-    drawAxes(ctx,W,H,ymin,ymax,0,winMs,yl,'time (ms)');
+    drawAxes(ctx,W,H,ymin,ymax,0,winMs,yl);
   };
   empty('cv-V',-90,55,'mV');
   empty('cv-gates',0,1,'');
@@ -1352,8 +1495,79 @@ window.addEventListener('load',()=>{
 
 window.addEventListener('resize',()=>{
   if(hist.t.length>0) renderAll();
-  else { renderSS(); renderTau(); renderPhase(); }
+  else {renderSS();renderTau();renderPhase();}
 });
 </script>
+
+<!-- Shared Accessibility Panel -->
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
+<div class="acc-panel" id="acc-panel">
+  <div class="acc-panel-title">⚙ Display Settings</div>
+  <div class="acc-row">
+    <div class="acc-row-label">Color Mode</div>
+    <div class="acc-toggle-row">
+      <span class="acc-toggle-label">Dark Mode</span>
+      <label class="acc-switch">
+        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
+        <span class="acc-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Size</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
+      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
+      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Style</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
+      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
+      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  var FONTS=['','font-serif','font-mono'];
+  var LS=window.localStorage||{};
+
+  function applyPrefs(){
+    var dark=LS.getItem('acc_dark')==='1';
+    var sz=LS.getItem('acc_sz')||'md';
+    var fi=parseInt(LS.getItem('acc_fi')||'0');
+    document.body.classList.toggle('dark-mode',dark);
+    document.body.classList.toggle('light-mode',!dark);
+    document.body.classList.remove('font-serif','font-mono');
+    if(FONTS[fi]) document.body.classList.add(FONTS[fi]);
+    var szClasses=['size-sm','size-md','size-lg'];
+    document.body.classList.remove.apply(document.body.classList,szClasses);
+    document.body.classList.add('size-'+sz);
+    var cb=document.getElementById('acc-dark');
+    if(cb) cb.checked=dark;
+    ['sm','md','lg'].forEach(function(s){var b=document.getElementById('acc-'+s);if(b)b.classList.toggle('active',s===sz);});
+    [0,1,2].forEach(function(i){var b=document.getElementById('acc-f'+i);if(b)b.classList.toggle('active',i===fi);});
+  }
+
+  window.accToggle=function(){document.getElementById('acc-panel').classList.toggle('open');};
+  window.accDark=function(cb){LS.setItem('acc_dark',cb.checked?'1':'0');applyPrefs();};
+  window.accSize=function(s){LS.setItem('acc_sz',s);applyPrefs();};
+  window.accFont=function(i){LS.setItem('acc_fi',i);applyPrefs();};
+
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('acc-panel'),b=document.getElementById('acc-btn');
+    if(p&&b&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b) p.classList.remove('open');
+  });
+
+  document.addEventListener('DOMContentLoaded',applyPrefs);
+  if(document.readyState!=='loading') applyPrefs();
+})();
+</script>
+
 </body>
 </html>

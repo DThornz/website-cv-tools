@@ -319,13 +319,73 @@ button{cursor:pointer;font-family:var(--serif)}
 .site-nav-link:hover{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.15)}
 .site-nav-link.curr{color:#2dd4bf;background:rgba(45,212,191,.08);border-color:rgba(45,212,191,.2);font-weight:600}
 
+
+/* ── Shared Accessibility Panel ── */
+.acc-btn{
+  position:fixed;bottom:24px;right:24px;z-index:9000;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--teal,#0b7a6e);color:#fff;border:none;
+  cursor:pointer;font-size:1.05em;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 3px 16px rgba(0,0,0,.18);
+  transition:transform .2s,box-shadow .2s;
+}
+.acc-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(0,0,0,.22)}
+.acc-panel{
+  position:fixed;bottom:74px;right:24px;z-index:9000;
+  background:#fff;border:1px solid #d4d9e8;border-radius:12px;
+  padding:18px 20px 14px;width:230px;
+  box-shadow:0 8px 40px rgba(0,0,0,.14);
+  opacity:0;transform:translateY(10px) scale(.96);
+  pointer-events:none;transition:all .22s cubic-bezier(.4,0,.2,1);
+}
+body.dark-mode .acc-panel{background:#0f1f38;border-color:#1c3050;color:#e2e8f0}
+.acc-panel.open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+.acc-panel-title{font-size:.78em;font-weight:600;margin-bottom:14px;
+  color:#1a202c;letter-spacing:.02em}
+body.dark-mode .acc-panel-title{color:#e2e8f0}
+.acc-row{margin-bottom:14px}
+.acc-row-label{font-size:.68em;text-transform:uppercase;letter-spacing:.1em;
+  color:#718096;margin-bottom:7px;font-family:'DM Mono',monospace}
+.acc-toggle-row{display:flex;align-items:center;justify-content:space-between}
+.acc-toggle-label{font-size:.82em;color:#4a5568}
+body.dark-mode .acc-toggle-label{color:#94a3b8}
+.acc-switch{position:relative;width:40px;height:21px}
+.acc-switch input{opacity:0;width:0;height:0}
+.acc-slider{position:absolute;inset:0;background:#d1d5db;border-radius:99px;cursor:pointer;transition:background .2s}
+.acc-slider::before{content:'';position:absolute;width:15px;height:15px;border-radius:50%;left:3px;top:3px;background:#fff;transition:transform .2s}
+.acc-switch input:checked + .acc-slider{background:var(--teal,#0b7a6e)}
+.acc-switch input:checked + .acc-slider::before{transform:translateX(19px)}
+.acc-btn-group{display:flex;gap:5px}
+.acc-opt{flex:1;padding:5px 4px;border:1px solid #d4d9e8;border-radius:6px;
+  background:#f0f2f7;color:#718096;font-size:.72em;cursor:pointer;
+  text-align:center;transition:all .15s;font-family:inherit}
+body.dark-mode .acc-opt{background:#132240;border-color:#1c3050;color:#7a90ae}
+.acc-opt.active,.acc-opt:hover{border-color:var(--teal,#0b7a6e);
+  color:var(--teal,#0b7a6e);background:rgba(11,122,110,.08)}
+
+/* ── Dark mode vars (accessibility panel) ── */
+body.dark-mode{
+  --bg:#060e1c;--bg2:#0a1628;--bg3:#0f1f38;--bg4:#132240;
+  --border:#1c3050;--border2:#243858;
+  --text:#e2e8f0;--muted:#7a90ae;--dim:#3d5470;--dimmer:#2a3d58;
+  color:var(--text);background:var(--bg);
+}
+body.dark-mode .site-nav{background:rgba(6,14,28,.95);border-color:var(--border)}
+body.dark-mode .card{background:var(--bg2);border-color:var(--border)}
+body.dark-mode .card:hover{border-color:#1a8a7d}
+/* Font variants */
+body.font-serif{font-family:'DM Serif Display',Georgia,serif!important}
+body.font-mono *:not(code):not(pre):not(.acc-panel *){font-family:'DM Mono',monospace!important}
+/* Size variants */
+body.size-sm{font-size:13px}body.size-md{font-size:15px}body.size-lg{font-size:17px}
+
 </style>
 </head>
 <body>
 <div class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
-  <a class="site-nav-link" href="AsadMirza_CV_v2.html">CV</a>
+  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
   <a class="site-nav-link" href="projects.html">Projects</a>
   <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="site-nav-link curr" href="fea-cfd-calc.html">FEA / CFD</a>
@@ -1772,5 +1832,76 @@ buildConverters();
 // Pre-compute defaults on load for better UX
 window.addEventListener('load',()=>{ ypCalc(); reCalc(); tbCalc(); });
 </script>
+
+<!-- Shared Accessibility Panel -->
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
+<div class="acc-panel" id="acc-panel">
+  <div class="acc-panel-title">⚙ Display Settings</div>
+  <div class="acc-row">
+    <div class="acc-row-label">Color Mode</div>
+    <div class="acc-toggle-row">
+      <span class="acc-toggle-label">Dark Mode</span>
+      <label class="acc-switch">
+        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
+        <span class="acc-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Size</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
+      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
+      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Style</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
+      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
+      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  var FONTS=['','font-serif','font-mono'];
+  var LS=window.localStorage||{};
+
+  function applyPrefs(){
+    var dark=LS.getItem('acc_dark')==='1';
+    var sz=LS.getItem('acc_sz')||'md';
+    var fi=parseInt(LS.getItem('acc_fi')||'0');
+    document.body.classList.toggle('dark-mode',dark);
+    document.body.classList.toggle('light-mode',!dark);
+    document.body.classList.remove('font-serif','font-mono');
+    if(FONTS[fi]) document.body.classList.add(FONTS[fi]);
+    var szClasses=['size-sm','size-md','size-lg'];
+    document.body.classList.remove.apply(document.body.classList,szClasses);
+    document.body.classList.add('size-'+sz);
+    var cb=document.getElementById('acc-dark');
+    if(cb) cb.checked=dark;
+    ['sm','md','lg'].forEach(function(s){var b=document.getElementById('acc-'+s);if(b)b.classList.toggle('active',s===sz);});
+    [0,1,2].forEach(function(i){var b=document.getElementById('acc-f'+i);if(b)b.classList.toggle('active',i===fi);});
+  }
+
+  window.accToggle=function(){document.getElementById('acc-panel').classList.toggle('open');};
+  window.accDark=function(cb){LS.setItem('acc_dark',cb.checked?'1':'0');applyPrefs();};
+  window.accSize=function(s){LS.setItem('acc_sz',s);applyPrefs();};
+  window.accFont=function(i){LS.setItem('acc_fi',i);applyPrefs();};
+
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('acc-panel'),b=document.getElementById('acc-btn');
+    if(p&&b&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b) p.classList.remove('open');
+  });
+
+  document.addEventListener('DOMContentLoaded',applyPrefs);
+  if(document.readyState!=='loading') applyPrefs();
+})();
+</script>
+
 </body>
 </html>
