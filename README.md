@@ -1,8 +1,9 @@
 # website-cv-tools
 
-**Personal academic website for Dr. Asad Mirza** — Research Assistant Professor, Department of Biomedical Engineering, Florida International University.
+**Personal academic website for Dr. Asad Mirza** — Research Assistant Professor,  
+Department of Biomedical Engineering, Florida International University.
 
-Deployed via **GitHub Pages** · Client-side only · No backend required
+Deployed via **GitHub Pages** · Static hosting · No backend required
 
 🌐 **Live site:** [dthornz.github.io/website-cv-tools](https://dthornz.github.io/website-cv-tools)
 
@@ -13,94 +14,95 @@ Deployed via **GitHub Pages** · Client-side only · No backend required
 | Page | File | Description |
 |------|------|-------------|
 | **Home** | `index.html` | Landing page with links to all tools |
-| **Curriculum Vitae** | `AsadMirza_CV_v2.html` | Full interactive academic CV |
-| **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub |
+| **Curriculum Vitae** | `AsadMirza_CV.html` | Full interactive academic CV |
+| **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
+| **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
+| **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
 
-All three pages share a consistent site-wide navigation bar.
+All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
 
 ---
 
-## CV (`AsadMirza_CV_v2.html`)
+## Curriculum Vitae (`AsadMirza_CV.html`)
 
-An interactive single-page CV built with vanilla HTML/CSS/JS.
+Interactive single-page academic CV built with vanilla HTML/CSS/JS.
 
 **Features:**
-- Collapsible sections at three levels (Section → Group → Entry)
+- Collapsible sections at three levels: Section → Group → Entry
 - Expandable publication cards with abstract, DOI, image, and video slots
 - Sidebar navigation with scroll-based active highlighting
 - **Expand All / Collapse All** toggle
-- **⬇ Download Word CV** button — exports a pre-formatted `.docx` (embedded as base64, no server needed)
-- **Accessibility settings panel** — light/dark mode, font family (Academic/Modern/Classic), font size (Small/Medium/Large)
-- Keyboard: `Ctrl+Z` / `Ctrl+Y` history in the editor
-- Print-friendly `@media print` styles (Times New Roman, ALL CAPS headers, Hutcheson-style academic format)
-- Fully responsive (mobile collapses sidebar)
+- **Download Word CV** button — exports a pre-formatted `.docx` (embedded base64, no server)
+- **Settings panel** — light/dark mode, three font families, three font sizes
+- Print-friendly `@media print` styles (Times New Roman, APA/academic format)
+- Fully responsive — mobile collapses sidebar
 
-**Sections covered:**
-Education · Work Experience · Publications · Conference Proceedings · Teaching · Supervision & Mentorship · Funding & Awards · Technical Skills · Service & Outreach · Career Timeline
+**Sections:**
+Education · Work Experience · Publications (Patent, Book Chapter, 9 Articles) ·  
+Conference Proceedings · Teaching · Supervision & Mentorship · Funding & Awards ·  
+Technical Skills · Service & Outreach
+
+---
+
+## Project Showcase (`projects.html`)
+
+Research portfolio with filterable cards that expand into full-detail modals.
+
+- Filter by: CFD/FSI · FEA · Biomedical · Image/ML · Software
+- Each card expands to show: description, metrics, equations, image gallery, links
+- 8 projects pre-populated including CAVD hemodynamics, NO transport, calcium signaling, and more
+- Media slots: YouTube embed, local image/video, or placeholder
+
+---
+
+## Hodgkin–Huxley Neuron Model (`hodgkin-huxley.html`)
+
+Fully interactive browser simulation of the Nobel Prize-winning 1952 model.
+
+**Mathematical content:**
+- Complete derivation of all 4 ODEs with equivalent circuit diagram (SVG)
+- Full rate functions α/β for m, h, n gates with empirical constants
+- Parameter table with physiological interpretations
+- 7 cited references (Hodgkin & Huxley 1952, Goldman UC Davis, Cambridge DAMTP, FSU Bertram, etc.)
+
+**Simulator features:**
+- 4th-order Runge–Kutta integration (dt = 0.01 ms)
+- **Speed control** — 8 levels from ⅛× (watch the AP rise frame by frame) to 14× (rapid survey)
+- **Auto-pause** — halts when membrane returns to rest post-stimulus, locks view on the AP
+- 6 real-time Canvas plots: V(t), gating variables m/h/n, ionic currents INa/IK/IL, steady-state curves x∞(V), time constants τx(V), V–n phase portrait
+- Stimulus modes: step / pulse train / ramp / sinusoidal
+- All parameters adjustable: ḡNa, ḡK, ḡL, ENa, EK, EL, Cm, temperature (Q10 scaling)
+- Channel blockers: Na⁺ (simulate TTX), K⁺ (simulate TEA)
+- AP spike counter, peak voltage, firing rate readout
+- **Phase Demo** preset — auto-runs and populates the V–n phase portrait with a limit-cycle orbit
 
 ---
 
 ## FEA / CFD Calculator (`fea-cfd-calc.html`)
 
-A comprehensive single-page engineering calculator hub. All 25+ calculators run entirely client-side — no data is sent anywhere.
+25+ client-side engineering calculators. All run in the browser — no data sent anywhere.
 
 ### Fluid Mechanics
-| Calculator | Description |
-|-----------|-------------|
-| **Y+ Estimation** | First-cell wall distance for pipe, flat plate, or external body |
-| **Reynolds Number** | Flow regime classification with physiological context |
-| **Mach Number** | Compressibility check with speed of sound from temperature |
-| **Strouhal Number** | Oscillation vs convection timescale |
-| **Dean Number** | Curved pipe secondary flow detection |
-| **Péclet Number** | Advection vs diffusion dominance |
-| **Turbulence BCs** | k, ε, ω, νₜ from intensity + length scale (paste into ANSYS/OpenFOAM) |
-| **Turbulence Intensity** | Estimate from Reynolds number (pipe or flat plate BL) |
-| **Turbulent Length Scale** | Estimate from geometry type |
-| **Flat Plate BL** | Blasius laminar & Schlichting turbulent δ, δ*, θ, Cƒ |
-| **Pipe Entry Length** | Hydrodynamic and thermal development lengths |
-| **Hagen-Poiseuille** | Laminar pipe Q↔ΔP (both modes) |
-| **Darcy-Weisbach** | Turbulent pressure drop with iterated Colebrook-White friction factor |
-| **Hydraulic Diameter** | Rectangle, annulus, triangle cross-sections |
+Y+ estimation · Reynolds / Mach / Strouhal / Dean / Péclet numbers · Turbulence inlet BCs (k, ε, ω, νₜ) · Turbulence intensity & length scale · Boundary layer (Blasius + Schlichting) · Pipe entry length · Hagen-Poiseuille (Q↔ΔP) · Darcy-Weisbach (Colebrook-White) · Hydraulic diameter
 
 ### Biomedical CFD
-| Calculator | Description |
-|-----------|-------------|
-| **Power Law** | Non-Newtonian effective viscosity (shear-thinning/thickening) |
-| **Carreau Model** | Blood viscosity with Cho & Kensey (1991) default parameters |
-| **Newtonian Validity** | Wall shear rate check vs 100 s⁻¹ threshold for blood |
-| **Womersley Number** | Pulsatile flow inertia; reference values for major vessels |
-| **Wall Shear Stress** | From flow rate or pressure drop; physiological range annotation |
-| **OSI / TAWSS** | Paste WSS time series → Oscillatory Shear Index + Time-Averaged WSS |
+Power Law & Carreau viscosity models (blood, Cho & Kensey parameters) · Newtonian validity check (γ̇ threshold) · Womersley number · Wall shear stress from Q or ΔP · OSI / TAWSS from pasted time-series
 
 ### Structural FEA
-| Calculator | Description |
-|-----------|-------------|
-| **Elastic Constants** | Convert any two of E, ν, G, K, λ to all others (isotropic) |
-| **Von Mises Stress** | 2D stress state or principal stresses; safety factor |
-| **Pressure Vessel** | Thin-wall & Lamé thick-wall (Kirchhoff-Love) with auto-classification |
-| **Beam Deflection** | Cantilever, simply supported, UDL — deflection and bending stress |
-| **Second Moment of Area** | Rectangle, solid circle, hollow circle cross-sections |
+Elastic constants conversion (E, ν, G, K, λ) · Von Mises + Tresca + safety factor · Pressure vessel (thin-wall + Lamé thick-wall) · Beam deflection (cantilever, simply supported, UDL) · Second moment of area
 
 ### Unit Converters (live, type-to-convert)
-Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Force · Density · Temperature (°C/°F/K/°R)
+Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Force · Density · Temperature (°C / °F / K / °R)
 
 ---
 
-## Editor (`cv_editor.jsx`)
+## Local Development / Editor
 
-A React-based GUI editor for the CV. Run locally with any JSX-capable bundler (Vite, CRA).
+`cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
 
-**Features:**
-- Sidebar tree: Section → Group → Entry with ↑↓ reorder and ✕ delete
-- Rich text editing (Bold, Italic, Underline, Links) via `contentEditable`
-- Image URLs (external or `src/images/`) with live preview
-- YouTube embed and local video support
-- **Undo / Redo** — 60-step history stack; `Ctrl+Z` / `Ctrl+Y` keyboard shortcuts
-- **New entries added at top** (reverse chronological)
-- **Export CV HTML** — generates and downloads `AsadMirza_CV_v2.html`
-- **Export / Import JSON** — save and restore full CV data
+**Features:** sidebar tree navigation · rich text editing · undo/redo (60-step, Ctrl+Z/Y) · media slots (images, YouTube, video) · Export HTML / Export JSON / Import JSON · new entries added at top (reverse chronological)
 
-The editor does **not** need to be deployed — run it locally, export the HTML, then commit the HTML to this repo.
+The editor does **not** need to be deployed — run locally, export `AsadMirza_CV.html`, commit to this repo.
 
 ---
 
@@ -108,12 +110,13 @@ The editor does **not** need to be deployed — run it locally, export the HTML,
 
 ```
 website-cv-tools/
-├── index.html              ← Main landing page
-├── AsadMirza_CV_v2.html    ← Interactive academic CV
-├── fea-cfd-calc.html       ← FEA / CFD calculator hub
+├── index.html              ← Landing page (4 cards)
+├── AsadMirza_CV.html       ← Interactive academic CV
+├── projects.html           ← Research project showcase
+├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
+├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
 ├── cv_editor.jsx           ← React GUI editor (run locally)
-├── Logo_V1.png             ← Site logo
 ├── README.md               ← This file
 └── LICENSE                 ← Apache 2.0
 ```
@@ -122,14 +125,12 @@ website-cv-tools/
 
 ## Deployment
 
-This site is deployed on **GitHub Pages** from the `main` branch root.
+Site is deployed on **GitHub Pages** from the `main` branch root.
 
 To update content:
-1. Run `cv_editor.jsx` locally
-2. Edit CV content via the GUI
-3. Click **Export CV HTML** → download `AsadMirza_CV_v2.html`
-4. Commit and push to `main`
-5. GitHub Pages serves the updated site within ~60 seconds
+1. Edit `AsadMirza_CV.html` directly, or use `cv_editor.jsx` locally to export it
+2. Commit changes to `main`
+3. GitHub Pages rebuilds in ~60 seconds
 
 ---
 
@@ -137,27 +138,14 @@ To update content:
 
 | Layer | Technology |
 |-------|-----------|
-| Markup | HTML5 |
-| Styling | CSS3 (custom properties, grid, flexbox) |
-| Interactivity | Vanilla JavaScript (no frameworks on live pages) |
+| Markup | HTML5, SVG |
+| Styling | CSS3 (custom properties, grid, flexbox, `@media print`) |
+| Interactivity | Vanilla JavaScript — Canvas API, RK4 ODE solver |
 | Fonts | Google Fonts — DM Serif Display, DM Mono, DM Sans |
-| Editor | React (JSX, useState, useRef, useEffect) |
-| Word Export | docx.js (Node.js, generates `.docx` via npm) |
+| Editor | React (JSX hooks) |
 | Hosting | GitHub Pages |
 
-No build step required for the deployed pages. Open any `.html` file directly in a browser or serve via any static host.
-
----
-
-## Research Focus
-
-Dr. Mirza's work spans:
-
-- **Cardiovascular CFD/FSI** — hemodynamic biomarkers for calcific aortic valve disease (CAVD)
-- **Non-Newtonian blood flow modeling** — Carreau and Quemada viscosity models for severely calcified geometries
-- **Cerebrovascular transport** — nitric oxide diffusion in microvascular networks using Green's Function methods
-- **Stochastic calcium signaling** — IP₃R-mediated Ca²⁺ dynamics in brain capillary endothelial cells
-- **Biomedical image analysis** — SEM fiber diameter pipelines, NIfTI brain vasculature graph extraction
+No build step required for deployed pages. Open any `.html` file in a browser.
 
 ---
 
@@ -170,8 +158,9 @@ Florida International University · Miami, FL 33174
 📧 [amirza@fiu.edu](mailto:amirza@fiu.edu)  
 🔗 [ORCID: 0000-0003-4515-2203](https://orcid.org/0000-0003-4515-2203)  
 📑 [Google Scholar](https://scholar.google.com/citations?user=a8fYPM0AAAAJ)  
-🔬 [ResearchGate](https://www.researchgate.net/profile/Asad_Mirza2)
+🔬 [ResearchGate](https://www.researchgate.net/profile/Asad_Mirza2)  
+⌥ [GitHub](https://github.com/DThornz)
 
 ---
 
-*Last updated: March 2026*
+*Last updated: April 2026*
