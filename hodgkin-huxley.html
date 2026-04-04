@@ -95,7 +95,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:820px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:960px}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
@@ -481,108 +481,122 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </div>
 
   <div class="circuit-wrap">
-    <svg viewBox="0 0 680 230" width="680" height="230" font-family="'DM Mono', monospace" font-size="12">
-      <!-- ─── Membrane rails ─── -->
-      <line x1="20" y1="40" x2="660" y2="40" stroke="#374151" stroke-width="2"/>
-      <line x1="20" y1="190" x2="660" y2="190" stroke="#374151" stroke-width="2"/>
-      <text x="12" y="36" font-size="10" fill="#718096" text-anchor="middle">Out</text>
-      <text x="12" y="196" font-size="10" fill="#718096" text-anchor="middle">In</text>
+    <svg viewBox="0 0 720 260" width="100%" height="auto" font-family="'DM Mono', monospace">
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 Z" fill="#0b7a6e"/>
+        </marker>
+      </defs>
 
-      <!-- ─── Iext (leftmost) ─── -->
-      <line x1="55" y1="40" x2="55" y2="72" stroke="#374151" stroke-width="2"/>
-      <circle cx="55" cy="100" r="20" fill="none" stroke="#0b7a6e" stroke-width="2"/>
-      <line x1="55" y1="92" x2="55" y2="108" stroke="#0b7a6e" stroke-width="1.5"/>
-      <line x1="48" y1="98" x2="62" y2="98" stroke="#0b7a6e" stroke-width="1.5"/>
-      <polygon points="55,85 52,91 58,91" fill="#0b7a6e"/>
-      <line x1="55" y1="120" x2="55" y2="190" stroke="#374151" stroke-width="2"/>
-      <text x="75" y="95" font-size="11" fill="#0b7a6e">I</text>
-      <text x="82" y="99" font-size="8" fill="#0b7a6e">ext</text>
+      <!-- ─── Rail labels ─── -->
+      <text x="14" y="38" font-size="10" fill="#718096" text-anchor="middle">Out</text>
+      <text x="14" y="200" font-size="10" fill="#718096" text-anchor="middle">In</text>
 
-      <!-- ─── Cm branch ─── -->
-      <line x1="165" y1="40" x2="165" y2="86" stroke="#374151" stroke-width="2"/>
-      <line x1="148" y1="87" x2="182" y2="87" stroke="#374151" stroke-width="3.5"/>
-      <line x1="148" y1="97" x2="182" y2="97" stroke="#374151" stroke-width="3.5"/>
-      <line x1="165" y1="97" x2="165" y2="190" stroke="#374151" stroke-width="2"/>
-      <text x="188" y="85" font-size="11" fill="#1a202c">C</text>
-      <text x="196" y="89" font-size="8" fill="#1a202c">m</text>
-      <text x="188" y="98" font-size="9" fill="#718096">1 µF/cm²</text>
+      <!-- ─── Top and bottom membrane rails ─── -->
+      <line x1="28" y1="35" x2="700" y2="35" stroke="#374151" stroke-width="2"/>
+      <line x1="28" y1="195" x2="700" y2="195" stroke="#374151" stroke-width="2"/>
 
-      <!-- ─── Na branch ─── -->
-      <!-- conductance (variable, zigzag) -->
-      <line x1="310" y1="40" x2="310" y2="65" stroke="#374151" stroke-width="2"/>
-      <!-- variable resistor symbol -->
-      <rect x="299" y="65" width="22" height="14" fill="none" stroke="#dc2626" stroke-width="2" rx="2"/>
-      <line x1="318" y1="59" x2="326" y2="79" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="2,1"/>
-      <line x1="310" y1="79" x2="310" y2="110" stroke="#374151" stroke-width="2"/>
-      <!-- battery ENa -->
-      <line x1="302" y1="112" x2="318" y2="112" stroke="#374151" stroke-width="3"/>
-      <line x1="305" y1="118" x2="315" y2="118" stroke="#374151" stroke-width="1.5"/>
-      <line x1="310" y1="120" x2="310" y2="190" stroke="#374151" stroke-width="2"/>
-      <!-- + - labels -->
-      <text x="294" y="110" font-size="10" fill="#dc2626">+</text>
-      <text x="294" y="122" font-size="10" fill="#dc2626">−</text>
-      <!-- channel labels -->
-      <text x="284" y="58" font-size="11" fill="#dc2626">ḡ</text>
-      <text x="293" y="62" font-size="8" fill="#dc2626">Na</text>
-      <text x="310" y="58" font-size="9" fill="#dc2626">m³h</text>
-      <text x="286" y="135" font-size="11" fill="#dc2626">E</text>
-      <text x="294" y="139" font-size="8" fill="#dc2626">Na</text>
-      <text x="286" y="148" font-size="9" fill="#718096">+50 mV</text>
+      <!-- ═══ Iext branch (x=70) ═══ -->
+      <!-- Standard IEEE current source: circle with arrow inside -->
+      <line x1="70" y1="35" x2="70" y2="78" stroke="#374151" stroke-width="2"/>
+      <circle cx="70" cy="105" r="24" fill="white" stroke="#0b7a6e" stroke-width="2"/>
+      <!-- Arrow pointing upward (conventional current direction into top rail) -->
+      <line x1="70" y1="122" x2="70" y2="92" stroke="#0b7a6e" stroke-width="2"
+            marker-end="url(#arr)"/>
+      <line x1="70" y1="129" x2="70" y2="195" stroke="#374151" stroke-width="2"/>
+      <!-- Label -->
+      <text x="100" y="100" font-size="12" font-weight="bold" fill="#0b7a6e">I</text>
+      <text x="110" y="104" font-size="9" fill="#0b7a6e">ext</text>
 
-      <!-- ─── K branch ─── -->
-      <line x1="450" y1="40" x2="450" y2="65" stroke="#374151" stroke-width="2"/>
-      <rect x="439" y="65" width="22" height="14" fill="none" stroke="#1d4ed8" stroke-width="2" rx="2"/>
-      <line x1="458" y1="59" x2="466" y2="79" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="2,1"/>
-      <line x1="450" y1="79" x2="450" y2="110" stroke="#374151" stroke-width="2"/>
-      <line x1="442" y1="112" x2="458" y2="112" stroke="#374151" stroke-width="3"/>
-      <line x1="445" y1="118" x2="455" y2="118" stroke="#374151" stroke-width="1.5"/>
-      <line x1="450" y1="120" x2="450" y2="190" stroke="#374151" stroke-width="2"/>
-      <text x="433" y="110" font-size="10" fill="#1d4ed8">−</text>
-      <text x="433" y="122" font-size="10" fill="#1d4ed8">+</text>
-      <text x="424" y="58" font-size="11" fill="#1d4ed8">ḡ</text>
-      <text x="433" y="62" font-size="8" fill="#1d4ed8">K</text>
-      <text x="449" y="58" font-size="9" fill="#1d4ed8">n⁴</text>
-      <text x="426" y="135" font-size="11" fill="#1d4ed8">E</text>
-      <text x="434" y="139" font-size="8" fill="#1d4ed8">K</text>
-      <text x="425" y="148" font-size="9" fill="#718096">−77 mV</text>
+      <!-- ═══ Cm branch (x=185) ═══ -->
+      <line x1="185" y1="35" x2="185" y2="82" stroke="#374151" stroke-width="2"/>
+      <!-- Capacitor plates -->
+      <line x1="165" y1="84" x2="205" y2="84" stroke="#374151" stroke-width="4"/>
+      <line x1="165" y1="94" x2="205" y2="94" stroke="#374151" stroke-width="4"/>
+      <line x1="185" y1="94" x2="185" y2="195" stroke="#374151" stroke-width="2"/>
+      <!-- Label -->
+      <text x="212" y="82" font-size="12" fill="#1a202c" font-weight="bold">C</text>
+      <text x="221" y="86" font-size="9" fill="#1a202c">m</text>
+      <text x="210" y="97" font-size="9" fill="#718096">1 µF/cm²</text>
 
-      <!-- ─── Leak branch ─── -->
-      <line x1="580" y1="40" x2="580" y2="65" stroke="#374151" stroke-width="2"/>
-      <!-- fixed resistor -->
-      <polyline points="580,65 573,70 587,76 573,82 587,88 573,94 587,100 580,105" fill="none" stroke="#15803d" stroke-width="2"/>
-      <line x1="580" y1="105" x2="580" y2="120" stroke="#374151" stroke-width="2"/>
-      <line x1="572" y1="122" x2="588" y2="122" stroke="#374151" stroke-width="3"/>
-      <line x1="575" y1="128" x2="585" y2="128" stroke="#374151" stroke-width="1.5"/>
-      <line x1="580" y1="130" x2="580" y2="190" stroke="#374151" stroke-width="2"/>
-      <text x="560" y="58" font-size="11" fill="#15803d">g</text>
-      <text x="568" y="62" font-size="8" fill="#15803d">L</text>
-      <text x="556" y="145" font-size="11" fill="#15803d">E</text>
-      <text x="564" y="149" font-size="8" fill="#15803d">L</text>
-      <text x="555" y="158" font-size="9" fill="#718096">−54.4 mV</text>
+      <!-- ═══ Na⁺ branch (x=335) ═══ -->
+      <line x1="335" y1="35"  x2="335" y2="60"  stroke="#374151" stroke-width="2"/>
+      <!-- Variable resistor box -->
+      <rect x="322" y="60" width="26" height="16" fill="white" stroke="#dc2626" stroke-width="2" rx="2"/>
+      <!-- Diagonal arrow for variable conductance -->
+      <line x1="322" y1="78" x2="350" y2="58" stroke="#dc2626" stroke-width="1.5"/>
+      <polygon points="350,58 344,60 346,54" fill="#dc2626"/>
+      <line x1="335" y1="76"  x2="335" y2="108" stroke="#374151" stroke-width="2"/>
+      <!-- Battery -->
+      <line x1="325" y1="110" x2="345" y2="110" stroke="#374151" stroke-width="3.5"/>
+      <line x1="328" y1="117" x2="342" y2="117" stroke="#374151" stroke-width="1.5"/>
+      <line x1="335" y1="119" x2="335" y2="195" stroke="#374151" stroke-width="2"/>
+      <!-- Polarity -->
+      <text x="315" y="112" font-size="11" fill="#dc2626" font-weight="bold">+</text>
+      <text x="315" y="122" font-size="11" fill="#dc2626" font-weight="bold">−</text>
+      <!-- Conductance label: ḡNa · m³h on two lines -->
+      <text x="283" y="53" font-size="11" fill="#dc2626" font-weight="bold">ḡ<tspan font-size="8" dy="2">Na</tspan></text>
+      <text x="305" y="53" font-size="10" fill="#dc2626">· m³h</text>
+      <!-- Reversal label -->
+      <text x="286" y="138" font-size="11" fill="#dc2626">E<tspan font-size="8" dy="2">Na</tspan></text>
+      <text x="286" y="152" font-size="9" fill="#718096">+115 mV</text>
 
-      <!-- ─── V label ─── -->
-      <text x="110" y="115" font-size="15" fill="#0b7a6e" font-weight="bold">V</text>
-      <text x="121" y="120" font-size="9" fill="#0b7a6e">m</text>
+      <!-- ═══ K⁺ branch (x=475) ═══ -->
+      <line x1="475" y1="35"  x2="475" y2="60"  stroke="#374151" stroke-width="2"/>
+      <rect x="462" y="60" width="26" height="16" fill="white" stroke="#1d4ed8" stroke-width="2" rx="2"/>
+      <line x1="462" y1="78" x2="490" y2="58" stroke="#1d4ed8" stroke-width="1.5"/>
+      <polygon points="490,58 484,60 486,54" fill="#1d4ed8"/>
+      <line x1="475" y1="76"  x2="475" y2="108" stroke="#374151" stroke-width="2"/>
+      <!-- Battery polarity reversed for K⁺ -->
+      <line x1="465" y1="110" x2="485" y2="110" stroke="#374151" stroke-width="1.5"/>
+      <line x1="462" y1="117" x2="488" y2="117" stroke="#374151" stroke-width="3.5"/>
+      <line x1="475" y1="119" x2="475" y2="195" stroke="#374151" stroke-width="2"/>
+      <text x="453" y="112" font-size="11" fill="#1d4ed8" font-weight="bold">−</text>
+      <text x="453" y="122" font-size="11" fill="#1d4ed8" font-weight="bold">+</text>
+      <!-- Labels -->
+      <text x="426" y="53" font-size="11" fill="#1d4ed8" font-weight="bold">ḡ<tspan font-size="8" dy="2">K</tspan></text>
+      <text x="445" y="53" font-size="10" fill="#1d4ed8">· n⁴</text>
+      <text x="428" y="138" font-size="11" fill="#1d4ed8">E<tspan font-size="8" dy="2">K</tspan></text>
+      <text x="428" y="152" font-size="9" fill="#718096">−12 mV</text>
 
-      <!-- ─── Node connectors ─── -->
-      <circle cx="165" cy="40" r="3" fill="#374151"/>
-      <circle cx="310" cy="40" r="3" fill="#374151"/>
-      <circle cx="450" cy="40" r="3" fill="#374151"/>
-      <circle cx="580" cy="40" r="3" fill="#374151"/>
-      <circle cx="165" cy="190" r="3" fill="#374151"/>
-      <circle cx="310" cy="190" r="3" fill="#374151"/>
-      <circle cx="450" cy="190" r="3" fill="#374151"/>
-      <circle cx="580" cy="190" r="3" fill="#374151"/>
+      <!-- ═══ Leak branch (x=615) ═══ -->
+      <line x1="615" y1="35"  x2="615" y2="60"  stroke="#374151" stroke-width="2"/>
+      <!-- Fixed resistor (zigzag) -->
+      <polyline points="615,60 607,65 623,71 607,77 623,83 607,89 623,95 615,100"
+                fill="none" stroke="#15803d" stroke-width="2"/>
+      <line x1="615" y1="100" x2="615" y2="113" stroke="#374151" stroke-width="2"/>
+      <line x1="605" y1="115" x2="625" y2="115" stroke="#374151" stroke-width="3.5"/>
+      <line x1="608" y1="122" x2="622" y2="122" stroke="#374151" stroke-width="1.5"/>
+      <line x1="615" y1="124" x2="615" y2="195" stroke="#374151" stroke-width="2"/>
+      <!-- Labels -->
+      <text x="628" y="60" font-size="11" fill="#15803d">g<tspan font-size="8" dy="2">L</tspan></text>
+      <text x="591" y="142" font-size="11" fill="#15803d">E<tspan font-size="8" dy="2">L</tspan></text>
+      <text x="586" y="156" font-size="9" fill="#718096">+10.6 mV</text>
+
+      <!-- ─── Vm label between Iext and Cm ─── -->
+      <text x="128" y="120" font-size="15" fill="#0b7a6e" font-weight="bold">V<tspan font-size="9" dy="3">m</tspan></text>
+
+      <!-- ─── Node dots ─── -->
+      <circle cx="185" cy="35"  r="3.5" fill="#374151"/>
+      <circle cx="335" cy="35"  r="3.5" fill="#374151"/>
+      <circle cx="475" cy="35"  r="3.5" fill="#374151"/>
+      <circle cx="615" cy="35"  r="3.5" fill="#374151"/>
+      <circle cx="185" cy="195" r="3.5" fill="#374151"/>
+      <circle cx="335" cy="195" r="3.5" fill="#374151"/>
+      <circle cx="475" cy="195" r="3.5" fill="#374151"/>
+      <circle cx="615" cy="195" r="3.5" fill="#374151"/>
 
       <!-- ─── Legend ─── -->
-      <rect x="20" y="200" width="10" height="3" fill="#dc2626" rx="1"/>
-      <text x="34" y="208" font-size="9" fill="#718096">Na⁺ channel</text>
-      <rect x="135" y="200" width="10" height="3" fill="#1d4ed8" rx="1"/>
-      <text x="149" y="208" font-size="9" fill="#718096">K⁺ channel</text>
-      <rect x="245" y="200" width="10" height="3" fill="#15803d" rx="1"/>
-      <text x="259" y="208" font-size="9" fill="#718096">Leak</text>
-      <rect x="305" y="200" width="10" height="3" fill="#374151" rx="1"/>
-      <text x="319" y="208" font-size="9" fill="#718096">Capacitor (C<tspan baseline-shift="sub" font-size="7">m</tspan>)</text>
+      <rect x="28"  y="218" width="12" height="3" fill="#dc2626" rx="1"/>
+      <text x="44"  y="226" font-size="9" fill="#718096">Na⁺ channel</text>
+      <rect x="148" y="218" width="12" height="3" fill="#1d4ed8" rx="1"/>
+      <text x="164" y="226" font-size="9" fill="#718096">K⁺ channel</text>
+      <rect x="268" y="218" width="12" height="3" fill="#15803d" rx="1"/>
+      <text x="284" y="226" font-size="9" fill="#718096">Leak</text>
+      <rect x="338" y="218" width="12" height="3" fill="#374151" rx="1"/>
+      <text x="354" y="226" font-size="9" fill="#718096">Capacitor (C<tspan baseline-shift="sub" font-size="7">m</tspan>)</text>
+      <rect x="468" y="218" width="12" height="3" fill="#0b7a6e" rx="1"/>
+      <text x="484" y="226" font-size="9" fill="#718096">Current source (I<tspan baseline-shift="sub" font-size="7">ext</tspan>)</text>
     </svg>
     <div style="font-size:.78em;color:var(--dim);text-align:center;margin-top:8px">Figure 1. Hodgkin–Huxley equivalent circuit. The dashed arrows on g<sub>Na</sub> and g<sub>K</sub> indicate voltage-dependent (variable) conductances. The battery polarity follows the convention that E<sub>Na</sub> drives inward current (depolarizing) while E<sub>K</sub> drives outward current (repolarizing).</div>
   </div>
@@ -737,8 +751,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
             </select>
           </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.5" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.5" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.1" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.1" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="0" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
@@ -819,7 +833,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 </div>
           <div style="font-size:.67em;color:var(--dim);margin:-2px 0 5px;line-height:1.35">Lower = slower, easier to read AP shape</div>
           <div class="ctrl-check-row">
-            <input type="checkbox" id="auto-pause" checked onchange="P.autoPause=this.checked">
+            <input type="checkbox" id="auto-pause" onchange="P.autoPause=this.checked">
             <label for="auto-pause">Auto-pause after settling (20 ms)</label>
           </div>
           <div class="ctrl-check-row">
@@ -1026,7 +1040,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 'use strict';
 
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
-const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:true};
+const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:false};
 // Default: continuous Iext=10, 120 ms window
 const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
 const DT=0.01, STORE_EVERY=2, MAX_HIST=15000;
