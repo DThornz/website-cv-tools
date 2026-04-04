@@ -96,10 +96,10 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:1020px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;grid-template-rows:1020px;gap:0;align-items:stretch;height:1020px;overflow:hidden}
 
 /* Controls panel */
-.sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:hidden;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
+.sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:hidden;overflow-x:hidden;height:100%;min-height:0;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
 .ctrl-group{margin-bottom:10px}
 .ctrl-group-label{font-family:var(--mono);font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px;font-weight:600}
 .ctrl-group-label::after{content:'';flex:1;height:1px;background:var(--border2)}
