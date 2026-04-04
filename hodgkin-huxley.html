@@ -1827,12 +1827,25 @@ function runInitialSimulation(){
   const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready — click ▶ Run';
 }
 
+
 // ─── LOAD ─────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  initState();
+  const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
+  const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx];
+  const dtSlEl=document.getElementById('sl-dt');if(dtSlEl)dtSlEl.value='0.01';
+  const durRowInit=document.getElementById('dur-row');
+  if(durRowInit) durRowInit.classList.add('disabled');
+  const freqRowInit=document.getElementById('freq-row');
+  if(freqRowInit) freqRowInit.classList.add('disabled');
+  const dtNumEl=document.getElementById('sl-dt-num');if(dtNumEl)dtNumEl.value='0.010';
+  renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
+  runInitialSimulation();
+});
 
-// ════════════════════════════════════════════════════════════
-// TAB SWITCHING
-// ════════════════════════════════════════════════════════════
-
+window.addEventListener('resize',()=>{
+  if(hist.t.length>0)renderAll();else{renderSS();renderTau();renderPhase();}
+});
 
 // ════════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════════════
@@ -2095,6 +2108,26 @@ function vcRenderIV() {
 
 
 // ── Tab switching ────────────────────────────────────────────────
+
+// ── VC UI Helpers ────────────────────────────────────────────────
+function vcSlider(param, val) {
+  const v = parseFloat(val);
+  const map = {vhold:'Vhold', vcmd:'Vcmd', tstart:'tStart', dur:'dur',
+               gna:'gNa', gk:'gK', ena:'ENa', ek:'EK'};
+  if (map[param]) vcP[map[param]] = v;
+  const numEl = document.getElementById(`vc-${param}-num`);
+  if (numEl) numEl.value = v;
+}
+
+function syncVCNum(sliderId, val) {
+  const el = document.getElementById(sliderId);
+  if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+}
+
+function vcUpdateProtocol() {
+  vcP.protocol = document.getElementById('vc-protocol').value;
+}
+
 function switchSimTab(tab) {
   ['cc','vc'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
