@@ -2209,223 +2209,6 @@ window.addEventListener('resize',()=>{
 });
 
 
-</script>
-
-<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
-<div class="acc-panel" id="acc-panel">
-  <div class="acc-panel-title">⚙ Display Settings</div>
-  <div class="acc-row">
-    <div class="acc-row-label">Color Mode</div>
-    <div class="acc-toggle-row">
-      <span class="acc-toggle-label">Dark Mode</span>
-      <label class="acc-switch">
-        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
-        <span class="acc-slider"></span>
-      </label>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Size</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
-      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
-      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Style</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
-      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
-      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function(){
-  var FONTS=['','font-serif','font-mono'];
-  var LS=window.localStorage;
-
-  function lsGet(k){try{return LS?LS.getItem(k):null;}catch(e){return null;}}
-  function lsSet(k,v){try{if(LS)LS.setItem(k,v);}catch(e){}}
-
-  function applyPrefs(){
-    var dark=lsGet('acc_dark')==='1';
-    var sz=lsGet('acc_sz')||'md';
-    var fi=parseInt(lsGet('acc_fi')||'0');
-    var b=document.body;
-    // Theme
-    b.classList.toggle('dark-mode',dark);
-    b.classList.toggle('light-mode',!dark);
-    // Size
-    b.classList.remove('size-sm','size-md','size-lg');
-    b.classList.add('size-'+sz);
-    // Font
-    b.classList.remove('font-serif','font-mono');
-    if(FONTS[fi]) b.classList.add(FONTS[fi]);
-    // Sync controls
-    var cb=document.getElementById('acc-dark');
-    if(cb) cb.checked=dark;
-    ['sm','md','lg'].forEach(function(s){
-      var el=document.getElementById('acc-'+s);
-      if(el) el.classList.toggle('active',s===sz);
-    });
-    [0,1,2].forEach(function(i){
-      var el=document.getElementById('acc-f'+i);
-      if(el) el.classList.toggle('active',i===fi);
-    });
-  }
-
-  window.accToggle=function(){
-    var p=document.getElementById('acc-panel');
-    if(p) p.classList.toggle('open');
-  };
-  window.accDark=function(cb){lsSet('acc_dark',cb.checked?'1':'0');applyPrefs();};
-  window.accSize=function(s){lsSet('acc_sz',s);applyPrefs();};
-  window.accFont=function(i){lsSet('acc_fi',i);applyPrefs();};
-
-  // Close on outside click
-  document.addEventListener('click',function(e){
-    var p=document.getElementById('acc-panel');
-    var b2=document.getElementById('acc-btn');
-    if(p&&b2&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b2)
-      p.classList.remove('open');
-  });
-
-  // Apply on load (before DOMContentLoaded to avoid flash)
-  applyPrefs();
-  document.addEventListener('DOMContentLoaded',applyPrefs);
-})();
-
-// ─── SYNC: slider ↔ number input ───────────────────────
-function syncSlider(slId, val){
-  const numEl = document.getElementById(slId+'-num');
-  // Don't overwrite if the number field is currently focused (user is typing)
-  if(numEl && document.activeElement !== numEl){
-    const dp = numEl.step && numEl.step.includes('.') ?
-      numEl.step.split('.')[1].length : 0;
-    numEl.value = parseFloat(val).toFixed(dp);
-  }
-}
-function syncNum(slId, val){
-  const slEl = document.getElementById(slId);
-  if(!slEl) return;
-  const numVal = parseFloat(val);
-  if(isNaN(numVal)) return;
-  const mn = parseFloat(slEl.min), mx = parseFloat(slEl.max);
-  const clamped = Math.min(mx, Math.max(mn, numVal));
-  slEl.value = clamped;
-  // Trigger the slider's oninput
-  slEl.dispatchEvent(new Event('input', {bubbles:true}));
-}
-
-// ─── DEFAULTS ────────────────────────────────────────────
-const DEFAULTS = {
-  gNa:120, gK:36, gL:0.3, ENa:50, EK:-77, EL:-54.387, Cm:1, T:6.3,
-  I0:10, tStart:10, dur:40, type:'step', freq:40, win:160, speed:3
-};
-function applyDefaults(){
-  applyPreset('standard');
-}
-
-// ─── ZOOM / PAN / HOME ───────────────────────────────────
-// Drag to pan, scroll to zoom, Home resets to auto-follow
-let _dragActive=false, _dragX0=0, _dragV0=0, _dragV1=0;
-
-function attachPlotInteraction(){
-  const plotIds=['cv-V','cv-gates','cv-currents'];
-  plotIds.forEach(id=>{
-    const c=document.getElementById(id);
-    if(!c) return;
-    c.style.cursor='grab';
-
-    // Mouse drag — pan
-    c.addEventListener('mousedown',e=>{
-      _dragActive=true; _dragX0=e.clientX;
-      _dragV0=viewStart; _dragV1=viewEnd;
-      c.style.cursor='grabbing'; e.preventDefault();
-    });
-    c.addEventListener('mousemove',e=>{
-      if(!_dragActive) return;
-      const pxPerMs=(c.clientWidth||600)/(viewEnd-viewStart);
-      const dMs=(e.clientX-_dragX0)/pxPerMs;
-      const span=_dragV1-_dragV0;
-      const newStart=_dragV0-dMs;
-      viewStart=Math.max(0,newStart);
-      viewEnd=viewStart+span;
-      viewLocked=true;
-      renderAll();
-    });
-    const stopDrag=()=>{ _dragActive=false; c.style.cursor='grab'; };
-    c.addEventListener('mouseup',stopDrag);
-    c.addEventListener('mouseleave',stopDrag);
-
-    // Scroll — zoom time axis
-    c.addEventListener('wheel',e=>{
-      e.preventDefault();
-      const span=viewEnd-viewStart;
-      const factor=e.deltaY>0?1.2:0.833;
-      const newSpan=Math.max(20,Math.min(2000,span*factor));
-      const center=(viewStart+viewEnd)/2;
-      viewStart=Math.max(0,center-newSpan/2);
-      viewEnd=viewStart+newSpan;
-      winMs=newSpan;
-      viewLocked=true;
-      // Update window slider
-      const slW=document.getElementById('sl-win');
-      if(slW){ slW.value=Math.round(newSpan); syncSlider('sl-win',Math.round(newSpan)); }
-      renderAll();
-    },{passive:false});
-
-    // Touch drag
-    let _tx0=0,_tv0=0,_tv1=0;
-    c.addEventListener('touchstart',e=>{
-      _tx0=e.touches[0].clientX; _tv0=viewStart; _tv1=viewEnd;
-    },{passive:true});
-    c.addEventListener('touchmove',e=>{
-      const pxPerMs=(c.clientWidth||600)/(viewEnd-viewStart);
-      const dMs=(e.touches[0].clientX-_tx0)/pxPerMs;
-      const span=_tv1-_tv0;
-      viewStart=Math.max(0,_tv0-dMs);
-      viewEnd=viewStart+span;
-      viewLocked=true;
-      renderAll();
-    },{passive:true});
-  });
-
-  // Double-click any plot → home
-  plotIds.forEach(id=>{
-    const c=document.getElementById(id);
-    if(c) c.addEventListener('dblclick',()=>homeView());
-  });
-}
-
-function homeView(){
-  viewLocked=false;
-  if(hist.t.length){
-    const tEnd=hist.t[hist.t.length-1];
-    viewStart=Math.max(0,tEnd-winMs);
-    viewEnd=Math.max(winMs,tEnd);
-  } else {
-    viewStart=0; viewEnd=winMs;
-  }
-  renderAll();
-}
-
-window.addEventListener('DOMContentLoaded',()=>{
-  attachPlotInteraction();
-});
-</script>
-
-<!-- Copyright footer -->
-<footer style="text-align:center;padding:20px 24px;font-family:'DM Mono',monospace;font-size:.72em;color:var(--dim);border-top:1px solid var(--border);margin-top:auto">
-  © 2026 Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
-  <a href="https://github.com/DThornz/website-cv-tools" target="_blank" style="color:var(--dim)">GitHub</a>
-</footer>
-</body>
-</html>
-
 
 
 // ════════════════════════════════════════════════════════════════
@@ -2696,4 +2479,219 @@ function switchSimTab(tab) {
   if (tab === 'vc') { vcReset(); vcRenderAll(); }
 }
 
+</script>
 
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
+<div class="acc-panel" id="acc-panel">
+  <div class="acc-panel-title">⚙ Display Settings</div>
+  <div class="acc-row">
+    <div class="acc-row-label">Color Mode</div>
+    <div class="acc-toggle-row">
+      <span class="acc-toggle-label">Dark Mode</span>
+      <label class="acc-switch">
+        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
+        <span class="acc-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Size</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
+      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
+      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Style</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
+      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
+      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var FONTS=['','font-serif','font-mono'];
+  var LS=window.localStorage;
+
+  function lsGet(k){try{return LS?LS.getItem(k):null;}catch(e){return null;}}
+  function lsSet(k,v){try{if(LS)LS.setItem(k,v);}catch(e){}}
+
+  function applyPrefs(){
+    var dark=lsGet('acc_dark')==='1';
+    var sz=lsGet('acc_sz')||'md';
+    var fi=parseInt(lsGet('acc_fi')||'0');
+    var b=document.body;
+    // Theme
+    b.classList.toggle('dark-mode',dark);
+    b.classList.toggle('light-mode',!dark);
+    // Size
+    b.classList.remove('size-sm','size-md','size-lg');
+    b.classList.add('size-'+sz);
+    // Font
+    b.classList.remove('font-serif','font-mono');
+    if(FONTS[fi]) b.classList.add(FONTS[fi]);
+    // Sync controls
+    var cb=document.getElementById('acc-dark');
+    if(cb) cb.checked=dark;
+    ['sm','md','lg'].forEach(function(s){
+      var el=document.getElementById('acc-'+s);
+      if(el) el.classList.toggle('active',s===sz);
+    });
+    [0,1,2].forEach(function(i){
+      var el=document.getElementById('acc-f'+i);
+      if(el) el.classList.toggle('active',i===fi);
+    });
+  }
+
+  window.accToggle=function(){
+    var p=document.getElementById('acc-panel');
+    if(p) p.classList.toggle('open');
+  };
+  window.accDark=function(cb){lsSet('acc_dark',cb.checked?'1':'0');applyPrefs();};
+  window.accSize=function(s){lsSet('acc_sz',s);applyPrefs();};
+  window.accFont=function(i){lsSet('acc_fi',i);applyPrefs();};
+
+  // Close on outside click
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('acc-panel');
+    var b2=document.getElementById('acc-btn');
+    if(p&&b2&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b2)
+      p.classList.remove('open');
+  });
+
+  // Apply on load (before DOMContentLoaded to avoid flash)
+  applyPrefs();
+  document.addEventListener('DOMContentLoaded',applyPrefs);
+})();
+
+// ─── SYNC: slider ↔ number input ───────────────────────
+function syncSlider(slId, val){
+  const numEl = document.getElementById(slId+'-num');
+  // Don't overwrite if the number field is currently focused (user is typing)
+  if(numEl && document.activeElement !== numEl){
+    const dp = numEl.step && numEl.step.includes('.') ?
+      numEl.step.split('.')[1].length : 0;
+    numEl.value = parseFloat(val).toFixed(dp);
+  }
+}
+function syncNum(slId, val){
+  const slEl = document.getElementById(slId);
+  if(!slEl) return;
+  const numVal = parseFloat(val);
+  if(isNaN(numVal)) return;
+  const mn = parseFloat(slEl.min), mx = parseFloat(slEl.max);
+  const clamped = Math.min(mx, Math.max(mn, numVal));
+  slEl.value = clamped;
+  // Trigger the slider's oninput
+  slEl.dispatchEvent(new Event('input', {bubbles:true}));
+}
+
+// ─── DEFAULTS ────────────────────────────────────────────
+const DEFAULTS = {
+  gNa:120, gK:36, gL:0.3, ENa:50, EK:-77, EL:-54.387, Cm:1, T:6.3,
+  I0:10, tStart:10, dur:40, type:'step', freq:40, win:160, speed:3
+};
+function applyDefaults(){
+  applyPreset('standard');
+}
+
+// ─── ZOOM / PAN / HOME ───────────────────────────────────
+// Drag to pan, scroll to zoom, Home resets to auto-follow
+let _dragActive=false, _dragX0=0, _dragV0=0, _dragV1=0;
+
+function attachPlotInteraction(){
+  const plotIds=['cv-V','cv-gates','cv-currents'];
+  plotIds.forEach(id=>{
+    const c=document.getElementById(id);
+    if(!c) return;
+    c.style.cursor='grab';
+
+    // Mouse drag — pan
+    c.addEventListener('mousedown',e=>{
+      _dragActive=true; _dragX0=e.clientX;
+      _dragV0=viewStart; _dragV1=viewEnd;
+      c.style.cursor='grabbing'; e.preventDefault();
+    });
+    c.addEventListener('mousemove',e=>{
+      if(!_dragActive) return;
+      const pxPerMs=(c.clientWidth||600)/(viewEnd-viewStart);
+      const dMs=(e.clientX-_dragX0)/pxPerMs;
+      const span=_dragV1-_dragV0;
+      const newStart=_dragV0-dMs;
+      viewStart=Math.max(0,newStart);
+      viewEnd=viewStart+span;
+      viewLocked=true;
+      renderAll();
+    });
+    const stopDrag=()=>{ _dragActive=false; c.style.cursor='grab'; };
+    c.addEventListener('mouseup',stopDrag);
+    c.addEventListener('mouseleave',stopDrag);
+
+    // Scroll — zoom time axis
+    c.addEventListener('wheel',e=>{
+      e.preventDefault();
+      const span=viewEnd-viewStart;
+      const factor=e.deltaY>0?1.2:0.833;
+      const newSpan=Math.max(20,Math.min(2000,span*factor));
+      const center=(viewStart+viewEnd)/2;
+      viewStart=Math.max(0,center-newSpan/2);
+      viewEnd=viewStart+newSpan;
+      winMs=newSpan;
+      viewLocked=true;
+      // Update window slider
+      const slW=document.getElementById('sl-win');
+      if(slW){ slW.value=Math.round(newSpan); syncSlider('sl-win',Math.round(newSpan)); }
+      renderAll();
+    },{passive:false});
+
+    // Touch drag
+    let _tx0=0,_tv0=0,_tv1=0;
+    c.addEventListener('touchstart',e=>{
+      _tx0=e.touches[0].clientX; _tv0=viewStart; _tv1=viewEnd;
+    },{passive:true});
+    c.addEventListener('touchmove',e=>{
+      const pxPerMs=(c.clientWidth||600)/(viewEnd-viewStart);
+      const dMs=(e.touches[0].clientX-_tx0)/pxPerMs;
+      const span=_tv1-_tv0;
+      viewStart=Math.max(0,_tv0-dMs);
+      viewEnd=viewStart+span;
+      viewLocked=true;
+      renderAll();
+    },{passive:true});
+  });
+
+  // Double-click any plot → home
+  plotIds.forEach(id=>{
+    const c=document.getElementById(id);
+    if(c) c.addEventListener('dblclick',()=>homeView());
+  });
+}
+
+function homeView(){
+  viewLocked=false;
+  if(hist.t.length){
+    const tEnd=hist.t[hist.t.length-1];
+    viewStart=Math.max(0,tEnd-winMs);
+    viewEnd=Math.max(winMs,tEnd);
+  } else {
+    viewStart=0; viewEnd=winMs;
+  }
+  renderAll();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  attachPlotInteraction();
+});
+</script>
+
+<!-- Copyright footer -->
+<footer style="text-align:center;padding:20px 24px;font-family:'DM Mono',monospace;font-size:.72em;color:var(--dim);border-top:1px solid var(--border);margin-top:auto">
+  © 2026 Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
+  <a href="https://github.com/DThornz/website-cv-tools" target="_blank" style="color:var(--dim)">GitHub</a>
+</footer>
+</body>
+</html>
