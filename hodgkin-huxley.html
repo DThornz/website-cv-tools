@@ -729,26 +729,27 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div class="ctrl-row">
             <span class="ctrl-label"><span class="ctrl-label-txt">Type</span></span>
             <select class="ctrl-select" id="stim-type" onchange="updateStim()">
-              <option value="step">Step current</option>
+              <option value="continuous" selected>Continuous</option>
+              <option value="step">Step (finite)</option>
               <option value="pulse">Pulse train</option>
               <option value="ramp">Ramp</option>
               <option value="sine">Sinusoidal</option>
             </select>
           </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.5" value="9" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.5" value="9" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.5" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.5" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="0" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="0" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim();syncSlider('sl-tStart',this.value)">
 </div>
-          <div class="ctrl-row">
+          <div class="ctrl-row" id="dur-row" style="display:none">
   <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="200" step="0.5" value="100" onchange="syncNum('sl-dur',this.value)" onblur="syncNum('sl-dur',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="200" step="0.5" value="100" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
 </div>
           <!-- Stimulus window computed display -->
-          <div id="stim-window-disp" style="grid-column:1/-1" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
+          <div id="stim-window-disp" style="grid-column:1/-1;display:none" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
             Active: t = <span id="stim-t0">10</span> → <span id="stim-t1">50</span> ms
           </div>
           <div class="ctrl-row" id="freq-row" style="display:none">
@@ -803,8 +804,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val');syncSlider('sl-Cm',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="200" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-win" min="50" max="500" step="10" value="200" oninput="slUpdate('win',this.value,'sl-win-val');updateWindow();syncSlider('sl-win',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="120" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-win" min="50" max="500" step="10" value="120" oninput="slUpdate('win',this.value,'sl-win-val');updateWindow();syncSlider('sl-win',this.value)">
 </div>
         </div>
 
@@ -819,7 +820,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div style="font-size:.67em;color:var(--dim);margin:-2px 0 5px;line-height:1.35">Lower = slower, easier to read AP shape</div>
           <div class="ctrl-check-row">
             <input type="checkbox" id="auto-pause" checked onchange="P.autoPause=this.checked">
-            <label for="auto-pause">Auto-pause after activity</label>
+            <label for="auto-pause">Auto-pause after settling (20 ms)</label>
           </div>
           <div class="ctrl-check-row">
             <input type="checkbox" id="show-full" checked onchange="P.showFull=this.checked">
@@ -854,9 +855,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div style="margin-top:10px">
           <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:6px">Quick Presets</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
-            <button onclick="applyPreset('standard')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Standard</button>
-            <button onclick="applyPreset('body')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">37°C Body</button>
-            <button onclick="applyPreset('burst')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst (15µA)</button>
+            <button onclick="applyPreset('standard')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Continuous</button>
+            <button onclick="applyPreset('step100')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Step 100ms</button>
+            <button onclick="applyPreset('burst')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst (20µA)</button>
             <button onclick="applyPreset('subthresh')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Sub-threshold</button>
             <button onclick="applyPreset('phasedemo')" style="padding:5px 4px;border:1px solid var(--teal);border-radius:5px;background:rgba(11,122,110,.08);font-size:.7em;cursor:pointer;color:var(--teal);font-weight:600;transition:all .15s;grid-column:1/-1" title="Auto-runs tonic firing to populate the phase portrait">▶ Phase Demo (auto-run)</button>
           </div>
@@ -1025,31 +1026,33 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
 const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:true};
-const STIM={type:'step',I0:9,tStart:0,dur:100,freq:40};
-const DT=0.01, STORE_EVERY=2, MAX_HIST=50000;
+// Default: continuous Iext=10, 120 ms window
+const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
+const DT=0.01, STORE_EVERY=2, MAX_HIST=200000;
 const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
-let speedIdx=2, winMs=110;
+let speedIdx=2, winMs=120;
 
 // ─── SIM STATE ────────────────────────────────────────────
 let t=0, y=[0,0,0,0], stepCnt=0;
 let running=false, animId=null;
-let viewStart=0, viewEnd=110, viewLocked=false;
+let viewLocked=false;
 let currentV=0;
 
-// History arrays
+// History arrays (rolling: capped at MAX_HIST)
 const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
 
 // AP detection
 let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH=50; // mV — MATLAB convention peak ~115mV
+const AP_THRESH=50; // mV — MATLAB convention peak ~115 mV
 
 // Phase portrait
 const TRAIL_LEN=6000;
 const phaseV=new Float32Array(TRAIL_LEN), phaseN=new Float32Array(TRAIL_LEN);
 let phasePtr=0, phaseCount=0;
 
-// Stability / auto-pause
-const STAB_THRESH=0.5, STAB_DUR=8;
+// Auto-pause: triggered 20 ms after voltage becomes negligible post-stimulus
+const STAB_THRESH=1.0;  // mV  — negligible change threshold
+const STAB_DUR=20;      // ms  — must be stable this long
 let stabTimer=0, postStimStart=-1;
 
 // ─── RATE FUNCTIONS — MATLAB/HH original (Vrest=0) ───────
@@ -1064,16 +1067,24 @@ function ss(V){return[am(V)/(am(V)+bm(V)),ah(V)/(ah(V)+bh(V)),an(V)/(an(V)+bn(V)
 
 // ─── STIMULUS ─────────────────────────────────────────────
 function iext(t){
-  const{type,I0,tStart,dur,freq}=STIM,tEnd=tStart+dur;
-  if(t<tStart)return 0;
-  if(type==='step')return t<=tEnd?I0:0;
-  if(type==='ramp')return t>tEnd?0:I0*(t-tStart)/dur;
-  if(type==='pulse'){if(t>tEnd)return 0;const p=1000/freq,pw=Math.min(1,p*0.4);return(t-tStart)%p<pw?I0:0;}
-  if(type==='sine'){if(t>tEnd)return 0;return I0*Math.sin(2*Math.PI*freq*(t-tStart)/1000);}
+  const{type,I0,tStart,dur,freq}=STIM, tEnd=tStart+dur;
+  if(t<tStart) return 0;
+  if(type==='continuous') return I0;                          // no end — always on
+  if(type==='step')  return t<=tEnd ? I0 : 0;
+  if(type==='ramp')  return t>tEnd  ? 0  : I0*(t-tStart)/dur;
+  if(type==='pulse'){
+    if(t>tEnd) return 0;
+    const p=1000/freq, pw=Math.min(1,p*0.4);
+    return (t-tStart)%p < pw ? I0 : 0;
+  }
+  if(type==='sine'){
+    if(t>tEnd) return 0;
+    return I0*Math.sin(2*Math.PI*freq*(t-tStart)/1000);
+  }
   return 0;
 }
 
-// ─── ODE (MATLAB order: [V,m,h,n]) ───────────────────────
+// ─── ODE ─────────────────────────────────────────────────
 function dydt(y,t){
   const[V,m,h,n]=y, ph=phi();
   const INa=P.blockNa?0:P.gNa*m*m*m*h*(V-P.ENa);
@@ -1104,18 +1115,34 @@ function storeAndDetect(){
   const IL =P.gL*(V-P.EL);
   hist.t.push(t);hist.V.push(V);hist.m.push(m);hist.h.push(h);
   hist.n.push(n);hist.INa.push(INa);hist.IK.push(IK);hist.IL.push(IL);hist.Iext.push(Ie);
-  if(hist.t.length>MAX_HIST){const ex=hist.t.length-MAX_HIST;for(const k of Object.keys(hist))hist[k].splice(0,ex);}
-  phaseV[phasePtr]=V;phaseN[phasePtr]=n;phasePtr=(phasePtr+1)%TRAIL_LEN;if(phaseCount<TRAIL_LEN)phaseCount++;
+  if(hist.t.length>MAX_HIST){
+    const ex=hist.t.length-MAX_HIST;
+    for(const k of Object.keys(hist))hist[k].splice(0,ex);
+  }
+  phaseV[phasePtr]=V;phaseN[phasePtr]=n;phasePtr=(phasePtr+1)%TRAIL_LEN;
+  if(phaseCount<TRAIL_LEN)phaseCount++;
+
   // Spike detection
   const prev=hist.V.length>=2?hist.V[hist.V.length-2]:V;
-  if(prev<AP_THRESH&&V>=AP_THRESH&&t-apLastSpike>3){apSpikes++;if(apSpikes>1)apSpikeTs.push(t-apLastSpike);apLastSpike=t;apPeakV=V;}
+  if(prev<AP_THRESH&&V>=AP_THRESH&&t-apLastSpike>3){
+    apSpikes++;if(apSpikes>1)apSpikeTs.push(t-apLastSpike);
+    apLastSpike=t;apPeakV=V;
+  }
   if(V>apPeakV&&apSpikes>0)apPeakV=V;
-  // Stability
-  const stimDone=t>STIM.tStart+STIM.dur+2;
-  if(stimDone){if(postStimStart<0)postStimStart=t;if(Math.abs(V)<STAB_THRESH&&m<0.02&&n<0.05)stabTimer+=DT;else stabTimer=0;}
+
+  // Stability / auto-pause: only fires when stimulus is NOT continuous
+  // AND after the stimulus window has ended AND V has settled
+  const isContinuous = STIM.type==='continuous';
+  if(!isContinuous){
+    const stimDone = t > STIM.tStart + STIM.dur + 2;
+    if(stimDone){
+      if(postStimStart<0) postStimStart=t;
+      if(Math.abs(V)<STAB_THRESH) stabTimer+=DT; else stabTimer=0;
+    }
+  }
 }
 
-function shouldAutoPause(){return P.autoPause&&stabTimer>=STAB_DUR;}
+function shouldAutoPause(){return P.autoPause && STIM.type!=='continuous' && stabTimer>=STAB_DUR;}
 
 // ─── INIT ─────────────────────────────────────────────────
 function initState(){
@@ -1133,14 +1160,14 @@ function animate(){
     rk4();
     if(stepCnt%STORE_EVERY===0)storeAndDetect();
     if(shouldAutoPause()){
-      viewStart=0;viewEnd=Math.max(winMs,t);viewLocked=true;
+      // Lock view to show full trace from t=0
+      viewLocked=true;
       stopSim();
       const sd=document.getElementById('sim-dot');if(sd)sd.classList.add('paused');
-      const st=document.getElementById('sim-status-text');if(st)st.textContent='Stable — paused';
+      const st=document.getElementById('sim-status-text');if(st)st.textContent='Stable — auto-paused';
       renderAll();updateStats();return;
     }
   }
-  updateViewWindow();
   renderAll();updateStats();
   animId=requestAnimationFrame(animate);
 }
@@ -1159,21 +1186,15 @@ function stopSim(){
   running=false;
   if(animId){cancelAnimationFrame(animId);animId=null;}
   const sd=document.getElementById('sim-dot');if(sd)sd.classList.add('paused');
-  const st=document.getElementById('sim-status-text');if(st&&st.textContent==='Running')st.textContent='Paused';
+  const st=document.getElementById('sim-status-text');
+  if(st&&st.textContent==='Running')st.textContent='Paused';
 }
 
 function resetSim(){
   stopSim();initState();
-  viewStart=0;viewEnd=winMs;viewLocked=false;
+  viewLocked=false;
   renderAll();updateStats();
   const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready';
-}
-
-// ─── VIEW WINDOW ──────────────────────────────────────────
-function updateViewWindow(){
-  if(viewLocked)return;
-  viewStart=Math.max(0,t-winMs);
-  viewEnd=Math.max(winMs,t);
 }
 
 // ─── CANVAS SETUP ─────────────────────────────────────────
@@ -1200,91 +1221,146 @@ function drawAxes(ctx,W,H,yMin,yMax,xMin,xMax,yLabel){
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#f9fafb';ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#fff';ctx.fillRect(p.left,p.top,pw,ph);
-  // Grid
   ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();}
   for(let i=0;i<=6;i++){ctx.beginPath();ctx.moveTo(p.left+pw*i/6,p.top);ctx.lineTo(p.left+pw*i/6,p.top+ph);ctx.stroke();}
   ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
-  // Zero line
-  if(yMin<0&&yMax>0){const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();ctx.setLineDash([]);}
-  // Labels
+  if(yMin<0&&yMax>0){
+    const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));
+    ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();ctx.setLineDash([]);
+  }
   const font="bold 12px 'DM Mono',monospace";
   ctx.fillStyle='#4a5568';ctx.font=font;ctx.textAlign='right';
-  for(let i=0;i<=5;i++){const val=yMin+(yMax-yMin)*(1-i/5);ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1),p.left-4,p.top+ph*i/5+4);}
+  for(let i=0;i<=5;i++){
+    const val=yMin+(yMax-yMin)*(1-i/5);
+    ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1),p.left-4,p.top+ph*i/5+4);
+  }
   ctx.textAlign='center';
-  for(let i=0;i<=6;i++){const val=xMin+(xMax-xMin)*i/6;ctx.fillText(Math.round(val),p.left+pw*i/6,H-8);}
-  ctx.save();ctx.translate(10,p.top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#718096';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
+  for(let i=0;i<=6;i++){
+    // X axis shows time within the current window (0..winMs)
+    ctx.fillText(Math.round(xMin+(xMax-xMin)*i/6),p.left+pw*i/6,H-8);
+  }
+  ctx.save();ctx.translate(10,p.top+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle='#718096';ctx.font="bold 12px 'DM Sans',sans-serif";
+  ctx.fillText(yLabel,0,0);ctx.restore();
 }
 
-// ─── PLOT TRACE ───────────────────────────────────────────
-function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw,dashed){
+// ─── ECG-STYLE PLOT (heart rate monitor — wraps at winMs) ──────────────
+// Maps time data to X position within a fixed [0, winMs] window.
+// The current "write head" (t % winMs) sweeps right; old data shows faded.
+function plotECG(ctx,ts,vs,W,H,vMin,vMax,color,lw){
   if(!ctx||!ts||ts.length<2)return;
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=lw||1.5;
-  if(dashed)ctx.setLineDash([4,3]);
-  ctx.beginPath();let first=true;
-  for(let i=0;i<ts.length;i++){
-    if(ts[i]<tMin-0.5||ts[i]>tMax+0.5)continue;
-    const x=p.left+pw*(ts[i]-tMin)/(tMax-tMin);
-    const yc=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
-    const ycc=Math.max(p.top-2,Math.min(p.top+ph+2,yc));
-    if(first){ctx.moveTo(x,ycc);first=false;}else ctx.lineTo(x,ycc);
-  }
-  ctx.stroke();if(dashed)ctx.setLineDash([]);ctx.restore();
-}
+  // Current cycle base
+  const tCur=ts[ts.length-1];
+  const cycleBase=Math.floor(tCur/winMs)*winMs; // start of current page
+  const headX=p.left+pw*((tCur%winMs)/winMs);  // current write-head X
 
-function drawStimulusShade(ctx,W,H,tMin,tMax){
-  const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  const tS=Math.max(tMin,STIM.tStart),tE=Math.min(tMax,STIM.tStart+STIM.dur);
-  if(tS>=tE)return;
-  const x1=p.left+pw*(tS-tMin)/(tMax-tMin),x2=p.left+pw*(tE-tMin)/(tMax-tMin);
-  ctx.fillStyle='rgba(11,122,110,.06)';ctx.fillRect(x1,p.top,x2-x1,ph);
+  // ── clip to plot area ──
+  ctx.save();ctx.beginPath();ctx.rect(p.left,p.top,pw,ph);ctx.clip();
+
+  // Draw the "eraser" strip just ahead of the write head
+  const eraseW=pw*0.04; // ~4% of width
+  ctx.fillStyle='#fff';
+  ctx.fillRect(headX,p.top,eraseW,ph);
+
+  // Helper: draw a segment of time data with a given alpha
+  function drawSegment(fromT,toT,alpha){
+    ctx.strokeStyle=color;ctx.lineWidth=lw||2;ctx.globalAlpha=alpha;
+    ctx.beginPath();let first=true;
+    for(let i=0;i<ts.length;i++){
+      if(ts[i]<fromT-DT||ts[i]>toT+DT) continue;
+      // x within window: ((ts[i] - cycleBase) % winMs) / winMs * pw
+      // but for previous cycle data: offset by -winMs
+      let tOffset=(ts[i]-cycleBase);
+      if(tOffset<0)tOffset+=winMs; // wrap previous cycle
+      const x=p.left+pw*(tOffset/winMs);
+      const yc=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
+      const ycc=Math.max(p.top-2,Math.min(p.top+ph+2,yc));
+      if(first||Math.abs(x-(p.left+pw*((ts[i-1]-cycleBase<0?ts[i-1]-cycleBase+winMs:ts[i-1]-cycleBase)/winMs)))>pw*0.5){
+        ctx.moveTo(x,ycc);first=false;
+      }else{
+        ctx.lineTo(x,ycc);
+      }
+    }
+    ctx.stroke();ctx.globalAlpha=1;
+  }
+
+  // Previous cycle (faded) — data from [cycleBase-winMs, cycleBase]
+  if(tCur>=winMs) drawSegment(cycleBase-winMs, cycleBase, 0.28);
+  // Current cycle (full brightness) — data from [cycleBase, tCur]
+  drawSegment(cycleBase, tCur, 1.0);
+
+  // Write-head cursor line
+  ctx.strokeStyle='rgba(11,122,110,0.6)';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(headX,p.top);ctx.lineTo(headX,p.top+ph);ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.restore();
 }
 
 // ─── RENDER PLOTS ─────────────────────────────────────────
 function renderAll(){
   if(!hist.t.length)return;
-  const tMin=viewStart,tMax=viewEnd;
   currentV=hist.V[hist.V.length-1];
-  renderV(tMin,tMax);renderGates(tMin,tMax);renderCurrents(tMin,tMax);renderIext(tMin,tMax);
+  renderV();renderGates();renderCurrents();renderIext_plot();
   renderSS();renderTau();renderPhase();
 }
 
-function renderV(tMin,tMax){
+function renderV(){
   const{ctx,W,H}=setupCanvas('cv-V');if(!ctx)return;
-  drawAxes(ctx,W,H,-20,125,tMin,tMax,'mV');
-  drawStimulusShade(ctx,W,H,tMin,tMax);
-  if(hist.Iext.length){const maxI=Math.max(1,...hist.Iext.map(v=>Math.abs(v)));const iSc=hist.Iext.map(v=>-20+v/maxI*15);plotTrace(ctx,hist.t,iSc,W,H,-20,125,tMin,tMax,'#94a3b8',1,true);}
-  plotTrace(ctx,hist.t,hist.V,W,H,-20,125,tMin,tMax,'#0b7a6e',2);
+  drawAxes(ctx,W,H,-20,125,0,winMs,'mV');
+  plotECG(ctx,hist.t,hist.V,W,H,-20,125,'#0b7a6e',2);
 }
 
-function renderGates(tMin,tMax){
+function renderGates(){
   const{ctx,W,H}=setupCanvas('cv-gates');if(!ctx)return;
-  drawAxes(ctx,W,H,0,1,tMin,tMax,'');
-  drawStimulusShade(ctx,W,H,tMin,tMax);
-  plotTrace(ctx,hist.t,hist.m,W,H,0,1,tMin,tMax,'#dc2626',1.5);
-  plotTrace(ctx,hist.t,hist.h,W,H,0,1,tMin,tMax,'#f59e0b',1.5);
-  plotTrace(ctx,hist.t,hist.n,W,H,0,1,tMin,tMax,'#7c3aed',1.5);
+  drawAxes(ctx,W,H,0,1,0,winMs,'');
+  plotECG(ctx,hist.t,hist.m,W,H,0,1,'#dc2626',1.5);
+  plotECG(ctx,hist.t,hist.h,W,H,0,1,'#f59e0b',1.5);
+  plotECG(ctx,hist.t,hist.n,W,H,0,1,'#7c3aed',1.5);
 }
 
-function renderCurrents(tMin,tMax){
+function renderCurrents(){
   const{ctx,W,H}=setupCanvas('cv-currents');if(!ctx)return;
+  const tCur=hist.t[hist.t.length-1];
+  const cycleBase=Math.floor(tCur/winMs)*winMs;
   let mxI=5;
-  for(let i=0;i<hist.t.length;i++){if(hist.t[i]<tMin-0.5||hist.t[i]>tMax+0.5)continue;const mx=Math.max(Math.abs(hist.INa[i]),Math.abs(hist.IK[i]),Math.abs(hist.IL[i]));if(mx>mxI)mxI=mx;}
+  for(let i=0;i<hist.t.length;i++){
+    if(hist.t[i]<cycleBase-winMs-0.5)continue;
+    const mx=Math.max(Math.abs(hist.INa[i]),Math.abs(hist.IK[i]),Math.abs(hist.IL[i]));
+    if(mx>mxI)mxI=mx;
+  }
   mxI=Math.max(5,mxI*1.12);
-  drawAxes(ctx,W,H,-mxI,mxI,tMin,tMax,'µA/cm²');
-  drawStimulusShade(ctx,W,H,tMin,tMax);
-  plotTrace(ctx,hist.t,hist.INa,W,H,-mxI,mxI,tMin,tMax,'#dc2626',1.5);
-  plotTrace(ctx,hist.t,hist.IK,W,H,-mxI,mxI,tMin,tMax,'#1d4ed8',1.5);
-  plotTrace(ctx,hist.t,hist.IL,W,H,-mxI,mxI,tMin,tMax,'#15803d',1);
+  drawAxes(ctx,W,H,-mxI,mxI,0,winMs,'µA/cm²');
+  plotECG(ctx,hist.t,hist.INa,W,H,-mxI,mxI,'#dc2626',1.5);
+  plotECG(ctx,hist.t,hist.IK, W,H,-mxI,mxI,'#1d4ed8',1.5);
+  plotECG(ctx,hist.t,hist.IL, W,H,-mxI,mxI,'#15803d',1);
 }
 
-function renderIext(tMin,tMax){
+function renderIext_plot(){
   const{ctx,W,H}=setupCanvas('cv-Iext');if(!ctx)return;
-  const preview=Math.abs(STIM.I0),mxI=Math.max(preview*1.2,1),mn=STIM.I0<0?-mxI:-mxI*0.12;
-  drawAxes(ctx,W,H,mn,mxI,tMin,tMax,'µA/cm²');
-  if(hist.t.length>1){plotTrace(ctx,hist.t,hist.Iext,W,H,mn,mxI,tMin,tMax,'#0b7a6e',2);}
-  else{const step=0.5,pts=[],is=[];for(let tt=tMin;tt<=tMax;tt+=step){pts.push(tt);is.push(iext(tt));}plotTrace(ctx,pts,is,W,H,mn,mxI,tMin,tMax,'rgba(11,122,110,.5)',1.5,true);}
+  const maxI=Math.max(Math.abs(STIM.I0),1);
+  const yMin=STIM.I0<0?-maxI*1.2:-maxI*0.15, yMax=maxI*1.2;
+  drawAxes(ctx,W,H,yMin,yMax,0,winMs,'µA/cm²');
+  if(hist.t.length>1){
+    plotECG(ctx,hist.t,hist.Iext,W,H,yMin,yMax,'#0b7a6e',2);
+  } else {
+    // Preview
+    const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
+    const step=0.5, pts=[],is=[];
+    for(let tt=0;tt<=winMs;tt+=step){pts.push(tt);is.push(iext(tt));}
+    // Draw as normal trace
+    ctx.save();ctx.strokeStyle='rgba(11,122,110,.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();let first=true;
+    for(let i=0;i<pts.length;i++){
+      const x=p.left+pw*(pts[i]/winMs);
+      const yc=p.top+ph*(1-(is[i]-yMin)/(yMax-yMin));
+      first?ctx.moveTo(x,yc):ctx.lineTo(x,yc);first=false;
+    }
+    ctx.stroke();ctx.setLineDash([]);ctx.restore();
+  }
 }
 
 function renderSS(){
@@ -1298,19 +1374,17 @@ function renderSS(){
     Vs.forEach((V,i)=>{const s=ss(V);const x=p.left+pw*(V+20)/150;const y=p.top+ph*(1-s[c]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
     ctx.stroke();
   }
-  // Vm marker
   const xV=p.left+pw*(currentV+20)/150;
   ctx.strokeStyle='rgba(11,122,110,.5)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
   ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+ph);ctx.stroke();ctx.setLineDash([]);
-  // Labels
   [[30,0],[-10,1],[10,2]].forEach(([V,c])=>{const s=ss(V);ctx.fillStyle=cols[c];ctx.font="bold 11px 'DM Mono',monospace";ctx.textAlign='left';ctx.fillText(lbls[c],p.left+pw*(V+20)/150+3,p.top+ph*(1-s[c])-3);});
 }
 
 function renderTau(){
   const{ctx,W,H}=setupCanvas('cv-tau');if(!ctx)return;
-  const ph=phi();
+  const ph2=phi();
   const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
-  const taus=Vs.map(V=>[1/((am(V)+bm(V))*ph),1/((ah(V)+bh(V))*ph),1/((an(V)+bn(V))*ph)]);
+  const taus=Vs.map(V=>[1/((am(V)+bm(V))*ph2),1/((ah(V)+bh(V))*ph2),1/((an(V)+bn(V))*ph2)]);
   const mxT=Math.max(...taus.flat())*1.1;
   const p=PAD,pw=W-p.left-p.right,pph=H-p.top-p.bottom;
   drawAxes(ctx,W,H,0,mxT,-20,130,'τ (ms)');
@@ -1374,12 +1448,11 @@ function setSpeed(v){
 
 function slUpdate(param,val,valId){
   const dp=param==='EL'?1:param==='gL'?2:param==='Cm'?1:param==='T'?1:0;
-  const numVal=parseFloat(val);
-  P[param]=numVal;
+  const numVal=parseFloat(val);P[param]=numVal;
   const spanEl=document.getElementById(valId);if(spanEl)spanEl.textContent=numVal.toFixed(dp);
   const numEl=document.getElementById(valId.replace('-val','-num'));if(numEl)numEl.value=numVal.toFixed(dp);
   if(param==='T'){const e=document.getElementById('stat-phi');if(e)e.textContent=phi().toFixed(2)+'×';renderSS();renderTau();}
-  if(param==='win'){winMs=numVal;if(!viewLocked){viewStart=Math.max(0,t-winMs);viewEnd=Math.max(winMs,t);}}
+  if(param==='win'){winMs=numVal;if(!running){renderAll();}}
 }
 
 function updateStim(){
@@ -1389,22 +1462,25 @@ function updateStim(){
   STIM.dur=parseFloat(document.getElementById('sl-dur').value);
   STIM.freq=parseFloat(document.getElementById('sl-freq').value);
   const showFreq=['pulse','sine'].includes(STIM.type);
-  document.getElementById('freq-row').style.display=showFreq?'flex':'none';
+  const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
+  const showDur=STIM.type!=='continuous';
+  const durRow=document.getElementById('dur-row');if(durRow)durRow.style.display=showDur?'flex':'none';
   const t0=STIM.tStart,t1=STIM.tStart+STIM.dur;
   const d0=document.getElementById('stim-t0'),d1=document.getElementById('stim-t1');
   if(d0)d0.textContent=t0.toFixed(0);if(d1)d1.textContent=t1.toFixed(0);
-  if(!running)renderIext(viewStart,viewEnd);
+  if(!running)renderIext_plot();
 }
 
 function clearPhase(){phasePtr=0;phaseCount=0;renderPhase();}
 
 // ─── PRESETS ──────────────────────────────────────────────
 const PRESETS={
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:9, tStart:0,dur:100,type:'step',freq:40,win:110,speed:3,autoStart:true},
-  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:9, tStart:0,dur:20, type:'step',freq:40,win:25, speed:2},
-  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',freq:40,win:220,speed:4},
-  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',freq:40,win:110,speed:3},
-  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'step',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'continuous',freq:40,win:120,speed:3,autoStart:true},
+  step100:   {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:10,tStart:0,dur:20, type:'continuous',freq:40,win:25, speed:2},
+  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',    freq:40,win:220,speed:4},
+  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
+  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'continuous',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
 };
 
 function applyPreset(name){
@@ -1425,22 +1501,24 @@ function applyPreset(name){
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
   const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx]||'—';
   const stEl=document.getElementById('stim-type');if(stEl)stEl.value=pr.type;
+  // Show/hide dur row based on type
+  const showDur=pr.type!=='continuous';
+  const durRow=document.getElementById('dur-row');if(durRow)durRow.style.display=showDur?'flex':'none';
   const showFreq=['pulse','sine'].includes(pr.type);
   const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
   if(pr.keepPhase){stopSim();initState();}else{resetSim();}
-  viewStart=0;viewEnd=winMs;viewLocked=false;
   renderSS();renderTau();
   if(pr.autoStart)setTimeout(startSim,100);
 }
 
 function applyDefaults(){applyPreset('standard');}
 
-// ─── INITIAL SIMULATION (synchronous, no race condition) ──
+// ─── INITIAL SIMULATION ───────────────────────────────────
 function runInitialSimulation(){
   if(running)return;
   initState();
-  for(let i=0;i<1000;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
-  viewStart=0;viewEnd=winMs;viewLocked=false;
+  // Run 1200 steps = 12 ms (shows first AP at Iext=10 continuous)
+  for(let i=0;i<1200;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
   renderAll();updateStats();
   const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready — click ▶ Run';
 }
@@ -1450,7 +1528,7 @@ window.addEventListener('load',()=>{
   initState();
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
   const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx];
-  renderSS();renderTau();renderPhase();renderIext(0,winMs);updateStats();
+  renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
   runInitialSimulation();
 });
 
