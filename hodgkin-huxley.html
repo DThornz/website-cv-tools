@@ -1660,7 +1660,7 @@ function clearPhase(){
 
 // ─── PRESETS ──────────────────────────────────────────────
 const PRESETS = {
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:10,tStart:10,dur:40, type:'step',freq:40, win:160,speed:3},
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:10,tStart:10,dur:40, type:'step',freq:40, win:160,speed:3, autoStart:true},
   body:      {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:37,  I0:10,tStart:5, dur:2,  type:'step',freq:40, win:60, speed:2},
   burst:     {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:15,tStart:10,dur:200,type:'step',freq:40, win:250,speed:4},
   subthresh: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:5, tStart:10,dur:40, type:'step',freq:40, win:160,speed:3},
@@ -1718,10 +1718,13 @@ window.addEventListener('load',()=>{
   renderSS(); renderTau(); renderPhase(); renderIext(0,winMs);
   updateStats();
   // Auto-run standard simulation so graphs are populated on first view
-  setTimeout(()=>{
-    applyPreset('standard');
-    setTimeout(startSim, 50); // start after preset resets state
-  },300);
+  // Use requestAnimationFrame to ensure layout is complete before sizing canvases
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      applyPreset('standard');
+      // applyPreset with autoStart:true calls setTimeout(startSim,150) internally
+    });
+  });
 });
 
 window.addEventListener('resize',()=>{
@@ -1936,5 +1939,11 @@ window.addEventListener('DOMContentLoaded',()=>{
   attachPlotInteraction();
 });
 </script>
+
+<!-- Copyright footer -->
+<footer style="text-align:center;padding:20px 24px;font-family:'DM Mono',monospace;font-size:.72em;color:var(--dim);border-top:1px solid var(--border);margin-top:auto">
+  © 2026 Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
+  <a href="https://github.com/DThornz/website-cv-tools" target="_blank" style="color:var(--dim)">GitHub</a>
+</footer>
 </body>
 </html>

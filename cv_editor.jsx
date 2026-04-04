@@ -201,6 +201,14 @@ const INITIAL_DATA = {
         {
           id: uid(), title: "Primary Instructor — Research Assistant Professor", defaultOpen: true,
           entries: [
+                        {
+              id: uid(), year: "2024–2025", title: "Hodgkin–Huxley Interactive Neuron Model",
+              subtitle: "Interactive educational browser simulator · FIU BME",
+              badges: [{ id: uid(), text: "Nobel (1952) Model", type: "first" }, { id: uid(), text: "RK4 · Canvas API", type: "award" }],
+              abstract: "Browser-based implementation of the Hodgkin–Huxley (1952) neuron model for BME 2740 and BME 6715 students. RK4 integration (dt=0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents, steady-state curves, time constants, and V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), and explore threshold, refractory period, and tonic firing.",
+              metaItems: [], links: [{ id: uid(), text: "🧠 Open Simulator", url: "hodgkin-huxley.html" }],
+              images: [], videos: [], notes: ""
+            },
             { id: uid(), year: "2024–Now", title: "BME 2740 — Biomedical Engineering Modeling and Simulation", subtitle: "~40 students/semester · MATLAB ODE/PDE modeling", badges: [], abstract: "Core undergraduate BME course covering MATLAB-based numerical methods including ODE solving (Euler, RK4, stiff solvers), PDE discretization, signal processing, and biomedical system simulation. Features MATLAB Live Scripts. Sections: Fall 2024, Spring 2025, Fall 2025, Spring 2026.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2024–Now", title: "BME 1054L — Introduction to BME Computing", subtitle: "~70 students/semester · Introductory MATLAB for BME students", badges: [], abstract: "Introductory computing covering MATLAB fundamentals, data visualization, image processing, and biomedical signal analysis. Custom Biosignal Processing module (ECG, EEG, Fourier/filtering). Sections: Spring 2025, Fall 2025, Spring 2026.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2024–Now", title: "Graduate Courses — BME 6715 & BME 6705", subtitle: "Advanced computational modeling for graduate students", badges: [], abstract: "BME 6715: Mathematical Modeling of Physiological Systems (Fall 2024, 5 students). BME 6705: Nonlinear Systems with Applications to Life Sciences (Spring 2026, 4 students).", metaItems: [], links: [], images: [], videos: [], notes: "" },
@@ -290,6 +298,7 @@ const INITIAL_DATA = {
           { id: uid(), year: "Apr–6Jul 2026", title: "PhD Qualifying Exam Committee", subtitle: "Biomedical Engineering Department, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Mar 2026–", title: "Graduate Program Committee", subtitle: "Biomedical Engineering Department, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Mar 2026", title: "Abstract Reviewer — URFIU Conference", subtitle: "Undergraduate Research at FIU Conference, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
+                    { id: uid(), year: "Mar 2026", title: "Abstract Reviewer — URFIU Conference", subtitle: "Undergraduate Research at FIU Conference, Florida International University, Miami, FL", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Mar 2026", title: "Faculty Judge — Undergraduate Research Practice Presentations", subtitle: "Honors College, FIU (URFIU)", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "Sum 2024", title: "BME Senior Design Oral Judge", subtitle: "Biomedical Engineering Society, FIU", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "2019", title: "EMBS BME Presentation — 3D Printing & Simulation", subtitle: "Pinecrest Cove Preparatory Academy, Miami, FL", badges: [], abstract: "Taught middle school students about 3D printing and BME-oriented simulations (hip implants, computer cooling).", metaItems: [], links: [], images: [], videos: [], notes: "" },
@@ -577,6 +586,15 @@ input:checked+.toggle-slider::before{transform:translateX(20px);background:#fff}
 </style>
 </head>
 <body class="light-mode size-md">
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link" href="index.html">Home</a>
+  <a class="site-nav-link curr" href="AsadMirza_CV.html">CV</a>
+  <a class="site-nav-link" href="projects.html">Projects</a>
+  <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
+  <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
+</div>
+
 <div class="top-bar">
   <div class="top-bar-name">${escHtml(h.name)}, ${escHtml(h.degrees)}</div>
   <div class="top-bar-right">
