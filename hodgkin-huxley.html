@@ -96,7 +96,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;grid-template-rows:1020px;gap:0;align-items:stretch;height:1020px;overflow:hidden}
+.sim-body{display:grid;grid-template-columns:400px 1fr;grid-template-rows:1100px;gap:0;align-items:stretch;height:1100px;overflow:hidden}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:hidden;overflow-x:hidden;height:100%;min-height:0;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
@@ -817,7 +817,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div id="stim-window-disp" style="grid-column:1/-1;display:none" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
             Active: t = <span id="stim-t0">10</span> → <span id="stim-t1">50</span> ms
           </div>
-          <div class="ctrl-row" id="freq-row" style="display:none">
+          <div class="ctrl-row" id="freq-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Freq<span class="ctrl-unit">Hz</span></span><input type="number" class="ctrl-num" id="sl-freq-num" min="1" max="200" step="1" value="40" onchange="syncNum('sl-freq',this.value);updateStim()" onblur="syncNum('sl-freq',this.value);updateStim()"></span>
   <input class="ctrl-slider" type="range" id="sl-freq" min="1" max="200" step="1" value="40" oninput="slUpdate('freq',this.value,'sl-freq-val');updateStim();syncSlider('sl-freq',this.value)">
 </div>
@@ -1553,7 +1553,8 @@ function updateStim(){
   STIM.dur=parseFloat(document.getElementById('sl-dur').value);
   STIM.freq=parseFloat(document.getElementById('sl-freq').value);
   const showFreq=['pulse','sine'].includes(STIM.type);
-  const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
+  const frEl=document.getElementById('freq-row');
+  if(frEl){ if(!showFreq) frEl.classList.add('disabled'); else frEl.classList.remove('disabled'); }
   const isCont=STIM.type==='continuous';
   const durRow=document.getElementById('dur-row');
   if(durRow){ if(isCont) durRow.classList.add('disabled'); else durRow.classList.remove('disabled'); }
@@ -1603,7 +1604,8 @@ function applyPreset(name){
   const durRow=document.getElementById('dur-row');
   if(durRow){ if(isCont2) durRow.classList.add('disabled'); else durRow.classList.remove('disabled'); }
   const showFreq=['pulse','sine'].includes(pr.type);
-  const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
+  const frEl=document.getElementById('freq-row');
+  if(frEl){ if(!showFreq) frEl.classList.add('disabled'); else frEl.classList.remove('disabled'); }
   if(pr.keepPhase){stopSim();initState();}else{resetSim();}
   renderSS();renderTau();
   if(pr.autoStart)setTimeout(startSim,100);
@@ -1632,6 +1634,9 @@ window.addEventListener('load',()=>{
   // dur-row: disabled for continuous default preset
   const durRowInit=document.getElementById('dur-row');
   if(durRowInit) durRowInit.classList.add('disabled');
+  // freq-row: disabled unless pulse/sine preset
+  const freqRowInit=document.getElementById('freq-row');
+  if(freqRowInit) freqRowInit.classList.add('disabled');
   const dtNumEl=document.getElementById('sl-dt-num');if(dtNumEl)dtNumEl.value='0.010';
   renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
   runInitialSimulation();
