@@ -867,8 +867,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val');syncSlider('sl-Cm',this.value)">
 </div>
 <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">dt<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dt-num" min="0.005" max="0.115" step="0.005" value="0.01" onchange="syncNum('sl-dt',this.value)" onblur="syncNum('sl-dt',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-dt" min="0.005" max="0.115" step="0.005" value="0.01" oninput="slUpdateDT(this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">dt<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dt-num" min="0.005" max="0.115" step="0.001" value="0.01" onchange="syncNum('sl-dt',this.value)" onblur="syncNum('sl-dt',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-dt" min="0.005" max="0.115" step="0.001" value="0.01" oninput="slUpdateDT(this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="120" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
@@ -1623,6 +1623,9 @@ window.addEventListener('load',()=>{
   initState();
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
   const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx];
+  // Force dt slider to 0.01 on load (avoids fp step-snapping to max)
+  const dtSlEl=document.getElementById('sl-dt');if(dtSlEl)dtSlEl.value='0.01';
+  const dtNumEl=document.getElementById('sl-dt-num');if(dtNumEl)dtNumEl.value='0.010';
   renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
   runInitialSimulation();
 });
