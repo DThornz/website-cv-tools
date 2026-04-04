@@ -1850,6 +1850,28 @@ window.addEventListener('resize',()=>{
 // ════════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════════════
 
+
+// ─── plotTrace: generic straight-line plot for voltage clamp ─────────────
+// (plotECG is used for current-clamp ECG wrap; this is a simple x-y trace)
+function plotTrace(ctx, xs, ys, W, H, yMin, yMax, xMin, xMax, color, lw) {
+  if (!ctx || !xs || xs.length < 2) return;
+  const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(p.left, p.top, pw, ph); ctx.clip();
+  ctx.strokeStyle = color; ctx.lineWidth = lw || 1.5;
+  ctx.beginPath();
+  let first = true;
+  for (let i = 0; i < xs.length; i++) {
+    if (xs[i] < xMin - 0.01 || xs[i] > xMax + 0.01) continue;
+    const x = p.left + pw * ((xs[i] - xMin) / (xMax - xMin));
+    const y = p.top  + ph * (1 - (ys[i] - yMin) / (yMax - yMin));
+    if (first) { ctx.moveTo(x, y); first = false; }
+    else         ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
 // ════════════════════════════════════════════════════════════════
 // VOLTAGE CLAMP ENGINE — clean rewrite, verified against Python sim
 // ════════════════════════════════════════════════════════════════
@@ -1858,7 +1880,7 @@ window.addEventListener('resize',()=>{
 const vcP = {
   gNa:120, gK:36, gL:0.3, ENa:115, EK:-12, EL:10.6,
   blockNa:false, blockK:false,
-  Vhold:0, Vcmd:20, tStart:10, dur:40,
+  Vhold:0, Vcmd:20, tStart:10, dur:40, T:6.3,
 };
 const vcDT = 0.01;
 let vcT = 0;
@@ -1879,14 +1901,17 @@ function vcVoltage(t) {
 }
 
 // ── Gate ODE (V is clamped — only m, h, n evolve) ────────────────
+function phiVC() { return Math.pow(3, (vcP.T - 6.3) / 10); }
+
 function vcDydt(y, t) {
   const V = vcVoltage(t);
   const [, m, h, n] = y;
+  const ph = phiVC();
   return [
-    0,                                    // dV/dt = 0 (clamped)
-    am(V)*(1-m) - bm(V)*m,               // dm/dt
-    ah(V)*(1-h) - bh(V)*h,               // dh/dt
-    an(V)*(1-n) - bn(V)*n,               // dn/dt
+    0,
+    ph * (am(V)*(1-m) - bm(V)*m),
+    ph * (ah(V)*(1-h) - bh(V)*h),
+    ph * (an(V)*(1-n) - bn(V)*n),
   ];
 }
 
@@ -1978,7 +2003,7 @@ function vcSyncSliders() {
     'vc-vhold': 'Vhold', 'vc-vcmd': 'Vcmd',
     'vc-tpre': 'tStart', 'vc-dur': 'dur',
     'vc-gna': 'gNa',    'vc-gk': 'gK',  'vc-gl': 'gL',
-    'vc-ena': 'ENa',    'vc-ek': 'EK',  'vc-el': 'EL',
+    'vc-ena': 'ENa',    'vc-ek': 'EK',  'vc-el': 'EL',  'vc-T': 'T',
   };
   for (const [id, field] of Object.entries(map)) {
     const el = document.getElementById(id);
@@ -2009,7 +2034,7 @@ function vcSlider(param, val) {
   if (isNaN(v)) return;
   const map = {
     vhold:'Vhold', vcmd:'Vcmd', tpre:'tStart', dur:'dur',
-    gna:'gNa', gk:'gK', gl:'gL', ena:'ENa', ek:'EK', el:'EL',
+    gna:'gNa', gk:'gK', gl:'gL', ena:'ENa', ek:'EK', el:'EL', T:'T',
   };
   if (map[param] !== undefined) vcP[map[param]] = v;
   const numEl = document.getElementById(`vc-${param}-num`);
