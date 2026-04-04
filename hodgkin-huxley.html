@@ -42,13 +42,13 @@ a:hover{text-decoration:underline}
 .site-nav-link.curr{color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.2);font-weight:600}
 
 /* ─── Page Layout ────────────────────────────────────────── */
-.page-wrap{max-width:1040px;margin:0 auto;padding:0 28px 80px}
+.page-wrap{max-width:1040px;margin:0 auto;padding:0 48px 80px}
 
 /* ─── Hero ───────────────────────────────────────────────── */
 .hero{padding:52px 0 36px;border-bottom:1px solid var(--border);margin-bottom:48px}
 .hero-kicker{font-family:var(--mono);font-size:.7em;color:var(--teal);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
 .hero-title{font-family:var(--serif);font-size:clamp(2.2em,4.5vw,3.2em);font-weight:400;line-height:1.1;margin-bottom:14px;color:var(--text)}
-.hero-sub{font-size:1.05em;color:var(--muted);max-width:640px;line-height:1.65;margin-bottom:24px}
+.hero-sub{font-size:1.05em;color:var(--muted);max-width:640px;line-height:1.65;margin-bottom:24px;text-align:left}
 .hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
 .pill{padding:4px 12px;border-radius:99px;font-size:.72em;font-family:var(--mono);background:var(--teal-light);color:var(--teal);border:1px solid rgba(11,122,110,.2)}
 .hero-meta{display:flex;gap:28px;flex-wrap:wrap}
@@ -59,8 +59,8 @@ a:hover{text-decoration:underline}
 .section{margin-bottom:56px}
 .section-num{font-family:var(--mono);font-size:.7em;color:var(--teal);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px}
 .section-title{font-family:var(--serif);font-size:1.8em;font-weight:400;margin-bottom:14px;color:var(--text)}
-.section-body{font-size:.93em;color:var(--muted);line-height:1.8;max-width:780px}
-.section-body p{margin-bottom:14px}
+.section-body{font-size:.93em;color:var(--muted);line-height:1.8;max-width:800px;text-align:justify;text-justify:inter-word}
+.section-body p{margin-bottom:14px;text-align:justify;text-justify:inter-word}
 .section-body strong{color:var(--text)}
 .section-divider{height:1px;background:var(--border);margin:48px 0}
 
@@ -95,7 +95,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:960px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:1040px}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
@@ -416,6 +416,22 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
 .ctrl-group.full{grid-column:1/-1}
 .ctrl-group-label::after{flex:1;height:1px;background:var(--border)}
+
+/* ─── Figure / image blocks ────────────────────────────── */
+.fig-row{display:flex;gap:20px;margin:24px 0;align-items:flex-start;flex-wrap:wrap}
+.fig-item{flex:1;min-width:140px;max-width:280px}
+.fig-item img{width:100%;border-radius:8px;border:1px solid var(--border);display:block;object-fit:cover}
+.fig-item .fig-cap{font-size:.75em;color:var(--dim);margin-top:6px;text-align:center;font-family:var(--mono);font-style:italic;line-height:1.4}
+.fig-portrait{width:100%;border-radius:8px;border:2px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 12px;min-height:160px}
+.fig-portrait-name{font-family:var(--serif);font-size:1em;color:var(--text);margin-top:8px;text-align:center}
+.fig-portrait-dates{font-size:.72em;color:var(--dim);font-family:var(--mono);margin-top:2px}
+.fig-portrait-icon{font-size:3em;line-height:1;opacity:.7}
+.fig-wrap{margin:24px 0;text-align:center}
+.fig-wrap img{max-width:100%;border-radius:8px;border:1px solid var(--border)}
+.fig-wrap .fig-cap{font-size:.78em;color:var(--dim);margin-top:8px;font-style:italic;font-family:var(--mono)}
+.fig-aside{float:right;margin:0 0 18px 24px;max-width:220px;clear:right}
+.fig-aside img{width:100%;border-radius:8px;border:1px solid var(--border)}
+.fig-aside .fig-cap{font-size:.72em;color:var(--dim);margin-top:5px;text-align:center;font-family:var(--mono);font-style:italic;line-height:1.4}
 </style>
 </head>
 <body class="light-mode">
@@ -460,7 +476,31 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <div class="section-num">§ 1</div>
   <h2 class="section-title">The Discovery: Squid Axons and the Action Potential</h2>
   <div class="section-body">
+    
+  <div class="fig-row" style="float:right;margin:0 0 18px 24px;max-width:320px;clear:right">
+    <div class="fig-item" style="max-width:145px">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Alan_Lloyd_Hodgkin_1963.jpg/220px-Alan_Lloyd_Hodgkin_1963.jpg"
+           alt="Alan Lloyd Hodgkin, 1963"
+           onerror="this.parentElement.innerHTML='<div class=\'fig-portrait\'><div class=\'fig-portrait-icon\'>🔬</div><div class=\'fig-portrait-name\'>Alan L. Hodgkin</div><div class=\'fig-portrait-dates\'>1914 – 1998</div></div><div class=\'fig-cap\'>Nobel Lecture, 1963</div>'">
+      <div class="fig-cap">Alan L. Hodgkin<br>1914 – 1998</div>
+    </div>
+    <div class="fig-item" style="max-width:145px">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Andrew_Fielding_Huxley_1963.jpg/220px-Andrew_Fielding_Huxley_1963.jpg"
+           alt="Andrew Fielding Huxley, 1963"
+           onerror="this.parentElement.innerHTML='<div class=\'fig-portrait\'><div class=\'fig-portrait-icon\'>🧬</div><div class=\'fig-portrait-name\'>Andrew F. Huxley</div><div class=\'fig-portrait-dates\'>1917 – 2012</div></div><div class=\'fig-cap\'>Nobel Lecture, 1963</div>'">
+      <div class="fig-cap">Andrew F. Huxley<br>1917 – 2012</div>
+    </div>
+  </div>
+
     <p>In the summer of 1949 at the Marine Biological Association laboratory in Plymouth, England, <strong>Alan Lloyd Hodgkin</strong> and <strong>Andrew Fielding Huxley</strong> performed a series of elegant voltage-clamp experiments on the <em>Loligo forbesi</em> giant squid axon. This particular axon — nearly 1 mm in diameter — was large enough to insert a wire electrode directly into its interior, making it the ideal preparation for measuring membrane currents with then-unprecedented precision. Their findings, published across five landmark papers in the <em>Journal of Physiology</em> in 1952, constituted the first complete quantitative description of the ionic mechanisms underlying the action potential.<sup>[1]</sup></p>
+    <div class="fig-aside">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Loligo_pealeii.jpg/320px-Loligo_pealeii.jpg"
+           alt="Loligo pealeii — longfin inshore squid"
+           onerror="this.style.display='none'">
+      <div class="fig-cap"><em>Loligo pealeii</em> — the longfin inshore squid. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
+    </div>
+
+
     <p>The core insight of Hodgkin and Huxley was that the action potential — the brief, stereotyped electrical impulse by which neurons communicate — arises from the coordinated, voltage-dependent opening and closing of ion-selective channels in the cell membrane. By holding the membrane potential at fixed values (voltage clamp) and measuring the resulting ionic currents, they could isolate and characterize separate <strong>sodium (Na⁺)</strong> and <strong>potassium (K⁺)</strong> conductances as functions of both voltage and time.</p>
     <p>Their mathematical model, derived entirely from experimental data, was able to <em>predict</em> action potential shape, conduction velocity, refractory period, and threshold — phenomena that had been observed but never explained from first principles. For this work, Hodgkin and Huxley (together with Sir John Eccles for his work on synaptic transmission) received the <strong>Nobel Prize in Physiology or Medicine in 1963</strong>.<sup>[2]</sup></p>
   </div>
@@ -695,6 +735,14 @@ body.dark-mode .hero{border-color:#1c3050!important}
     <strong>n</strong> (K⁺ activation): delayed rectifier. At V=0: n(0)=0 (closed). Opens during depolarization, driving repolarization. Note: initial conditions 0 match the MATLAB code (0×α/… = 0).
   </div>
 
+  
+  <div class="fig-wrap" style="max-width:520px;margin:20px auto">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Hodgkin-Huxley.svg/600px-Hodgkin-Huxley.svg.png"
+         alt="Hodgkin-Huxley model voltage clamp results"
+         onerror="this.style.display='none'">
+    <div class="fig-cap">Calculated (upper) vs. measured (lower) action potentials from the 1952 paper — the model's remarkable predictive accuracy. Reproduced from Hodgkin &amp; Huxley (1952), <em>J. Physiol.</em> 117, 500–544. Public domain.</div>
+  </div>
+
   <h3 style="font-family:var(--serif);font-size:1.2em;font-weight:400;margin:28px 0 12px;color:var(--text)">Standard Parameter Values</h3>
   <table class="param-table">
     <thead><tr><th>Parameter</th><th>Value</th><th>Units</th><th>Physical Meaning</th></tr></thead>
@@ -867,8 +915,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
         <!-- Presets -->
         <div style="margin-top:10px">
-          <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:6px">Quick Presets</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:6px;grid-column:1/-1">Quick Presets</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;grid-column:1/-1">
             <button onclick="applyPreset('standard')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Continuous</button>
             <button onclick="applyPreset('step100')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Step 100ms</button>
             <button onclick="applyPreset('burst')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst (20µA)</button>
@@ -1539,8 +1587,8 @@ function applyDefaults(){applyPreset('standard');}
 function runInitialSimulation(){
   if(running)return;
   initState();
-  // Run 1200 steps = 12 ms (shows first AP at Iext=10 continuous)
-  for(let i=0;i<1200;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
+  // Run 12000 steps = 120 ms full window (complete stimulus trace)
+  for(let i=0;i<12000;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
   renderAll();updateStats();
   const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready — click ▶ Run';
 }
