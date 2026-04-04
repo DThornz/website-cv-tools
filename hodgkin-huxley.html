@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+<!DOCTY
+PE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -799,8 +800,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
             </select>
           </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.1" value="9" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.1" value="9" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.1" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.1" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="0" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
@@ -864,6 +865,10 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">C<sub>m</sub><span class="ctrl-unit">µF/cm²</span></span><input type="number" class="ctrl-num" id="sl-Cm-num" min="0.1" max="3" step="0.05" value="1.0" onchange="syncNum('sl-Cm',this.value)" onblur="syncNum('sl-Cm',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val');syncSlider('sl-Cm',this.value)">
+</div>
+<div class="ctrl-row">
+  <span class="ctrl-label"><span class="ctrl-label-txt">dt<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dt-num" min="0.005" max="0.5" step="0.005" value="0.01" onchange="syncNum('sl-dt',this.value)" onblur="syncNum('sl-dt',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-dt" min="0.005" max="0.5" step="0.005" value="0.01" oninput="slUpdateDT(this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="120" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
@@ -1090,8 +1095,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
 const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:false};
 // Default: continuous Iext=10, 120 ms window
-const STIM={type:'continuous',I0:9,tStart:0,dur:100,freq:40};
-const DT=0.01, STORE_EVERY=2, MAX_HIST=15000;
+const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
+let DT=0.01;
+const STORE_EVERY=2, MAX_HIST=15000;
 const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
 let speedIdx=2, winMs=120;
 
@@ -1525,6 +1531,19 @@ function slUpdate(param,val,valId){
   if(param==='win'){winMs=numVal;if(!running){renderAll();}}
 }
 
+
+function slUpdateDT(val){
+  const v=parseFloat(val);
+  if(isNaN(v)||v<=0)return;
+  DT=Math.min(0.5,Math.max(0.005,v));
+  const dp=3;
+  const spanEl=document.getElementById('sl-dt-val');if(spanEl)spanEl.textContent=DT.toFixed(dp);
+  const numEl=document.getElementById('sl-dt-num');if(numEl)numEl.value=DT.toFixed(dp);
+  // Warn if dt is large — likely to be numerically unstable
+  const st=document.getElementById('sim-status-text');
+  if(st && DT>0.1) st.textContent='⚠ Large dt — may be unstable';
+}
+
 function updateStim(){
   STIM.type=document.getElementById('stim-type').value;
   STIM.I0=parseFloat(document.getElementById('sl-I0').value);
@@ -1545,9 +1564,9 @@ function clearPhase(){phasePtr=0;phaseCount=0;renderPhase();}
 
 // ─── PRESETS ──────────────────────────────────────────────
 const PRESETS={
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:9,tStart:0,dur:100,type:'continuous',freq:40,win:120,speed:3,autoStart:true},
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'continuous',freq:40,win:120,speed:3,autoStart:true},
   step100:   {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
-  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:9,tStart:0,dur:20, type:'continuous',freq:40,win:25, speed:2},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:10,tStart:0,dur:20, type:'continuous',freq:40,win:25, speed:2},
   burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',    freq:40,win:220,speed:4},
   subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
   phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'continuous',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
@@ -1566,6 +1585,11 @@ function applyPreset(name){
   sl('sl-gNa',pr.gNa);sl('sl-gK',pr.gK);sl('sl-gL',pr.gL,2);
   sl('sl-ENa',pr.ENa);sl('sl-EK',pr.EK);sl('sl-EL',pr.EL,1);
   sl('sl-Cm',pr.Cm,1);sl('sl-T',pr.T,1);
+  // Reset dt to default when applying a preset
+  const dtPreset=pr.dt||0.01;
+  DT=dtPreset;
+  const dtSl=document.getElementById('sl-dt');if(dtSl)dtSl.value=dtPreset;
+  const dtNum=document.getElementById('sl-dt-num');if(dtNum)dtNum.value=dtPreset.toFixed(3);
   sl('sl-I0',pr.I0);sl('sl-tStart',pr.tStart);sl('sl-dur',pr.dur);sl('sl-freq',pr.freq);sl('sl-win',pr.win);
   const spEl=document.getElementById('sl-speed');if(spEl)spEl.value=pr.speed||3;
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
@@ -1586,6 +1610,7 @@ function applyDefaults(){applyPreset('standard');}
 // ─── INITIAL SIMULATION ───────────────────────────────────
 function runInitialSimulation(){
   if(running)return;
+  DT=0.01; // reset to stable default for initial simulation
   initState();
   // Run 12000 steps = 120 ms full window (complete stimulus trace)
   for(let i=0;i<12000;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
@@ -1823,3 +1848,4 @@ window.addEventListener('DOMContentLoaded',()=>{
 </footer>
 </body>
 </html>
+
