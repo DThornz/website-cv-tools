@@ -95,7 +95,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:280px 1fr;gap:0;align-items:stretch;height:660px}
+.sim-body{display:grid;grid-template-columns:280px 1fr;gap:0;align-items:stretch;height:780px}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box}
@@ -722,7 +722,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
         <!-- Stimulus -->
         <div class="ctrl-group">
-          <div class="ctrl-group-label">Stimulus</div>
+          <div class="ctrl-group-label">Stimulus · I<sub>ext</sub>(t)</div>
           <div class="ctrl-row">
             <span class="ctrl-label"><span class="ctrl-label-txt">Type</span></span>
             <select class="ctrl-select" id="stim-type" onchange="updateStim()">
@@ -733,19 +733,23 @@ body.dark-mode .hero{border-color:#1c3050!important}
             </select>
           </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="40" step="0.5" value="10" oninput="syncNum('sl-I0',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="40" step="0.5" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="40" step="0.5" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Delay<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="10" oninput="syncNum('sl-tStart',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="10" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="10" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim();syncSlider('sl-tStart',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Dur.<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="150" step="0.5" value="40" oninput="syncNum('sl-dur',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="150" step="0.5" value="40" onchange="syncNum('sl-dur',this.value)" onblur="syncNum('sl-dur',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="150" step="0.5" value="40" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
 </div>
+          <!-- Stimulus window computed display -->
+          <div id="stim-window-disp" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
+            Active: t = <span id="stim-t0">10</span> → <span id="stim-t1">50</span> ms
+          </div>
           <div class="ctrl-row" id="freq-row" style="display:none">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Freq<span class="ctrl-unit">Hz</span></span><input type="number" class="ctrl-num" id="sl-freq-num" min="1" max="200" step="1" value="40" oninput="syncNum('sl-freq',this.value);updateStim()"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Freq<span class="ctrl-unit">Hz</span></span><input type="number" class="ctrl-num" id="sl-freq-num" min="1" max="200" step="1" value="40" onchange="syncNum('sl-freq',this.value);updateStim()" onblur="syncNum('sl-freq',this.value);updateStim()"></span>
   <input class="ctrl-slider" type="range" id="sl-freq" min="1" max="200" step="1" value="40" oninput="slUpdate('freq',this.value,'sl-freq-val');updateStim();syncSlider('sl-freq',this.value)">
 </div>
         </div>
@@ -754,15 +758,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Max Conductances</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>Na</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gNa-num" min="0" max="200" step="1" value="120" oninput="syncNum('sl-gNa',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>Na</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gNa-num" min="0" max="200" step="1" value="120" onchange="syncNum('sl-gNa',this.value)" onblur="syncNum('sl-gNa',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-gNa" min="0" max="200" step="1" value="120" oninput="slUpdate('gNa',this.value,'sl-gNa-val');syncSlider('sl-gNa',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>K</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gK-num" min="0" max="80" step="0.5" value="36" oninput="syncNum('sl-gK',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>K</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gK-num" min="0" max="80" step="0.5" value="36" onchange="syncNum('sl-gK',this.value)" onblur="syncNum('sl-gK',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-gK" min="0" max="80" step="0.5" value="36" oninput="slUpdate('gK',this.value,'sl-gK-val');syncSlider('sl-gK',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>L</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gL-num" min="0" max="2" step="0.01" value="0.3" oninput="syncNum('sl-gL',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>L</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="sl-gL-num" min="0" max="2" step="0.01" value="0.3" onchange="syncNum('sl-gL',this.value)" onblur="syncNum('sl-gL',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-gL" min="0" max="2" step="0.01" value="0.3" oninput="slUpdate('gL',this.value,'sl-gL-val');syncSlider('sl-gL',this.value)">
 </div>
         </div>
@@ -771,15 +775,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Reversal Potentials</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="0" max="100" step="1" value="50" oninput="syncNum('sl-ENa',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="0" max="100" step="1" value="50" onchange="syncNum('sl-ENa',this.value)" onblur="syncNum('sl-ENa',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-ENa" min="0" max="100" step="1" value="50" oninput="slUpdate('ENa',this.value,'sl-ENa-val');syncSlider('sl-ENa',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-100" max="-40" step="1" value="-77" oninput="syncNum('sl-EK',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-100" max="-40" step="1" value="-77" onchange="syncNum('sl-EK',this.value)" onblur="syncNum('sl-EK',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-EK" min="-100" max="-40" step="1" value="-77" oninput="slUpdate('EK',this.value,'sl-EK-val');syncSlider('sl-EK',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-80" max="-40" step="0.1" value="-54.4" oninput="syncNum('sl-EL',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-80" max="-40" step="0.1" value="-54.4" onchange="syncNum('sl-EL',this.value)" onblur="syncNum('sl-EL',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-EL" min="-80" max="-40" step="0.1" value="-54.4" oninput="slUpdate('EL',this.value,'sl-EL-val');syncSlider('sl-EL',this.value)">
 </div>
         </div>
@@ -788,15 +792,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Physical Parameters</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Temp<span class="ctrl-unit">°C</span></span><input type="number" class="ctrl-num" id="sl-T-num" min="0" max="42" step="0.5" value="6.3" oninput="syncNum('sl-T',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Temp<span class="ctrl-unit">°C</span></span><input type="number" class="ctrl-num" id="sl-T-num" min="0" max="42" step="0.5" value="6.3" onchange="syncNum('sl-T',this.value)" onblur="syncNum('sl-T',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-T" min="0" max="42" step="0.5" value="6.3" oninput="slUpdate('T',this.value,'sl-T-val');syncSlider('sl-T',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">C<sub>m</sub><span class="ctrl-unit">µF/cm²</span></span><input type="number" class="ctrl-num" id="sl-Cm-num" min="0.1" max="3" step="0.05" value="1.0" oninput="syncNum('sl-Cm',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">C<sub>m</sub><span class="ctrl-unit">µF/cm²</span></span><input type="number" class="ctrl-num" id="sl-Cm-num" min="0.1" max="3" step="0.05" value="1.0" onchange="syncNum('sl-Cm',this.value)" onblur="syncNum('sl-Cm',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val');syncSlider('sl-Cm',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="200" oninput="syncNum('sl-win',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="200" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-win" min="50" max="500" step="10" value="200" oninput="slUpdate('win',this.value,'sl-win-val');updateWindow();syncSlider('sl-win',this.value)">
 </div>
         </div>
@@ -806,7 +810,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Playback Speed</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Speed</span><input type="number" class="ctrl-num" id="sl-speed-num" min="1" max="8" step="1" value="3×" oninput="syncNum('sl-speed',this.value)"></span>
+  <span class="ctrl-label"><span class="ctrl-label-txt">Speed</span><input type="number" class="ctrl-num" id="sl-speed-num" min="1" max="8" step="1" value="3×" onchange="syncNum('sl-speed',this.value)" onblur="syncNum('sl-speed',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-speed" min="1" max="8" step="1" value="3" oninput="setSpeed(this.value);syncSlider('sl-speed',this.value)">
 </div>
           <div style="font-size:.67em;color:var(--dim);margin:-2px 0 5px;line-height:1.35">Lower = slower, easier to read AP shape</div>
@@ -883,6 +887,13 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <div class="legend-item"><div class="legend-dot" style="background:#15803d"></div>I<sub>L</sub></div>
           </div>
           <canvas id="cv-currents" height="138"></canvas>
+        </div>
+        <div class="plot-wrap">
+          <div class="plot-label">Stimulus Current I<sub>ext</sub>(t) (µA/cm²)</div>
+          <div class="plot-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#0b7a6e"></div>I<sub>ext</sub></div>
+          </div>
+          <canvas id="cv-Iext" height="90"></canvas>
         </div>
       </div>
     </div><!-- /sim-body -->
@@ -1373,6 +1384,7 @@ function renderAll(){
   renderV(tMin,tMax);
   renderGates(tMin,tMax);
   renderCurrents(tMin,tMax);
+  renderIext(tMin,tMax);
   renderSS();
   renderTau();
   renderPhase();
@@ -1426,6 +1438,29 @@ function renderCurrents(tMin,tMax){
   plotTrace(ctx,hist.t,hist.IL,W,H,-mxI,mxI,tMin,tMax,'#15803d',1);
 }
 
+
+function renderIext(tMin,tMax){
+  const {ctx,W,H}=setupCanvas('cv-Iext');
+  // Build Iext trace from stored history
+  const maxI=Math.max(1,...hist.Iext.map(v=>Math.abs(v)));
+  // Also account for future stimulus shape (show a preview even before sim runs)
+  const previewI=Math.max(maxI, Math.abs(STIM.I0));
+  const yMax=previewI*1.2; const yMin=STIM.I0<0?-previewI*1.2:-yMax*0.15;
+  drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,'µA/cm²');
+  drawStimulusShade(ctx,W,H,tMin,tMax);
+  // If we have history, draw it
+  if(hist.t.length>1){
+    plotTrace(ctx,hist.t,hist.Iext,W,H,yMin,yMax,tMin,tMax,'#0b7a6e',2);
+  } else {
+    // Preview: draw what the stimulus will look like over the view window
+    const step=0.5, previewTs=[], previewIs=[];
+    for(let tt=tMin;tt<=tMax;tt+=step){ previewTs.push(tt); previewIs.push(iext(tt)); }
+    plotTrace(ctx,previewTs,previewIs,W,H,yMin,yMax,tMin,tMax,'rgba(11,122,110,.5)',1.5,true);
+    ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';
+    const p2=PAD,pw2=W-p2.left-p2.right;
+    ctx.fillText('Preview — stimulus shape before running',p2.left+pw2/2,H/2);
+  }
+}
 function renderSS(){
   const {ctx,W,H}=setupCanvas('cv-ss');
   const Vs=[];for(let V=-100;V<=60;V+=0.5)Vs.push(V);
@@ -1606,6 +1641,15 @@ function updateStim(){
   STIM.freq=parseFloat(document.getElementById('sl-freq').value);
   const showFreq=['pulse','sine'].includes(STIM.type);
   document.getElementById('freq-row').style.display=showFreq?'flex':'none';
+
+  // Update stimulus window display
+  const t0=STIM.tStart, t1=STIM.tStart+STIM.dur;
+  const d0=document.getElementById('stim-t0');
+  const d1=document.getElementById('stim-t1');
+  if(d0) d0.textContent=t0.toFixed(0);
+  if(d1) d1.textContent=t1.toFixed(0);
+  // Refresh Iext preview
+  if(!running) renderIext(viewStart||0, viewEnd||winMs);
 }
 
 function clearPhase(){
@@ -1680,6 +1724,7 @@ window.addEventListener('load',()=>{
   empty('cv-V',-90,55,'mV');
   empty('cv-gates',0,1,'');
   empty('cv-currents',-5,5,'µA/cm²');
+  renderIext(0,winMs); // show stimulus preview
   updateStats();
 });
 
@@ -1806,7 +1851,12 @@ window.addEventListener('resize',()=>{
 // ─── SYNC: slider ↔ number input ───────────────────────
 function syncSlider(slId, val){
   const numEl = document.getElementById(slId+'-num');
-  if(numEl) numEl.value = parseFloat(val);
+  // Don't overwrite if the number field is currently focused (user is typing)
+  if(numEl && document.activeElement !== numEl){
+    const dp = numEl.step && numEl.step.includes('.') ?
+      numEl.step.split('.')[1].length : 0;
+    numEl.value = parseFloat(val).toFixed(dp);
+  }
 }
 function syncNum(slId, val){
   const slEl = document.getElementById(slId);
