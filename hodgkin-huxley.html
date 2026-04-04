@@ -1023,104 +1023,63 @@ body.dark-mode .hero{border-color:#1c3050!important}
 <script>
 'use strict';
 
-// ─── PARAMETERS ──────────────────────────────────────────
-// MATLAB convention defaults (HH_ODE45_Inline.m)
-const P = {
-  gNa:120, gK:36, gL:0.3,
-  ENa:115, EK:-12, EL:10.6,
-  Cm:1, T:6.3,
-  blockNa:false, blockK:false,
-  autoPause:true, showFull:true
-};
-// Default: constant Iext=9 from t=0 (matches MATLAB Iext=9, tSpan=[0,100])
-const STIM = { type:'step', I0:9, tStart:0, dur:100, freq:40 };
+// ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
+const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:true};
+const STIM={type:'step',I0:9,tStart:0,dur:100,freq:40};
+const DT=0.01, STORE_EVERY=2, MAX_HIST=50000;
+const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
+let speedIdx=2, winMs=110;
 
 // ─── SIM STATE ────────────────────────────────────────────
-let t=0, y=[-65, 0.053, 0.596, 0.318];
-const DT = 0.01;
-let running=false, animId=null, stepCnt=0;
+let t=0, y=[0,0,0,0], stepCnt=0;
+let running=false, animId=null;
+let viewStart=0, viewEnd=110, viewLocked=false;
+let currentV=0;
 
-// Speed: steps per animation frame (lower = slower display)
-const SPEED_LEVELS = [10, 25, 50, 100, 200, 350, 500, 800];
-let speedIdx = 2; // default index → 50 steps/frame = 0.5 ms sim/frame
-
-// History: full accumulated trace
-const hist = { t:[], V:[], m:[], h:[], n:[], INa:[], IK:[], IL:[], Iext:[] };
-const STORE_EVERY = 2;   // store every N steps
-const MAX_HIST = 50000;  // cap at 500 ms worth
-
-// View control
-let viewLocked = false;   // when true, don't advance view window
-let viewStart  = 0;
-let viewEnd    = 200;
-let winMs      = 200;     // display window width
-
-// Stability / auto-pause
-const STAB_THRESH = 0.3;  // mV — consider stable if |V - Vrest| < this
-const STAB_DUR    = 8;   // ms — must be stable for this long
-let stabTimer     = 0;    // ms spent stable post-stimulus
-let stimEnded     = false;
-let postStimStart = -1;
+// History arrays
+const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
 
 // AP detection
 let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH = 50; // mV — MATLAB convention (Vrest=0, peak ~110mV)
+const AP_THRESH=50; // mV — MATLAB convention peak ~115mV
 
-// Phase portrait trail
-const TRAIL_LEN = 6000;
-const phaseV = new Float32Array(TRAIL_LEN);
-const phaseN = new Float32Array(TRAIL_LEN);
+// Phase portrait
+const TRAIL_LEN=6000;
+const phaseV=new Float32Array(TRAIL_LEN), phaseN=new Float32Array(TRAIL_LEN);
 let phasePtr=0, phaseCount=0;
 
-// ─── RATE FUNCTIONS ──────────────────────────────────────
-// ─── RATE FUNCTIONS — MATLAB convention (Vrest = 0 mV) ──────────
-// Matches HH_ODE45_Inline.m exactly. Singularities handled via L'Hôpital:
-//   alpha_m → 1.0 at V=25;  alpha_n → 0.1 at V=10
-function am(V){ const x=V-25; return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1); }
-function bm(V){ return 4*Math.exp(-V/18); }
-function ah(V){ return 0.07*Math.exp(-V/20); }
-function bh(V){ return 1/(Math.exp(-(V-30)/10)+1); }
-function an(V){ const x=V-10; return Math.abs(x)<1e-7?0.1:-0.01*x/(Math.exp(-x/10)-1); }
-function bn(V){ return 0.125*Math.exp(-V/80); }
-function phi(){ return Math.pow(3,(P.T-6.3)/10); }
+// Stability / auto-pause
+const STAB_THRESH=0.5, STAB_DUR=8;
+let stabTimer=0, postStimStart=-1;
 
-function ss(V){
-  return [am(V)/(am(V)+bm(V)), ah(V)/(ah(V)+bh(V)), an(V)/(an(V)+bn(V))];
-}
+// ─── RATE FUNCTIONS — MATLAB/HH original (Vrest=0) ───────
+function am(V){const x=V-25;return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1);}
+function bm(V){return 4*Math.exp(-V/18);}
+function ah(V){return 0.07*Math.exp(-V/20);}
+function bh(V){return 1/(Math.exp(-(V-30)/10)+1);}
+function an(V){const x=V-10;return Math.abs(x)<1e-7?0.1:-0.01*x/(Math.exp(-x/10)-1);}
+function bn(V){return 0.125*Math.exp(-V/80);}
+function phi(){return Math.pow(3,(P.T-6.3)/10);}
+function ss(V){return[am(V)/(am(V)+bm(V)),ah(V)/(ah(V)+bh(V)),an(V)/(an(V)+bn(V))];}
 
 // ─── STIMULUS ─────────────────────────────────────────────
 function iext(t){
-  const {type,I0,tStart,dur,freq}=STIM;
-  const tEnd=tStart+dur;
-  if(t<tStart) return 0;
-  if(type==='step')  return t<=tEnd ? I0 : 0;
-  if(type==='ramp')  return t>tEnd  ? 0  : I0*(t-tStart)/dur;
-  if(type==='pulse'){
-    if(t>tEnd) return 0;
-    const period=1000/freq, pw=Math.min(1,period*0.4);
-    return (t-tStart)%period < pw ? I0 : 0;
-  }
-  if(type==='sine'){
-    if(t>tEnd) return 0;
-    return I0*Math.sin(2*Math.PI*freq*(t-tStart)/1000);
-  }
+  const{type,I0,tStart,dur,freq}=STIM,tEnd=tStart+dur;
+  if(t<tStart)return 0;
+  if(type==='step')return t<=tEnd?I0:0;
+  if(type==='ramp')return t>tEnd?0:I0*(t-tStart)/dur;
+  if(type==='pulse'){if(t>tEnd)return 0;const p=1000/freq,pw=Math.min(1,p*0.4);return(t-tStart)%p<pw?I0:0;}
+  if(type==='sine'){if(t>tEnd)return 0;return I0*Math.sin(2*Math.PI*freq*(t-tStart)/1000);}
   return 0;
 }
 
-// ─── ODE ─────────────────────────────────────────────────
-function dydt(y, t){
-  const [V,m,h,n] = y;
-  const ph = phi();
-  const INa = P.blockNa ? 0 : P.gNa*m*m*m*h*(V-P.ENa);
-  const IK  = P.blockK  ? 0 : P.gK *n*n*n*n*(V-P.EK);
-  const IL  = P.gL*(V-P.EL);
-  const Ie  = iext(t);
-  return [
-    (Ie-INa-IK-IL)/P.Cm,
-    ph*(am(V)*(1-m)-bm(V)*m),
-    ph*(ah(V)*(1-h)-bh(V)*h),
-    ph*(an(V)*(1-n)-bn(V)*n)
-  ];
+// ─── ODE (MATLAB order: [V,m,h,n]) ───────────────────────
+function dydt(y,t){
+  const[V,m,h,n]=y, ph=phi();
+  const INa=P.blockNa?0:P.gNa*m*m*m*h*(V-P.ENa);
+  const IK =P.blockK ?0:P.gK *n*n*n*n*(V-P.EK);
+  const IL =P.gL*(V-P.EL), Ie=iext(t);
+  return[(Ie-INa-IK-IL)/P.Cm, ph*(am(V)*(1-m)-bm(V)*m), ph*(ah(V)*(1-h)-bh(V)*h), ph*(an(V)*(1-n)-bn(V)*n)];
 }
 
 // ─── RK4 ─────────────────────────────────────────────────
@@ -1139,286 +1098,168 @@ function rk4(){
 
 // ─── STORE & DETECT ──────────────────────────────────────
 function storeAndDetect(){
-  const [V,m,h,n]=y;
-  const Ie=iext(t);
+  const[V,m,h,n]=y, Ie=iext(t);
   const INa=P.blockNa?0:P.gNa*m*m*m*h*(V-P.ENa);
   const IK =P.blockK ?0:P.gK *n*n*n*n*(V-P.EK);
   const IL =P.gL*(V-P.EL);
-
-  hist.t.push(t); hist.V.push(V); hist.m.push(m);
-  hist.h.push(h); hist.n.push(n);
-  hist.INa.push(INa); hist.IK.push(IK);
-  hist.IL.push(IL); hist.Iext.push(Ie);
-
-  // Cap history
-  if(hist.t.length>MAX_HIST){
-    const ex=hist.t.length-MAX_HIST;
-    for(const k of Object.keys(hist)) hist[k].splice(0,ex);
-  }
-
-  // Phase trail
-  phaseV[phasePtr]=V; phaseN[phasePtr]=n;
-  phasePtr=(phasePtr+1)%TRAIL_LEN;
-  if(phaseCount<TRAIL_LEN) phaseCount++;
-
+  hist.t.push(t);hist.V.push(V);hist.m.push(m);hist.h.push(h);
+  hist.n.push(n);hist.INa.push(INa);hist.IK.push(IK);hist.IL.push(IL);hist.Iext.push(Ie);
+  if(hist.t.length>MAX_HIST){const ex=hist.t.length-MAX_HIST;for(const k of Object.keys(hist))hist[k].splice(0,ex);}
+  phaseV[phasePtr]=V;phaseN[phasePtr]=n;phasePtr=(phasePtr+1)%TRAIL_LEN;if(phaseCount<TRAIL_LEN)phaseCount++;
   // Spike detection
   const prev=hist.V.length>=2?hist.V[hist.V.length-2]:V;
-  if(prev<AP_THRESH && V>=AP_THRESH && t-apLastSpike>5){
-    apSpikes++; 
-    if(apSpikes>1) apSpikeTs.push(t-apLastSpike);
-    apLastSpike=t; apPeakV=V;
-  }
-  if(V>apPeakV && apSpikes>0) apPeakV=V;
-
-  // Stability tracking for auto-pause
-  // MATLAB convention: Vrest=0, gates rest at 0
-  const Vrest=0;
-  const stimDone=t > STIM.tStart+STIM.dur+2;
-  if(stimDone){
-    if(postStimStart<0) postStimStart=t;
-    if(Math.abs(V-Vrest)<STAB_THRESH && m<0.02 && n<0.05)
-      stabTimer+=DT;
-    else
-      stabTimer=0;
-  }
-
-  // Update view window
-  updateViewWindow();
+  if(prev<AP_THRESH&&V>=AP_THRESH&&t-apLastSpike>3){apSpikes++;if(apSpikes>1)apSpikeTs.push(t-apLastSpike);apLastSpike=t;apPeakV=V;}
+  if(V>apPeakV&&apSpikes>0)apPeakV=V;
+  // Stability
+  const stimDone=t>STIM.tStart+STIM.dur+2;
+  if(stimDone){if(postStimStart<0)postStimStart=t;if(Math.abs(V)<STAB_THRESH&&m<0.02&&n<0.05)stabTimer+=DT;else stabTimer=0;}
 }
 
-// ─── VIEW WINDOW LOGIC ────────────────────────────────────
-// "showFull": start at 0, grow to winMs, then scroll.
-// "auto-pause": when stable, lock the view so the interesting part stays visible.
-function updateViewWindow(){
-  if(viewLocked) return;
+function shouldAutoPause(){return P.autoPause&&stabTimer>=STAB_DUR;}
 
-  const tCur=t;
-  if(P.showFull){
-    viewStart = Math.max(0, tCur - winMs);
-    viewEnd   = Math.max(winMs, tCur);
-  } else {
-    viewStart = Math.max(0, tCur - winMs);
-    viewEnd   = viewStart + winMs;
-  }
-}
-
-// ─── AUTO-PAUSE DECISION ─────────────────────────────────
-function shouldAutoPause(){
-  if(!P.autoPause) return false;
-  if(stabTimer >= STAB_DUR) return true;
-  return false;
+// ─── INIT ─────────────────────────────────────────────────
+function initState(){
+  y=[0,0,0,0]; t=0; stepCnt=0;
+  for(const k of Object.keys(hist))hist[k]=[];
+  apSpikes=0;apLastSpike=-1e9;apPeakV=-Infinity;apSpikeTs=[];
+  phasePtr=0;phaseCount=0;stabTimer=0;postStimStart=-1;
 }
 
 // ─── SIMULATION LOOP ──────────────────────────────────────
 function animate(){
-  if(!running) return;
-  const steps = SPEED_LEVELS[speedIdx];
+  if(!running)return;
+  const steps=SPEED_LEVELS[speedIdx];
   for(let i=0;i<steps;i++){
     rk4();
-    if(stepCnt%STORE_EVERY===0) storeAndDetect();
+    if(stepCnt%STORE_EVERY===0)storeAndDetect();
     if(shouldAutoPause()){
-      // Show from t=0 so stimulus onset and AP are both visible
-      viewStart = 0;
-      viewEnd   = Math.max(winMs, t);
-      viewLocked = true;
+      viewStart=0;viewEnd=Math.max(winMs,t);viewLocked=true;
       stopSim();
-      document.getElementById('sim-status-text').textContent='Stable — auto-paused';
-      document.getElementById('sim-dot').classList.add('paused');
-      renderAll(); updateStats();
-      return;
+      const sd=document.getElementById('sim-dot');if(sd)sd.classList.add('paused');
+      const st=document.getElementById('sim-status-text');if(st)st.textContent='Stable — paused';
+      renderAll();updateStats();return;
     }
   }
-  renderAll(); updateStats();
-  animId = requestAnimationFrame(animate);
+  updateViewWindow();
+  renderAll();updateStats();
+  animId=requestAnimationFrame(animate);
 }
 
 function startSim(){
-  if(running) return;
-  // Reset stability timers so a previous auto-pause doesn't immediately re-fire
-  stabTimer=0; postStimStart=-1;
-  viewLocked = false;
-  running = true;
-  document.getElementById('sim-dot').classList.remove('paused');
-  document.getElementById('sim-status-text').textContent='Running';
-  animId = requestAnimationFrame(animate);
+  if(running)return;
+  stabTimer=0;postStimStart=-1;  // clear stale pause state
+  viewLocked=false;
+  running=true;
+  const sd=document.getElementById('sim-dot');if(sd)sd.classList.remove('paused');
+  const st=document.getElementById('sim-status-text');if(st)st.textContent='Running';
+  animId=requestAnimationFrame(animate);
 }
 
 function stopSim(){
   running=false;
-  if(animId){ cancelAnimationFrame(animId); animId=null; }
-  document.getElementById('sim-dot').classList.add('paused');
-  if(document.getElementById('sim-status-text').textContent==='Running')
-    document.getElementById('sim-status-text').textContent='Paused';
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  const sd=document.getElementById('sim-dot');if(sd)sd.classList.add('paused');
+  const st=document.getElementById('sim-status-text');if(st&&st.textContent==='Running')st.textContent='Paused';
 }
 
 function resetSim(){
-  stopSim();
-  initState();
-  viewLocked=false;
-  viewStart=0; viewEnd=winMs;
-  renderAll(); updateStats();
-  document.getElementById('sim-status-text').textContent='Ready';
+  stopSim();initState();
+  viewStart=0;viewEnd=winMs;viewLocked=false;
+  renderAll();updateStats();
+  const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready';
 }
 
-// ─── INIT ─────────────────────────────────────────────────
-function initState(){
-  // MATLAB convention: Vm0=0, n0=m0=h0=0 (0*alpha/... = 0)
-  y=[0, 0, 0, 0];
-  t=0; stepCnt=0;
-  for(const k of Object.keys(hist)) hist[k]=[];
-  apSpikes=0; apLastSpike=-1e9; apPeakV=-Infinity; apSpikeTs=[];
-  phasePtr=0; phaseCount=0;
-  stabTimer=0; postStimStart=-1;
+// ─── VIEW WINDOW ──────────────────────────────────────────
+function updateViewWindow(){
+  if(viewLocked)return;
+  viewStart=Math.max(0,t-winMs);
+  viewEnd=Math.max(winMs,t);
 }
 
-// ─── CANVAS UTILITIES ─────────────────────────────────────
+// ─── CANVAS SETUP ─────────────────────────────────────────
 const PAD={top:18,right:16,bottom:40,left:58};
 
 function setupCanvas(id){
-  const canvas=document.getElementById(id);
+  const c=document.getElementById(id);
+  if(!c)return{ctx:null,W:0,H:0};
+  if(!c.dataset.lh)c.dataset.lh=c.getAttribute('height')||'160';
+  const minH=parseInt(c.dataset.lh);
+  const W=Math.max(100,c.parentElement.clientWidth||600);
+  const H=Math.max(minH,c.clientHeight||minH);
   const dpr=window.devicePixelRatio||1;
-
-  // Store logical height ONCE from HTML attribute — never re-read from canvas property
-  // (canvas.height = N reflects back to the attribute and would grow on each call)
-  if(!canvas.dataset.lh){
-    canvas.dataset.lh=canvas.getAttribute('height')||'160';
-  }
-  const minH=parseInt(canvas.dataset.lh);
-  // Use rendered height from CSS if flex container has expanded the canvas
-  const H=Math.max(minH, canvas.clientHeight||minH);
-  const W=Math.max(100, canvas.parentElement.clientWidth||600);
-
-  canvas.width=Math.round(W*dpr);
-  canvas.height=Math.round(H*dpr);
-  canvas.style.width=W+'px';
-  canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  return {ctx,W,H};
+  c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);
+  c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,W,H};
 }
 
-function drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,yLabel){
-  const p=PAD, pw=W-p.left-p.right, ph=H-p.top-p.bottom;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#f9fafb'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#fff'; ctx.fillRect(p.left,p.top,pw,ph);
-
-  // Grid
-  ctx.strokeStyle='#f3f4f6'; ctx.lineWidth=1;
-  for(let i=0;i<=5;i++){
-    const y=p.top+ph*i/5;
-    ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(p.left+pw,y);ctx.stroke();
-  }
-  for(let i=0;i<=6;i++){
-    const x=p.left+pw*i/6;
-    ctx.beginPath();ctx.moveTo(x,p.top);ctx.lineTo(x,p.top+ph);ctx.stroke();
-  }
-
-  // Border
-  ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1;
-  ctx.strokeRect(p.left,p.top,pw,ph);
-
-  // Zero line
-  if(yMin<0&&yMax>0){
-    const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));
-    ctx.strokeStyle='rgba(0,0,0,.1)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-    ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  // Y labels
-  ctx.fillStyle='#6b7280'; ctx.font="bold 12px 'DM Mono',monospace"; ctx.textAlign='right';
-  for(let i=0;i<=5;i++){
-    const val=yMin+(yMax-yMin)*(1-i/5);
-    const y=p.top+ph*i/5;
-    ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1),p.left-4,y+4);
-  }
-
-  // X labels
-  ctx.textAlign='center';
-  for(let i=0;i<=6;i++){
-    const val=tMin+(tMax-tMin)*i/6;
-    ctx.fillText(Math.round(val),p.left+pw*i/6,H-8);
-  }
-
-  // Y axis label
-  ctx.save();ctx.translate(9,p.top+ph/2);ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center';ctx.fillStyle='#9ca3af';
-  ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
-}
-
-function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw,dashed){
-  if(!ts||ts.length<2) return;
+// ─── DRAW AXES ────────────────────────────────────────────
+function drawAxes(ctx,W,H,yMin,yMax,xMin,xMax,yLabel){
+  if(!ctx)return;
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  ctx.save();
-  ctx.strokeStyle=color; ctx.lineWidth=lw||1.5;
-  if(dashed) ctx.setLineDash([4,3]);
-  ctx.beginPath();
-  let first=true;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f9fafb';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff';ctx.fillRect(p.left,p.top,pw,ph);
+  // Grid
+  ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();}
+  for(let i=0;i<=6;i++){ctx.beginPath();ctx.moveTo(p.left+pw*i/6,p.top);ctx.lineTo(p.left+pw*i/6,p.top+ph);ctx.stroke();}
+  ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
+  // Zero line
+  if(yMin<0&&yMax>0){const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));ctx.strokeStyle='rgba(0,0,0,.1)';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();ctx.setLineDash([]);}
+  // Labels
+  const font="bold 12px 'DM Mono',monospace";
+  ctx.fillStyle='#4a5568';ctx.font=font;ctx.textAlign='right';
+  for(let i=0;i<=5;i++){const val=yMin+(yMax-yMin)*(1-i/5);ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1),p.left-4,p.top+ph*i/5+4);}
+  ctx.textAlign='center';
+  for(let i=0;i<=6;i++){const val=xMin+(xMax-xMin)*i/6;ctx.fillText(Math.round(val),p.left+pw*i/6,H-8);}
+  ctx.save();ctx.translate(10,p.top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#718096';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
+}
+
+// ─── PLOT TRACE ───────────────────────────────────────────
+function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw,dashed){
+  if(!ctx||!ts||ts.length<2)return;
+  const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=lw||1.5;
+  if(dashed)ctx.setLineDash([4,3]);
+  ctx.beginPath();let first=true;
   for(let i=0;i<ts.length;i++){
-    if(ts[i]<tMin-0.5||ts[i]>tMax+0.5) continue;
+    if(ts[i]<tMin-0.5||ts[i]>tMax+0.5)continue;
     const x=p.left+pw*(ts[i]-tMin)/(tMax-tMin);
     const yc=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
     const ycc=Math.max(p.top-2,Math.min(p.top+ph+2,yc));
     if(first){ctx.moveTo(x,ycc);first=false;}else ctx.lineTo(x,ycc);
   }
-  ctx.stroke();
-  if(dashed) ctx.setLineDash([]);
-  ctx.restore();
+  ctx.stroke();if(dashed)ctx.setLineDash([]);ctx.restore();
 }
 
-// Stimulus shading
 function drawStimulusShade(ctx,W,H,tMin,tMax){
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  const tS=Math.max(tMin,STIM.tStart);
-  const tE=Math.min(tMax,STIM.tStart+STIM.dur);
-  if(tS>=tE) return;
-  const x1=p.left+pw*(tS-tMin)/(tMax-tMin);
-  const x2=p.left+pw*(tE-tMin)/(tMax-tMin);
-  ctx.fillStyle='rgba(11,122,110,.06)';
-  ctx.fillRect(x1,p.top,x2-x1,ph);
+  const tS=Math.max(tMin,STIM.tStart),tE=Math.min(tMax,STIM.tStart+STIM.dur);
+  if(tS>=tE)return;
+  const x1=p.left+pw*(tS-tMin)/(tMax-tMin),x2=p.left+pw*(tE-tMin)/(tMax-tMin);
+  ctx.fillStyle='rgba(11,122,110,.06)';ctx.fillRect(x1,p.top,x2-x1,ph);
 }
 
-// ─── RENDER ───────────────────────────────────────────────
-let currentV=-65;
-
+// ─── RENDER PLOTS ─────────────────────────────────────────
 function renderAll(){
-  if(!hist.t.length) return;
-  const tMin=viewStart, tMax=viewEnd;
+  if(!hist.t.length)return;
+  const tMin=viewStart,tMax=viewEnd;
   currentV=hist.V[hist.V.length-1];
-  renderV(tMin,tMax);
-  renderGates(tMin,tMax);
-  renderCurrents(tMin,tMax);
-  renderIext(tMin,tMax);
-  renderSS();
-  renderTau();
-  renderPhase();
+  renderV(tMin,tMax);renderGates(tMin,tMax);renderCurrents(tMin,tMax);renderIext(tMin,tMax);
+  renderSS();renderTau();renderPhase();
 }
 
 function renderV(tMin,tMax){
-  const {ctx,W,H}=setupCanvas('cv-V');
+  const{ctx,W,H}=setupCanvas('cv-V');if(!ctx)return;
   drawAxes(ctx,W,H,-20,125,tMin,tMax,'mV');
   drawStimulusShade(ctx,W,H,tMin,tMax);
-
-  // Iext scaled to fit
-  const maxI=Math.max(1,...hist.Iext.map(Math.abs));
-  const iScaled=hist.Iext.map(v=>-20+v/maxI*18); // scaled to -20..~0 baseline
-  plotTrace(ctx,hist.t,iScaled,W,H,-20,125,tMin,tMax,'#94a3b8',1,true);
+  if(hist.Iext.length){const maxI=Math.max(1,...hist.Iext.map(v=>Math.abs(v)));const iSc=hist.Iext.map(v=>-20+v/maxI*15);plotTrace(ctx,hist.t,iSc,W,H,-20,125,tMin,tMax,'#94a3b8',1,true);}
   plotTrace(ctx,hist.t,hist.V,W,H,-20,125,tMin,tMax,'#0b7a6e',2);
-
-  // Current V dot at right edge
-  if(!viewLocked){
-    const p=PAD,ph2=H-p.top-p.bottom,pw=W-p.left-p.right;
-    const xNow=p.left+pw;
-    const vNow=hist.V[hist.V.length-1];
-    const yNow=p.top+ph2*(1-(vNow+20)/145);
-    ctx.fillStyle='#0b7a6e';
-    ctx.beginPath();ctx.arc(xNow,yNow,3.5,0,Math.PI*2);ctx.fill();
-  }
 }
 
 function renderGates(tMin,tMax){
-  const {ctx,W,H}=setupCanvas('cv-gates');
+  const{ctx,W,H}=setupCanvas('cv-gates');if(!ctx)return;
   drawAxes(ctx,W,H,0,1,tMin,tMax,'');
   drawStimulusShade(ctx,W,H,tMin,tMax);
   plotTrace(ctx,hist.t,hist.m,W,H,0,1,tMin,tMax,'#dc2626',1.5);
@@ -1427,15 +1268,10 @@ function renderGates(tMin,tMax){
 }
 
 function renderCurrents(tMin,tMax){
-  const {ctx,W,H}=setupCanvas('cv-currents');
-  // Scale y-axis to the visible window only — prevents flatline from full-history extremes
+  const{ctx,W,H}=setupCanvas('cv-currents');if(!ctx)return;
   let mxI=5;
-  for(let i=0;i<hist.t.length;i++){
-    if(hist.t[i]<tMin-0.5||hist.t[i]>tMax+0.5) continue;
-    const mx=Math.max(Math.abs(hist.INa[i]),Math.abs(hist.IK[i]),Math.abs(hist.IL[i]));
-    if(mx>mxI) mxI=mx;
-  }
-  mxI=Math.max(5, mxI*1.12);
+  for(let i=0;i<hist.t.length;i++){if(hist.t[i]<tMin-0.5||hist.t[i]>tMax+0.5)continue;const mx=Math.max(Math.abs(hist.INa[i]),Math.abs(hist.IK[i]),Math.abs(hist.IL[i]));if(mx>mxI)mxI=mx;}
+  mxI=Math.max(5,mxI*1.12);
   drawAxes(ctx,W,H,-mxI,mxI,tMin,tMax,'µA/cm²');
   drawStimulusShade(ctx,W,H,tMin,tMax);
   plotTrace(ctx,hist.t,hist.INa,W,H,-mxI,mxI,tMin,tMax,'#dc2626',1.5);
@@ -1443,199 +1279,107 @@ function renderCurrents(tMin,tMax){
   plotTrace(ctx,hist.t,hist.IL,W,H,-mxI,mxI,tMin,tMax,'#15803d',1);
 }
 
-
 function renderIext(tMin,tMax){
-  const {ctx,W,H}=setupCanvas('cv-Iext');
-  // Build Iext trace from stored history
-  const maxI=Math.max(1,...hist.Iext.map(v=>Math.abs(v)));
-  // Also account for future stimulus shape (show a preview even before sim runs)
-  const previewI=Math.max(maxI, Math.abs(STIM.I0));
-  const yMax=previewI*1.2; const yMin=STIM.I0<0?-previewI*1.2:-yMax*0.15;
-  drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,'µA/cm²');
-  drawStimulusShade(ctx,W,H,tMin,tMax);
-  // If we have history, draw it
-  if(hist.t.length>1){
-    plotTrace(ctx,hist.t,hist.Iext,W,H,yMin,yMax,tMin,tMax,'#0b7a6e',2);
-  } else {
-    // Preview: draw what the stimulus will look like over the view window
-    const step=0.5, previewTs=[], previewIs=[];
-    for(let tt=tMin;tt<=tMax;tt+=step){ previewTs.push(tt); previewIs.push(iext(tt)); }
-    plotTrace(ctx,previewTs,previewIs,W,H,yMin,yMax,tMin,tMax,'rgba(11,122,110,.5)',1.5,true);
-    ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';
-    const p2=PAD,pw2=W-p2.left-p2.right;
-    ctx.fillText('Preview — stimulus shape before running',p2.left+pw2/2,H/2);
-  }
+  const{ctx,W,H}=setupCanvas('cv-Iext');if(!ctx)return;
+  const preview=Math.abs(STIM.I0),mxI=Math.max(preview*1.2,1),mn=STIM.I0<0?-mxI:-mxI*0.12;
+  drawAxes(ctx,W,H,mn,mxI,tMin,tMax,'µA/cm²');
+  if(hist.t.length>1){plotTrace(ctx,hist.t,hist.Iext,W,H,mn,mxI,tMin,tMax,'#0b7a6e',2);}
+  else{const step=0.5,pts=[],is=[];for(let tt=tMin;tt<=tMax;tt+=step){pts.push(tt);is.push(iext(tt));}plotTrace(ctx,pts,is,W,H,mn,mxI,tMin,tMax,'rgba(11,122,110,.5)',1.5,true);}
 }
+
 function renderSS(){
-  const {ctx,W,H}=setupCanvas('cv-ss');
+  const{ctx,W,H}=setupCanvas('cv-ss');if(!ctx)return;
   const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
   drawAxes(ctx,W,H,0,1,-20,130,'x∞');
-
-  const cols=['#dc2626','#f59e0b','#7c3aed'];
-  const lbls=['m∞','h∞','n∞'];
+  const cols=['#dc2626','#f59e0b','#7c3aed'],lbls=['m∞','h∞','n∞'];
   for(let c=0;c<3;c++){
     ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
-    Vs.forEach((V,i)=>{
-      const s=ss(V);
-      const x=p.left+pw*(V+100)/160;
-      const y=p.top+ph*(1-s[c]);
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    });
+    Vs.forEach((V,i)=>{const s=ss(V);const x=p.left+pw*(V+20)/150;const y=p.top+ph*(1-s[c]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
     ctx.stroke();
   }
-
-  // Current Vm marker
+  // Vm marker
   const xV=p.left+pw*(currentV+20)/150;
-  ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+ph);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle='#0b7a6e';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='center';
-  ctx.fillText('Vm',xV,p.top-2);
-
+  ctx.strokeStyle='rgba(11,122,110,.5)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+ph);ctx.stroke();ctx.setLineDash([]);
   // Labels
-  const lpos=[{V:30,i:0},{V:-10,i:1},{V:10,i:2}];
-  lpos.forEach(({V,i})=>{
-    const s=ss(V);
-    ctx.fillStyle=cols[i];ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='left';
-    ctx.fillText(lbls[i],p.left+pw*(V+20)/150+3,p.top+ph*(1-s[i])-3);
-  });
+  [[30,0],[-10,1],[10,2]].forEach(([V,c])=>{const s=ss(V);ctx.fillStyle=cols[c];ctx.font="bold 11px 'DM Mono',monospace";ctx.textAlign='left';ctx.fillText(lbls[c],p.left+pw*(V+20)/150+3,p.top+ph*(1-s[c])-3);});
 }
 
 function renderTau(){
-  const {ctx,W,H}=setupCanvas('cv-tau');
+  const{ctx,W,H}=setupCanvas('cv-tau');if(!ctx)return;
   const ph=phi();
   const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
-  const taus=Vs.map(V=>[
-    1/((am(V)+bm(V))*ph),
-    1/((ah(V)+bh(V))*ph),
-    1/((an(V)+bn(V))*ph)
-  ]);
+  const taus=Vs.map(V=>[1/((am(V)+bm(V))*ph),1/((ah(V)+bh(V))*ph),1/((an(V)+bn(V))*ph)]);
   const mxT=Math.max(...taus.flat())*1.1;
   const p=PAD,pw=W-p.left-p.right,pph=H-p.top-p.bottom;
   drawAxes(ctx,W,H,0,mxT,-20,130,'τ (ms)');
-
-  const cols=['#dc2626','#f59e0b','#7c3aed'];
-  const lbls=['τm','τh','τn'];
+  const cols=['#dc2626','#f59e0b','#7c3aed'],lbls=['τm','τh','τn'];
   for(let c=0;c<3;c++){
     ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
-    Vs.forEach((V,i)=>{
-      const x=p.left+pw*(V+100)/160;
-      const y=p.top+pph*(1-taus[i][c]/mxT);
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    });
+    Vs.forEach((V,i)=>{const x=p.left+pw*(V+20)/150;const y=p.top+pph*(1-taus[i][c]/mxT);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
     ctx.stroke();
   }
-  const lpos=[{V:35,i:0},{V:-10,i:1},{V:15,i:2}];
-  lpos.forEach(({V,i})=>{
-    const idx=Math.round((V+100)/0.5);
-    if(idx<0||idx>=taus.length) return;
-    const τ=taus[idx][i];
-    ctx.fillStyle=cols[i];ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='left';
-    ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+pph*(1-τ/mxT)-3);
-  });
-
-  // Vm marker
-  const xV=p.left+pw*(currentV+20)/150;
-  ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+pph);ctx.stroke();
-  ctx.setLineDash([]);
+  [[35,0],[-10,1],[15,2]].forEach(([V,c])=>{const idx=Math.round((V+20)/0.5);if(idx<0||idx>=taus.length)return;const τ=taus[idx][c];ctx.fillStyle=cols[c];ctx.font="bold 11px 'DM Mono',monospace";ctx.textAlign='left';ctx.fillText(lbls[c],p.left+pw*(V+20)/150+3,p.top+pph*(1-τ/mxT)-3);});
+  const xV=p.left+pw*(currentV+20)/150;ctx.strokeStyle='rgba(11,122,110,.5)';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+pph);ctx.stroke();ctx.setLineDash([]);
 }
 
 function renderPhase(){
-  const {ctx,W,H}=setupCanvas('cv-phase');
-  const p={top:20,right:20,bottom:36,left:54};
-  const pw=W-p.left-p.right, ph=H-p.top-p.bottom;
-
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#f9fafb';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#fff';ctx.fillRect(p.left,p.top,pw,ph);
-
-  // Grid
+  const{ctx,W,H}=setupCanvas('cv-phase');if(!ctx)return;
+  const p={top:20,right:20,bottom:36,left:54},pw=W-p.left-p.right,ph=H-p.top-p.bottom;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#f9fafb';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.fillRect(p.left,p.top,pw,ph);
   ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
-  for(let i=0;i<=5;i++){
-    ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(p.left+pw*i/5,p.top);ctx.lineTo(p.left+pw*i/5,p.top+ph);ctx.stroke();
-  }
+  for(let i=0;i<=5;i++){ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();ctx.beginPath();ctx.moveTo(p.left+pw*i/5,p.top);ctx.lineTo(p.left+pw*i/5,p.top+ph);ctx.stroke();}
   ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
-
-  const vMin=-90,vMax=55,nMin=0,nMax=1;
-  const xp=(n)=>p.left+pw*(n-nMin)/(nMax-nMin);
-  const yp=(v)=>p.top+ph*(1-(v-vMin)/(vMax-vMin));
-
-  // Draw trajectory
-  const count=Math.min(phaseCount,TRAIL_LEN);
-  if(count>2){
-    for(let i=1;i<count;i++){
-      const a=((phasePtr-count+i-1+TRAIL_LEN)%TRAIL_LEN);
-      const b=((phasePtr-count+i+TRAIL_LEN)%TRAIL_LEN);
-      const alpha=Math.pow(i/count,0.6);
-      ctx.strokeStyle=`rgba(11,122,110,${alpha*0.9})`;
-      ctx.lineWidth=1.5;
-      ctx.beginPath();
-      ctx.moveTo(xp(phaseN[a]),yp(phaseV[a]));
-      ctx.lineTo(xp(phaseN[b]),yp(phaseV[b]));
-      ctx.stroke();
+  const vMin=-20,vMax=125,nMin=0,nMax=1;
+  const xp=(n)=>p.left+pw*(n-nMin)/(nMax-nMin), yp=(v)=>p.top+ph*(1-(v-vMin)/(vMax-vMin));
+  const cnt=Math.min(phaseCount,TRAIL_LEN);
+  if(cnt>2){
+    for(let i=1;i<cnt;i++){
+      const a=(phasePtr-cnt+i-1+TRAIL_LEN)%TRAIL_LEN,b=(phasePtr-cnt+i+TRAIL_LEN)%TRAIL_LEN;
+      ctx.strokeStyle=`rgba(11,122,110,${Math.pow(i/cnt,0.6)*0.9})`;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(xp(phaseN[a]),yp(phaseV[a]));ctx.lineTo(xp(phaseN[b]),yp(phaseV[b]));ctx.stroke();
     }
-    // Current point
-    const ci=(phasePtr-1+TRAIL_LEN)%TRAIL_LEN;
-    ctx.fillStyle='#0b7a6e';
-    ctx.beginPath();ctx.arc(xp(phaseN[ci]),yp(phaseV[ci]),5,0,Math.PI*2);ctx.fill();
+    const ci=(phasePtr-1+TRAIL_LEN)%TRAIL_LEN;ctx.fillStyle='#0b7a6e';ctx.beginPath();ctx.arc(xp(phaseN[ci]),yp(phaseV[ci]),5,0,Math.PI*2);ctx.fill();
   } else {
-    // No data yet — show placeholder text
-    ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans',sans-serif";
-    ctx.textAlign='center';
-    ctx.fillText('Run the simulation to see the phase portrait',p.left+pw/2,p.top+ph/2-10);
-    ctx.font="11px 'DM Sans',sans-serif";
-    ctx.fillText('or click "Phase Demo" below',p.left+pw/2,p.top+ph/2+12);
+    ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans',sans-serif";ctx.textAlign='center';
+    ctx.fillText('Run the simulation to see the phase portrait',p.left+pw/2,p.top+ph/2-8);
+    ctx.fillText('or click "Phase Demo" preset',p.left+pw/2,p.top+ph/2+12);
   }
-
-  // Axes
   ctx.fillStyle='#6b7280';ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='right';
-  for(let i=0;i<=5;i++){
-    ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
-  }
-  ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='center';
-  for(let i=0;i<=5;i++){
-    ctx.fillText((nMin+(nMax-nMin)*i/5).toFixed(2),p.left+pw*i/5,H-8);
-  }
-  ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center';ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";
-  ctx.fillText('V (mV)',0,0);ctx.restore();
-  ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.textAlign='center';
-  ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
+  for(let i=0;i<=5;i++)ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
+  ctx.textAlign='center';ctx.font="bold 12px 'DM Mono',monospace";
+  for(let i=0;i<=5;i++)ctx.fillText((nMin+(nMax-nMin)*i/5).toFixed(2),p.left+pw*i/5,H-8);
+  ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText('V (mV)',0,0);ctx.restore();
+  ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.textAlign='center';ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
 }
 
 // ─── STATS ────────────────────────────────────────────────
 function updateStats(){
-  document.getElementById('stat-spikes').textContent=apSpikes;
-  document.getElementById('stat-peak').textContent=apSpikes>0?apPeakV.toFixed(1):'—';
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('stat-spikes',apSpikes);
+  el('stat-peak',apSpikes>0?apPeakV.toFixed(1):'—');
   const meanISI=apSpikeTs.length>0?apSpikeTs.reduce((a,b)=>a+b,0)/apSpikeTs.length:0;
-  document.getElementById('stat-freq').textContent=meanISI>0?(1000/meanISI).toFixed(1):'—';
-  document.getElementById('stat-t').textContent=t.toFixed(0);
-  document.getElementById('stat-phi').textContent=phi().toFixed(2)+'×';
+  el('stat-freq',meanISI>0?(1000/meanISI).toFixed(1):'—');
+  el('stat-t',t.toFixed(0));
+  el('stat-phi',phi().toFixed(2)+'×');
 }
 
 // ─── UI HELPERS ───────────────────────────────────────────
 function setSpeed(v){
   speedIdx=parseInt(v)-1;
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
-  document.getElementById('sl-speed-val').textContent=labels[speedIdx]||v+'×';
+  const el=document.getElementById('sl-speed-val');if(el)el.textContent=labels[speedIdx]||v+'×';
 }
 
 function slUpdate(param,val,valId){
   const dp=param==='EL'?1:param==='gL'?2:param==='Cm'?1:param==='T'?1:0;
   const numVal=parseFloat(val);
-  // Update the legacy span (if still exists) and the number input
-  const spanEl=document.getElementById(valId);
-  if(spanEl) spanEl.textContent=numVal.toFixed(dp);
-  // Also sync number input (id = slider_id + '-num', valId = slider_id + '-val')
-  const numId=valId.replace('-val','-num');
-  const numEl=document.getElementById(numId);
-  if(numEl) numEl.value=numVal.toFixed(dp);
   P[param]=numVal;
-  if(param==='T'){ document.getElementById('stat-phi').textContent=phi().toFixed(2)+'×'; renderSS();renderTau(); }
-  if(param==='win'){ winMs=numVal; if(!viewLocked){viewStart=Math.max(0,t-winMs);viewEnd=Math.max(winMs,t);} }
+  const spanEl=document.getElementById(valId);if(spanEl)spanEl.textContent=numVal.toFixed(dp);
+  const numEl=document.getElementById(valId.replace('-val','-num'));if(numEl)numEl.value=numVal.toFixed(dp);
+  if(param==='T'){const e=document.getElementById('stat-phi');if(e)e.textContent=phi().toFixed(2)+'×';renderSS();renderTau();}
+  if(param==='win'){winMs=numVal;if(!viewLocked){viewStart=Math.max(0,t-winMs);viewEnd=Math.max(winMs,t);}}
 }
 
 function updateStim(){
@@ -1646,117 +1390,74 @@ function updateStim(){
   STIM.freq=parseFloat(document.getElementById('sl-freq').value);
   const showFreq=['pulse','sine'].includes(STIM.type);
   document.getElementById('freq-row').style.display=showFreq?'flex':'none';
-
-  // Update stimulus window display
-  const t0=STIM.tStart, t1=STIM.tStart+STIM.dur;
-  const d0=document.getElementById('stim-t0');
-  const d1=document.getElementById('stim-t1');
-  if(d0) d0.textContent=t0.toFixed(0);
-  if(d1) d1.textContent=t1.toFixed(0);
-  // Refresh Iext preview
-  if(!running) renderIext(viewStart||0, viewEnd||winMs);
+  const t0=STIM.tStart,t1=STIM.tStart+STIM.dur;
+  const d0=document.getElementById('stim-t0'),d1=document.getElementById('stim-t1');
+  if(d0)d0.textContent=t0.toFixed(0);if(d1)d1.textContent=t1.toFixed(0);
+  if(!running)renderIext(viewStart,viewEnd);
 }
 
-function clearPhase(){
-  phasePtr=0;phaseCount=0;
-  renderPhase();
-}
+function clearPhase(){phasePtr=0;phaseCount=0;renderPhase();}
 
 // ─── PRESETS ──────────────────────────────────────────────
-// MATLAB convention presets (Vrest=0, ENa=115, EK=-12, EL=10.6)
-const PRESETS = {
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:9, tStart:0,dur:100,type:'step',freq:40, win:110,speed:3, autoStart:true},
-  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37,  I0:9, tStart:0,dur:20, type:'step',freq:40, win:25, speed:2},
-  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:20,tStart:0,dur:200,type:'step',freq:40, win:220,speed:4},
-  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:5, tStart:0,dur:100,type:'step',freq:40, win:110,speed:3},
-  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:12,tStart:0,dur:150,type:'step',freq:40, win:160,speed:6,autoStart:true,keepPhase:true},
+const PRESETS={
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:9, tStart:0,dur:100,type:'step',freq:40,win:110,speed:3,autoStart:true},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:9, tStart:0,dur:20, type:'step',freq:40,win:25, speed:2},
+  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',freq:40,win:220,speed:4},
+  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',freq:40,win:110,speed:3},
+  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'step',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
 };
 
 function applyPreset(name){
-  const pr=PRESETS[name]; if(!pr) return;
-  P.gNa=pr.gNa; P.gK=pr.gK; P.gL=pr.gL;
-  P.ENa=pr.ENa; P.EK=pr.EK; P.EL=pr.EL;
-  P.Cm=pr.Cm; P.T=pr.T;
-  STIM.I0=pr.I0; STIM.tStart=pr.tStart; STIM.dur=pr.dur;
-  STIM.type=pr.type; STIM.freq=pr.freq;
-  winMs=pr.win; speedIdx=(pr.speed||3)-1;
-
-  // Update all sliders
+  const pr=PRESETS[name];if(!pr)return;
+  P.gNa=pr.gNa;P.gK=pr.gK;P.gL=pr.gL;P.ENa=pr.ENa;P.EK=pr.EK;P.EL=pr.EL;P.Cm=pr.Cm;P.T=pr.T;
+  STIM.I0=pr.I0;STIM.tStart=pr.tStart;STIM.dur=pr.dur;STIM.type=pr.type;STIM.freq=pr.freq;
+  winMs=pr.win;speedIdx=(pr.speed||3)-1;
   const sl=(id,val,dp)=>{
     const e=document.getElementById(id);if(e)e.value=val;
     const d=document.getElementById(id+'-val');if(d)d.textContent=parseFloat(val).toFixed(dp??0);
+    const n=document.getElementById(id+'-num');if(n)n.value=parseFloat(val).toFixed(dp??0);
   };
   sl('sl-gNa',pr.gNa);sl('sl-gK',pr.gK);sl('sl-gL',pr.gL,2);
   sl('sl-ENa',pr.ENa);sl('sl-EK',pr.EK);sl('sl-EL',pr.EL,1);
   sl('sl-Cm',pr.Cm,1);sl('sl-T',pr.T,1);
-  sl('sl-I0',pr.I0);sl('sl-tStart',pr.tStart);sl('sl-dur',pr.dur);
-  sl('sl-freq',pr.freq);sl('sl-win',pr.win);
-  document.getElementById('sl-speed').value=pr.speed||3;
+  sl('sl-I0',pr.I0);sl('sl-tStart',pr.tStart);sl('sl-dur',pr.dur);sl('sl-freq',pr.freq);sl('sl-win',pr.win);
+  const spEl=document.getElementById('sl-speed');if(spEl)spEl.value=pr.speed||3;
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
-  document.getElementById('sl-speed-val').textContent=labels[speedIdx]||'—';
-  document.getElementById('stim-type').value=pr.type;
+  const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx]||'—';
+  const stEl=document.getElementById('stim-type');if(stEl)stEl.value=pr.type;
   const showFreq=['pulse','sine'].includes(pr.type);
-  document.getElementById('freq-row').style.display=showFreq?'flex':'none';
-
-  // For phase demo: keep phase trail, reset sim state only
-  if(pr.keepPhase){
-    stopSim();
-    // Reset sim but preserve phase trail for continuity
-    const savedV=phaseV.slice(); const savedN=phaseN.slice();
-    const savedPtr=phasePtr; const savedCount=phaseCount;
-    initState();
-    phaseV.set(savedV); phaseN.set(savedN); phasePtr=savedPtr; phaseCount=savedCount;
-  } else {
-    resetSim();
-  }
-
-  viewStart=0; viewEnd=winMs; viewLocked=false;
-  renderSS(); renderTau();
-  if(pr.autoStart) setTimeout(startSim, 150);
+  const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
+  if(pr.keepPhase){stopSim();initState();}else{resetSim();}
+  viewStart=0;viewEnd=winMs;viewLocked=false;
+  renderSS();renderTau();
+  if(pr.autoStart)setTimeout(startSim,100);
 }
 
-// ─── INIT ─────────────────────────────────────────────────
-// Run a fixed batch of steps synchronously to populate graphs on load —
-// avoids all race conditions with requestAnimationFrame / setTimeout chains.
-function runInitialSimulation() {
-  if (running) return;
-  // Apply standard parameters first
-  // MATLAB convention defaults
-  P.gNa=120; P.gK=36; P.gL=0.3;
-  P.ENa=115; P.EK=-12; P.EL=10.6;
-  P.Cm=1;   P.T=6.3;
-  P.blockNa=false; P.blockK=false;
-  STIM.type='step'; STIM.I0=9; STIM.tStart=0; STIM.dur=100; STIM.freq=40;
-  winMs=110; speedIdx=2;
-  viewStart=0; viewEnd=winMs; viewLocked=false;
+function applyDefaults(){applyPreset('standard');}
+
+// ─── INITIAL SIMULATION (synchronous, no race condition) ──
+function runInitialSimulation(){
+  if(running)return;
   initState();
-  // Run synchronously — 1500 steps = 15 ms of simulation (captures full AP)
-  // Run 1000 steps = 10ms (captures first AP clearly at Iext=9)
-  for(let i=0;i<1000;i++){
-    rk4();
-    if(stepCnt%STORE_EVERY===0) storeAndDetect();
-  }
-  renderAll();
-  updateStats();
-  document.getElementById('sim-status-text').textContent='Ready — click ▶ Run';
+  for(let i=0;i<1000;i++){rk4();if(stepCnt%STORE_EVERY===0)storeAndDetect();}
+  viewStart=0;viewEnd=winMs;viewLocked=false;
+  renderAll();updateStats();
+  const st=document.getElementById('sim-status-text');if(st)st.textContent='Ready — click ▶ Run';
 }
 
+// ─── LOAD ─────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   initState();
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
-  document.getElementById('sl-speed-val').textContent=labels[speedIdx];
-  renderSS(); renderTau(); renderPhase(); renderIext(0,winMs);
-  updateStats();
-  // Populate graphs immediately — synchronous, no race condition
+  const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx];
+  renderSS();renderTau();renderPhase();renderIext(0,winMs);updateStats();
   runInitialSimulation();
-});
-  });
 });
 
 window.addEventListener('resize',()=>{
-  if(hist.t.length>0) renderAll();
-  else {renderSS();renderTau();renderPhase();}
+  if(hist.t.length>0)renderAll();else{renderSS();renderTau();renderPhase();}
 });
+
 </script>
 
 <button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
