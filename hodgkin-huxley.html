@@ -657,17 +657,17 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </div>
 
   <div class="eq-block">
-    <div class="eq-row"><span class="eq-label">α<sub>m</sub> =</span><span class="eq-main">0.1(V+40) / (1−e<sup>−(V+40)/10</sup>)</span><span class="eq-comment">→ 1.0 as V → −40 (L'Hôpital)</span></div>
-    <div class="eq-row"><span class="eq-label">β<sub>m</sub> =</span><span class="eq-main">4·e<sup>−(V+65)/18</sup></span></div>
+    <div class="eq-row"><span class="eq-label">α<sub>m</sub> =</span><span class="eq-main">−0.1(V−25) / (e<sup>−(V−25)/10</sup>−1)</span><span class="eq-comment">→ 1.0 as V → 25 (L'Hôpital)</span></div>
+    <div class="eq-row"><span class="eq-label">β<sub>m</sub> =</span><span class="eq-main">4·e<sup>−V/18</sup></span></div>
     <div class="eq-sep"></div>
-    <div class="eq-row"><span class="eq-label">α<sub>h</sub> =</span><span class="eq-main">0.07·e<sup>−(V+65)/20</sup></span></div>
-    <div class="eq-row"><span class="eq-label">β<sub>h</sub> =</span><span class="eq-main">1 / (1+e<sup>−(V+35)/10</sup>)</span></div>
+    <div class="eq-row"><span class="eq-label">α<sub>h</sub> =</span><span class="eq-main">0.07·e<sup>−V/20</sup></span></div>
+    <div class="eq-row"><span class="eq-label">β<sub>h</sub> =</span><span class="eq-main">1 / (e<sup>−(V−30)/10</sup>+1)</span></div>
     <div class="eq-sep"></div>
-    <div class="eq-row"><span class="eq-label">α<sub>n</sub> =</span><span class="eq-main">0.01(V+55) / (1−e<sup>−(V+55)/10</sup>)</span><span class="eq-comment">→ 0.1 as V → −55</span></div>
-    <div class="eq-row"><span class="eq-label">β<sub>n</sub> =</span><span class="eq-main">0.125·e<sup>−(V+65)/80</sup></span></div>
+    <div class="eq-row"><span class="eq-label">α<sub>n</sub> =</span><span class="eq-main">−0.01(V−10) / (e<sup>−(V−10)/10</sup>−1)</span><span class="eq-comment">→ 0.1 as V → 10 (L'Hôpital)</span></div>
+    <div class="eq-row"><span class="eq-label">β<sub>n</sub> =</span><span class="eq-main">0.125·e<sup>−V/80</sup></span></div>
     <div class="eq-sep"></div>
     <div class="eq-row"><span class="eq-label">φ(T) =</span><span class="eq-main">3<sup>(T−6.3)/10</sup></span><span class="eq-comment">Q<sub>10</sub>=3 temperature scaling (all rates × φ)</span></div>
-    <div class="eq-note">All rates α and β above are for T = 6.3°C (the original squid axon experiment temperature). At body temperature (37°C), φ ≈ 28 — kinetics are ~28× faster.<sup>[3,4]</sup></div>
+    <div class="eq-note">Equations match <strong>HH_ODE45_Inline.m</strong> exactly. V is referenced to V<sub>rest</sub>=0 mV (original Hodgkin–Huxley convention). Initial conditions: V(0)=0, m(0)=n(0)=h(0)=0. At T=6.3°C (squid axon experiment); at body temperature (37°C), φ≈28× faster.<sup>[3,4]</sup></div>
   </div>
 
   <div class="section-body">
@@ -676,9 +676,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
   <div class="callout callout-amber">
     <div class="callout-title">Physical Interpretation of the Gates</div>
-    <strong>m</strong> (Na⁺ activation): opens fast upon depolarization — the "activation gate." At rest: m<sub>∞</sub> ≈ 0.05 (mostly closed). During AP peak: m<sub>∞</sub> → 1.<br>
-    <strong>h</strong> (Na⁺ inactivation): closes slowly upon depolarization — the "inactivation gate." At rest: h<sub>∞</sub> ≈ 0.6 (mostly open). During AP: h → 0, blocking further Na⁺ entry (absolute refractory period).<br>
-    <strong>n</strong> (K⁺ activation): opens slowly upon depolarization — the "delayed rectifier." At rest: n<sub>∞</sub> ≈ 0.32 (mostly closed). During repolarization: n → 1, driving hyperpolarization.
+    <strong>m</strong> (Na⁺ activation): opens fast upon depolarization. At rest (V=0): m(0)=0, m<sub>∞</sub>→0 (closed). During AP peak (~115 mV): m<sub>∞</sub>→1.<br>
+    <strong>h</strong> (Na⁺ inactivation): inactivation gate. At V=0: h(0)=0; the system builds up as it depolarizes. During AP: h→0, blocking further Na⁺ entry (absolute refractory period).<br>
+    <strong>n</strong> (K⁺ activation): delayed rectifier. At V=0: n(0)=0 (closed). Opens during depolarization, driving repolarization. Note: initial conditions 0 match the MATLAB code (0×α/… = 0).
   </div>
 
   <h3 style="font-family:var(--serif);font-size:1.2em;font-weight:400;margin:28px 0 12px;color:var(--text)">Standard Parameter Values</h3>
@@ -688,11 +688,11 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <tr><td>ḡ<sub>Na</sub></td><td>120</td><td>mS/cm²</td><td>Max sodium conductance</td></tr>
       <tr><td>ḡ<sub>K</sub></td><td>36</td><td>mS/cm²</td><td>Max potassium conductance</td></tr>
       <tr><td>ḡ<sub>L</sub></td><td>0.3</td><td>mS/cm²</td><td>Passive leak conductance</td></tr>
-      <tr><td>E<sub>Na</sub></td><td>+50</td><td>mV</td><td>Na⁺ Nernst potential (inward driving force)</td></tr>
-      <tr><td>E<sub>K</sub></td><td>−77</td><td>mV</td><td>K⁺ Nernst potential (outward driving force)</td></tr>
-      <tr><td>E<sub>L</sub></td><td>−54.4</td><td>mV</td><td>Leak reversal potential (sets V<sub>rest</sub>)</td></tr>
+      <tr><td>E<sub>Na</sub></td><td>+115</td><td>mV</td><td>Na⁺ Nernst potential (inward driving force)</td></tr>
+      <tr><td>E<sub>K</sub></td><td>−12</td><td>mV</td><td>K⁺ Nernst potential (outward driving force)</td></tr>
+      <tr><td>E<sub>L</sub></td><td>+10.6</td><td>mV</td><td>Leak reversal potential (sets V<sub>rest</sub>)</td></tr>
       <tr><td>C<sub>m</sub></td><td>1</td><td>µF/cm²</td><td>Membrane capacitance</td></tr>
-      <tr><td>T</td><td>6.3</td><td>°C</td><td>Squid giant axon experiment temperature</td></tr>
+      <tr><td>V<sub>rest</sub></td><td>0</td><td>mV</td><td>Resting membrane potential (original H&amp;H convention)</td></tr>
     </tbody>
   </table>
 </div>
@@ -736,16 +736,16 @@ body.dark-mode .hero{border-color:#1c3050!important}
             </select>
           </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="40" step="0.5" value="10" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="40" step="0.5" value="10" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">I<sub>ext</sub><span class="ctrl-unit">µA/cm²</span></span><input type="number" class="ctrl-num" id="sl-I0-num" min="-5" max="50" step="0.5" value="9" onchange="syncNum('sl-I0',this.value)" onblur="syncNum('sl-I0',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-I0" min="-5" max="50" step="0.5" value="9" oninput="slUpdate('I0',this.value,'sl-I0-val');updateStim();syncSlider('sl-I0',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="10" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="10" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim();syncSlider('sl-tStart',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="0" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="0" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim();syncSlider('sl-tStart',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="150" step="0.5" value="40" onchange="syncNum('sl-dur',this.value)" onblur="syncNum('sl-dur',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="150" step="0.5" value="40" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="200" step="0.5" value="100" onchange="syncNum('sl-dur',this.value)" onblur="syncNum('sl-dur',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="200" step="0.5" value="100" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
 </div>
           <!-- Stimulus window computed display -->
           <div id="stim-window-disp" style="grid-column:1/-1" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
@@ -778,16 +778,16 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Reversal Potentials</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="0" max="100" step="1" value="50" onchange="syncNum('sl-ENa',this.value)" onblur="syncNum('sl-ENa',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-ENa" min="0" max="100" step="1" value="50" oninput="slUpdate('ENa',this.value,'sl-ENa-val');syncSlider('sl-ENa',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="50" max="200" step="1" value="115" onchange="syncNum('sl-ENa',this.value)" onblur="syncNum('sl-ENa',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-ENa" min="50" max="200" step="1" value="115" oninput="slUpdate('ENa',this.value,'sl-ENa-val');syncSlider('sl-ENa',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-100" max="-40" step="1" value="-77" onchange="syncNum('sl-EK',this.value)" onblur="syncNum('sl-EK',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-EK" min="-100" max="-40" step="1" value="-77" oninput="slUpdate('EK',this.value,'sl-EK-val');syncSlider('sl-EK',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-40" max="20" step="1" value="-12" onchange="syncNum('sl-EK',this.value)" onblur="syncNum('sl-EK',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-EK" min="-40" max="20" step="1" value="-12" oninput="slUpdate('EK',this.value,'sl-EK-val');syncSlider('sl-EK',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-80" max="-40" step="0.1" value="-54.4" onchange="syncNum('sl-EL',this.value)" onblur="syncNum('sl-EL',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-EL" min="-80" max="-40" step="0.1" value="-54.4" oninput="slUpdate('EL',this.value,'sl-EL-val');syncSlider('sl-EL',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-20" max="30" step="0.1" value="10.6" onchange="syncNum('sl-EL',this.value)" onblur="syncNum('sl-EL',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-EL" min="-20" max="30" step="0.1" value="10.6" oninput="slUpdate('EL',this.value,'sl-EL-val');syncSlider('sl-EL',this.value)">
 </div>
         </div>
 
@@ -1024,14 +1024,16 @@ body.dark-mode .hero{border-color:#1c3050!important}
 'use strict';
 
 // ─── PARAMETERS ──────────────────────────────────────────
+// MATLAB convention defaults (HH_ODE45_Inline.m)
 const P = {
   gNa:120, gK:36, gL:0.3,
-  ENa:50,  EK:-77, EL:-54.387,
+  ENa:115, EK:-12, EL:10.6,
   Cm:1, T:6.3,
   blockNa:false, blockK:false,
   autoPause:true, showFull:true
 };
-const STIM = { type:'step', I0:10, tStart:10, dur:40, freq:40 };
+// Default: constant Iext=9 from t=0 (matches MATLAB Iext=9, tSpan=[0,100])
+const STIM = { type:'step', I0:9, tStart:0, dur:100, freq:40 };
 
 // ─── SIM STATE ────────────────────────────────────────────
 let t=0, y=[-65, 0.053, 0.596, 0.318];
@@ -1062,7 +1064,7 @@ let postStimStart = -1;
 
 // AP detection
 let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH = 0;
+const AP_THRESH = 50; // mV — MATLAB convention (Vrest=0, peak ~110mV)
 
 // Phase portrait trail
 const TRAIL_LEN = 6000;
@@ -1071,12 +1073,15 @@ const phaseN = new Float32Array(TRAIL_LEN);
 let phasePtr=0, phaseCount=0;
 
 // ─── RATE FUNCTIONS ──────────────────────────────────────
-function am(V){ const x=V+40; return Math.abs(x)<1e-7?1.0:0.1*x/(1-Math.exp(-x/10)); }
-function bm(V){ return 4*Math.exp(-(V+65)/18); }
-function ah(V){ return 0.07*Math.exp(-(V+65)/20); }
-function bh(V){ return 1/(1+Math.exp(-(V+35)/10)); }
-function an(V){ const x=V+55; return Math.abs(x)<1e-7?0.1:0.01*x/(1-Math.exp(-x/10)); }
-function bn(V){ return 0.125*Math.exp(-(V+65)/80); }
+// ─── RATE FUNCTIONS — MATLAB convention (Vrest = 0 mV) ──────────
+// Matches HH_ODE45_Inline.m exactly. Singularities handled via L'Hôpital:
+//   alpha_m → 1.0 at V=25;  alpha_n → 0.1 at V=10
+function am(V){ const x=V-25; return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1); }
+function bm(V){ return 4*Math.exp(-V/18); }
+function ah(V){ return 0.07*Math.exp(-V/20); }
+function bh(V){ return 1/(Math.exp(-(V-30)/10)+1); }
+function an(V){ const x=V-10; return Math.abs(x)<1e-7?0.1:-0.01*x/(Math.exp(-x/10)-1); }
+function bn(V){ return 0.125*Math.exp(-V/80); }
 function phi(){ return Math.pow(3,(P.T-6.3)/10); }
 
 function ss(V){
@@ -1166,11 +1171,12 @@ function storeAndDetect(){
   if(V>apPeakV && apSpikes>0) apPeakV=V;
 
   // Stability tracking for auto-pause
-  const Vrest=-65;
+  // MATLAB convention: Vrest=0, gates rest at 0
+  const Vrest=0;
   const stimDone=t > STIM.tStart+STIM.dur+2;
   if(stimDone){
     if(postStimStart<0) postStimStart=t;
-    if(Math.abs(V-Vrest)<STAB_THRESH && Math.abs(m-0.053)<0.01 && Math.abs(n-0.318)<0.01)
+    if(Math.abs(V-Vrest)<STAB_THRESH && m<0.02 && n<0.05)
       stabTimer+=DT;
     else
       stabTimer=0;
@@ -1228,6 +1234,8 @@ function animate(){
 
 function startSim(){
   if(running) return;
+  // Reset stability timers so a previous auto-pause doesn't immediately re-fire
+  stabTimer=0; postStimStart=-1;
   viewLocked = false;
   running = true;
   document.getElementById('sim-dot').classList.remove('paused');
@@ -1254,12 +1262,8 @@ function resetSim(){
 
 // ─── INIT ─────────────────────────────────────────────────
 function initState(){
-  const V0=-65;
-  const ph=phi();
-  const AM=am(V0)*ph, BM=bm(V0)*ph;
-  const AH=ah(V0)*ph, BH=bh(V0)*ph;
-  const AN=an(V0)*ph, BN=bn(V0)*ph;
-  y=[V0, AM/(AM+BM), AH/(AH+BH), AN/(AN+BN)];
+  // MATLAB convention: Vm0=0, n0=m0=h0=0 (0*alpha/... = 0)
+  y=[0, 0, 0, 0];
   t=0; stepCnt=0;
   for(const k of Object.keys(hist)) hist[k]=[];
   apSpikes=0; apLastSpike=-1e9; apPeakV=-Infinity; apSpikeTs=[];
@@ -1393,21 +1397,21 @@ function renderAll(){
 
 function renderV(tMin,tMax){
   const {ctx,W,H}=setupCanvas('cv-V');
-  drawAxes(ctx,W,H,-90,55,tMin,tMax,'mV');
+  drawAxes(ctx,W,H,-20,125,tMin,tMax,'mV');
   drawStimulusShade(ctx,W,H,tMin,tMax);
 
   // Iext scaled to fit
   const maxI=Math.max(1,...hist.Iext.map(Math.abs));
-  const iScaled=hist.Iext.map(v=>-90+v/maxI*18);
-  plotTrace(ctx,hist.t,iScaled,W,H,-90,55,tMin,tMax,'#94a3b8',1,true);
-  plotTrace(ctx,hist.t,hist.V,W,H,-90,55,tMin,tMax,'#0b7a6e',2);
+  const iScaled=hist.Iext.map(v=>-20+v/maxI*18); // scaled to -20..~0 baseline
+  plotTrace(ctx,hist.t,iScaled,W,H,-20,125,tMin,tMax,'#94a3b8',1,true);
+  plotTrace(ctx,hist.t,hist.V,W,H,-20,125,tMin,tMax,'#0b7a6e',2);
 
   // Current V dot at right edge
   if(!viewLocked){
     const p=PAD,ph2=H-p.top-p.bottom,pw=W-p.left-p.right;
     const xNow=p.left+pw;
     const vNow=hist.V[hist.V.length-1];
-    const yNow=p.top+ph2*(1-(vNow+90)/145);
+    const yNow=p.top+ph2*(1-(vNow+20)/145);
     ctx.fillStyle='#0b7a6e';
     ctx.beginPath();ctx.arc(xNow,yNow,3.5,0,Math.PI*2);ctx.fill();
   }
@@ -1464,9 +1468,9 @@ function renderIext(tMin,tMax){
 }
 function renderSS(){
   const {ctx,W,H}=setupCanvas('cv-ss');
-  const Vs=[];for(let V=-100;V<=60;V+=0.5)Vs.push(V);
+  const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,1,-100,60,'x∞');
+  drawAxes(ctx,W,H,0,1,-20,130,'x∞');
 
   const cols=['#dc2626','#f59e0b','#7c3aed'];
   const lbls=['m∞','h∞','n∞'];
@@ -1482,7 +1486,7 @@ function renderSS(){
   }
 
   // Current Vm marker
-  const xV=p.left+pw*(currentV+100)/160;
+  const xV=p.left+pw*(currentV+20)/150;
   ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
   ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+ph);ctx.stroke();
   ctx.setLineDash([]);
@@ -1490,18 +1494,18 @@ function renderSS(){
   ctx.fillText('Vm',xV,p.top-2);
 
   // Labels
-  const lpos=[{V:-20,i:0},{V:-72,i:1},{V:-50,i:2}];
+  const lpos=[{V:30,i:0},{V:-10,i:1},{V:10,i:2}];
   lpos.forEach(({V,i})=>{
     const s=ss(V);
     ctx.fillStyle=cols[i];ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='left';
-    ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+ph*(1-s[i])-3);
+    ctx.fillText(lbls[i],p.left+pw*(V+20)/150+3,p.top+ph*(1-s[i])-3);
   });
 }
 
 function renderTau(){
   const {ctx,W,H}=setupCanvas('cv-tau');
   const ph=phi();
-  const Vs=[];for(let V=-100;V<=60;V+=0.5)Vs.push(V);
+  const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
   const taus=Vs.map(V=>[
     1/((am(V)+bm(V))*ph),
     1/((ah(V)+bh(V))*ph),
@@ -1509,7 +1513,7 @@ function renderTau(){
   ]);
   const mxT=Math.max(...taus.flat())*1.1;
   const p=PAD,pw=W-p.left-p.right,pph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,mxT,-100,60,'τ (ms)');
+  drawAxes(ctx,W,H,0,mxT,-20,130,'τ (ms)');
 
   const cols=['#dc2626','#f59e0b','#7c3aed'];
   const lbls=['τm','τh','τn'];
@@ -1522,7 +1526,7 @@ function renderTau(){
     });
     ctx.stroke();
   }
-  const lpos=[{V:-15,i:0},{V:-68,i:1},{V:-53,i:2}];
+  const lpos=[{V:35,i:0},{V:-10,i:1},{V:15,i:2}];
   lpos.forEach(({V,i})=>{
     const idx=Math.round((V+100)/0.5);
     if(idx<0||idx>=taus.length) return;
@@ -1532,7 +1536,7 @@ function renderTau(){
   });
 
   // Vm marker
-  const xV=p.left+pw*(currentV+100)/160;
+  const xV=p.left+pw*(currentV+20)/150;
   ctx.strokeStyle='rgba(11,122,110,.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
   ctx.beginPath();ctx.moveTo(xV,p.top);ctx.lineTo(xV,p.top+pph);ctx.stroke();
   ctx.setLineDash([]);
@@ -1659,12 +1663,13 @@ function clearPhase(){
 }
 
 // ─── PRESETS ──────────────────────────────────────────────
+// MATLAB convention presets (Vrest=0, ENa=115, EK=-12, EL=10.6)
 const PRESETS = {
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:10,tStart:10,dur:40, type:'step',freq:40, win:160,speed:3, autoStart:true},
-  body:      {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:37,  I0:10,tStart:5, dur:2,  type:'step',freq:40, win:60, speed:2},
-  burst:     {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:15,tStart:10,dur:200,type:'step',freq:40, win:250,speed:4},
-  subthresh: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:5, tStart:10,dur:40, type:'step',freq:40, win:160,speed:3},
-  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.387,Cm:1,T:6.3, I0:12,tStart:5, dur:120,type:'step',freq:40, win:160,speed:6,autoStart:true,keepPhase:true},
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:9, tStart:0,dur:100,type:'step',freq:40, win:110,speed:3, autoStart:true},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37,  I0:9, tStart:0,dur:20, type:'step',freq:40, win:25, speed:2},
+  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:20,tStart:0,dur:200,type:'step',freq:40, win:220,speed:4},
+  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:5, tStart:0,dur:100,type:'step',freq:40, win:110,speed:3},
+  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3, I0:12,tStart:0,dur:150,type:'step',freq:40, win:160,speed:6,autoStart:true,keepPhase:true},
 };
 
 function applyPreset(name){
@@ -1716,19 +1721,20 @@ function applyPreset(name){
 function runInitialSimulation() {
   if (running) return;
   // Apply standard parameters first
+  // MATLAB convention defaults
   P.gNa=120; P.gK=36; P.gL=0.3;
-  P.ENa=50;  P.EK=-77; P.EL=-54.387;
+  P.ENa=115; P.EK=-12; P.EL=10.6;
   P.Cm=1;   P.T=6.3;
   P.blockNa=false; P.blockK=false;
-  STIM.type='step'; STIM.I0=10; STIM.tStart=10; STIM.dur=40; STIM.freq=40;
-  winMs=160; speedIdx=2;
+  STIM.type='step'; STIM.I0=9; STIM.tStart=0; STIM.dur=100; STIM.freq=40;
+  winMs=110; speedIdx=2;
   viewStart=0; viewEnd=winMs; viewLocked=false;
   initState();
   // Run synchronously — 1500 steps = 15 ms of simulation (captures full AP)
-  for(let i=0;i<1500;i++){
+  // Run 1000 steps = 10ms (captures first AP clearly at Iext=9)
+  for(let i=0;i<1000;i++){
     rk4();
     if(stepCnt%STORE_EVERY===0) storeAndDetect();
-    if(shouldAutoPause()){ viewStart=0; viewEnd=Math.max(winMs,t); viewLocked=true; break; }
   }
   renderAll();
   updateStats();
