@@ -86,7 +86,7 @@ sub,sup{font-size:.72em;line-height:1}
 .circuit-wrap svg{max-width:100%;height:auto}
 
 /* ─── SIMULATOR ──────────────────────────────────────────── */
-.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px -60px;box-shadow:var(--shadow-lg);position:relative;}
+.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px -80px;box-shadow:var(--shadow-lg);position:relative;}
 .sim-header{padding:18px 24px;background:linear-gradient(135deg,var(--teal) 0%,#0d8a7c 100%);color:#fff;display:flex;align-items:center;gap:12px}
 .sim-title{font-family:var(--serif);font-size:1.3em;font-weight:400}
 .sim-subtitle{font-size:.8em;opacity:.85;margin-top:2px}
@@ -95,11 +95,11 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:280px 1fr;gap:0;align-items:stretch;height:780px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:680px}
 
 /* Controls panel */
-.sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box}
-.ctrl-group{margin-bottom:13px}
+.sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
+.ctrl-group{margin-bottom:10px}
 .ctrl-group-label{font-family:var(--mono);font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px;font-weight:600}
 .ctrl-group-label::after{content:'';flex:1;height:1px;background:var(--border2)}
 .ctrl-row{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
@@ -413,6 +413,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
 .legend-item{display:flex;align-items:center;gap:4px;font-size:.65em;color:var(--muted);font-family:var(--mono)}
 .legend-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0}
 .ctrl-label-txt{color:var(--text);font-size:.84em;font-weight:500;white-space:nowrap;display:flex;align-items:baseline;gap:3px}.ctrl-unit{color:var(--dim);font-size:.72em;font-family:var(--mono);margin-left:3px}
+
+.ctrl-group.full{grid-column:1/-1}
+.ctrl-group-label::after{flex:1;height:1px;background:var(--border)}
 </style>
 </head>
 <body class="light-mode">
@@ -721,7 +724,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <div class="sim-controls">
 
         <!-- Stimulus -->
-        <div class="ctrl-group">
+        <div class="ctrl-group full">
           <div class="ctrl-group-label">Stimulus · I<sub>ext</sub>(t)</div>
           <div class="ctrl-row">
             <span class="ctrl-label"><span class="ctrl-label-txt">Type</span></span>
@@ -745,7 +748,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="150" step="0.5" value="40" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
 </div>
           <!-- Stimulus window computed display -->
-          <div id="stim-window-disp" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
+          <div id="stim-window-disp" style="grid-column:1/-1" style="font-family:var(--mono);font-size:.72em;color:var(--teal);background:rgba(11,122,110,.08);border:1px solid rgba(11,122,110,.2);border-radius:5px;padding:4px 8px;margin-bottom:8px;text-align:center">
             Active: t = <span id="stim-t0">10</span> → <span id="stim-t1">50</span> ms
           </div>
           <div class="ctrl-row" id="freq-row" style="display:none">
@@ -807,7 +810,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
 
         <!-- Speed & Display -->
-        <div class="ctrl-group">
+        <div class="ctrl-group full">
           <div class="ctrl-group-label">Playback Speed</div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Speed</span><input type="number" class="ctrl-num" id="sl-speed-num" min="1" max="8" step="1" value="3×" onchange="syncNum('sl-speed',this.value)" onblur="syncNum('sl-speed',this.value)"></span>
@@ -824,7 +827,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
           </div>
         </div>
         <!-- Channel Blocks -->
-        <div class="ctrl-group">
+        <div class="ctrl-group full">
           <div class="ctrl-group-label">Ion Channel Blockers</div>
           <div class="ctrl-check-row">
             <input type="checkbox" id="block-na" onchange="P.blockNa=this.checked">
@@ -837,11 +840,11 @@ body.dark-mode .hero{border-color:#1c3050!important}
         </div>
 
         <!-- Buttons -->
-        <div class="sim-btns">
+        <div class="sim-btns full" style="grid-column:1/-1">
           <button class="btn-sim btn-run" id="btn-run" onclick="startSim()">▶ Run</button>
           <button class="btn-sim btn-stop" onclick="stopSim()">⏸ Pause</button>
         </div>
-        <div class="sim-btns" style="margin-top:5px">
+        <div class="sim-btns" style="margin-top:5px;grid-column:1/-1">
           <button class="btn-sim btn-reset" onclick="resetSim()">↺ Reset</button>
           <button class="btn-sim btn-reset" onclick="applyDefaults()" title="Restore all parameters to HH defaults">⟳ Defaults</button>
           <button class="btn-sim btn-reset" id="btn-home" onclick="homeView()" title="Reset plot view to auto-follow">⌂ Home</button>
@@ -1208,11 +1211,9 @@ function animate(){
     rk4();
     if(stepCnt%STORE_EVERY===0) storeAndDetect();
     if(shouldAutoPause()){
-      // Lock view so the AP stays centered in the window
-      const apT = apLastSpike>0 ? apLastSpike : STIM.tStart;
-      const halfWin = winMs/2;
-      viewStart = Math.max(0, apT - halfWin*0.4);
-      viewEnd   = viewStart + winMs;
+      // Show from t=0 so stimulus onset and AP are both visible
+      viewStart = 0;
+      viewEnd   = Math.max(winMs, t);
       viewLocked = true;
       stopSim();
       document.getElementById('sim-status-text').textContent='Stable — auto-paused';
@@ -1267,7 +1268,7 @@ function initState(){
 }
 
 // ─── CANVAS UTILITIES ─────────────────────────────────────
-const PAD={top:14,right:12,bottom:30,left:50};
+const PAD={top:14,right:12,bottom:34,left:54};
 
 function setupCanvas(id){
   const canvas=document.getElementById(id);
@@ -1322,7 +1323,7 @@ function drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,yLabel){
   }
 
   // Y labels
-  ctx.fillStyle='#6b7280'; ctx.font="10px 'DM Mono',monospace"; ctx.textAlign='right';
+  ctx.fillStyle='#6b7280'; ctx.font="bold 12px 'DM Mono',monospace"; ctx.textAlign='right';
   for(let i=0;i<=5;i++){
     const val=yMin+(yMax-yMin)*(1-i/5);
     const y=p.top+ph*i/5;
@@ -1339,7 +1340,7 @@ function drawAxes(ctx,W,H,yMin,yMax,tMin,tMax,yLabel){
   // Y axis label
   ctx.save();ctx.translate(9,p.top+ph/2);ctx.rotate(-Math.PI/2);
   ctx.textAlign='center';ctx.fillStyle='#9ca3af';
-  ctx.font="10px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
+  ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText(yLabel,0,0);ctx.restore();
 }
 
 function plotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw,dashed){
@@ -1492,7 +1493,7 @@ function renderSS(){
   const lpos=[{V:-20,i:0},{V:-72,i:1},{V:-50,i:2}];
   lpos.forEach(({V,i})=>{
     const s=ss(V);
-    ctx.fillStyle=cols[i];ctx.font="10px 'DM Mono',monospace";ctx.textAlign='left';
+    ctx.fillStyle=cols[i];ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='left';
     ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+ph*(1-s[i])-3);
   });
 }
@@ -1526,7 +1527,7 @@ function renderTau(){
     const idx=Math.round((V+100)/0.5);
     if(idx<0||idx>=taus.length) return;
     const τ=taus[idx][i];
-    ctx.fillStyle=cols[i];ctx.font="10px 'DM Mono',monospace";ctx.textAlign='left';
+    ctx.fillStyle=cols[i];ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='left';
     ctx.fillText(lbls[i],p.left+pw*(V+100)/160+3,p.top+pph*(1-τ/mxT)-3);
   });
 
@@ -1586,18 +1587,18 @@ function renderPhase(){
   }
 
   // Axes
-  ctx.fillStyle='#6b7280';ctx.font="10px 'DM Mono',monospace";ctx.textAlign='right';
+  ctx.fillStyle='#6b7280';ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='right';
   for(let i=0;i<=5;i++){
     ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
   }
-  ctx.textAlign='center';
+  ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='center';
   for(let i=0;i<=5;i++){
     ctx.fillText((nMin+(nMax-nMin)*i/5).toFixed(2),p.left+pw*i/5,H-8);
   }
   ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center';ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";
+  ctx.textAlign='center';ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";
   ctx.fillText('V (mV)',0,0);ctx.restore();
-  ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';
+  ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.textAlign='center';
   ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
 }
 
@@ -1712,20 +1713,12 @@ function applyPreset(name){
 // ─── INIT ─────────────────────────────────────────────────
 window.addEventListener('load',()=>{
   initState();
-  // Set initial speed label
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
   document.getElementById('sl-speed-val').textContent=labels[speedIdx];
-  renderSS(); renderTau(); renderPhase();
-
-  const empty=(id,ymin,ymax,yl)=>{
-    const {ctx,W,H}=setupCanvas(id);
-    drawAxes(ctx,W,H,ymin,ymax,0,winMs,yl);
-  };
-  empty('cv-V',-90,55,'mV');
-  empty('cv-gates',0,1,'');
-  empty('cv-currents',-5,5,'µA/cm²');
-  renderIext(0,winMs); // show stimulus preview
+  renderSS(); renderTau(); renderPhase(); renderIext(0,winMs);
   updateStats();
+  // Auto-run standard simulation so graphs are populated on first view
+  setTimeout(()=>{ applyPreset('standard'); },200);
 });
 
 window.addEventListener('resize',()=>{
