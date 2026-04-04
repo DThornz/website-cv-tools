@@ -1022,13 +1022,14 @@ body.dark-mode .hero{border-color:#1c3050!important}
      JAVASCRIPT — HH SIMULATION (improved)
 ══════════════════════════════════════════════════════════ -->
 <script>
+
 'use strict';
 
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
 const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:true};
 // Default: continuous Iext=10, 120 ms window
 const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
-const DT=0.01, STORE_EVERY=2, MAX_HIST=200000;
+const DT=0.01, STORE_EVERY=2, MAX_HIST=15000;
 const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
 let speedIdx=2, winMs=120;
 
@@ -1052,7 +1053,7 @@ let phasePtr=0, phaseCount=0;
 
 // Auto-pause: triggered 20 ms after voltage becomes negligible post-stimulus
 const STAB_THRESH=1.0;  // mV  — negligible change threshold
-const STAB_DUR=20;      // ms  — must be stable this long
+const STAB_DUR=50;      // ms  — must be stable this long
 let stabTimer=0, postStimStart=-1;
 
 // ─── RATE FUNCTIONS — MATLAB/HH original (Vrest=0) ───────
@@ -1115,9 +1116,16 @@ function storeAndDetect(){
   const IL =P.gL*(V-P.EL);
   hist.t.push(t);hist.V.push(V);hist.m.push(m);hist.h.push(h);
   hist.n.push(n);hist.INa.push(INa);hist.IK.push(IK);hist.IL.push(IL);hist.Iext.push(Ie);
-  if(hist.t.length>MAX_HIST){
-    const ex=hist.t.length-MAX_HIST;
-    for(const k of Object.keys(hist))hist[k].splice(0,ex);
+  // Periodic memory trim: every 500 stored points, discard old data
+  // For continuous mode keep 2 full display cycles; otherwise keep MAX_HIST
+  if(hist.t.length % 500 === 0 && hist.t.length > MAX_HIST){
+    // Keep last 2 display windows (ECG needs current + previous cycle)
+    const keepMs = STIM.type==='continuous' ? winMs*2+20 : winMs*3;
+    const keepPts = Math.ceil(keepMs / (DT*STORE_EVERY));
+    const drop = Math.max(0, hist.t.length - keepPts);
+    if(drop > 0){
+      for(const k of Object.keys(hist))hist[k].splice(0,drop);
+    }
   }
   phaseV[phasePtr]=V;phaseN[phasePtr]=n;phasePtr=(phasePtr+1)%TRAIL_LEN;
   if(phaseCount<TRAIL_LEN)phaseCount++;
@@ -1535,6 +1543,7 @@ window.addEventListener('load',()=>{
 window.addEventListener('resize',()=>{
   if(hist.t.length>0)renderAll();else{renderSS();renderTau();renderPhase();}
 });
+
 
 </script>
 
