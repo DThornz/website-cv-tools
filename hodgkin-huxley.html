@@ -45,13 +45,13 @@ a:hover{text-decoration:underline}
 .page-wrap{max-width:1040px;margin:0 auto;padding:0 48px 80px}
 
 /* ─── Hero ───────────────────────────────────────────────── */
-.hero{padding:52px 0 36px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.hero{padding:52px 0 36px;border-bottom:1px solid var(--border);margin-bottom:48px;text-align:center}
 .hero-kicker{font-family:var(--mono);font-size:.7em;color:var(--teal);letter-spacing:.16em;text-transform:uppercase;margin-bottom:12px}
 .hero-title{font-family:var(--serif);font-size:clamp(2.2em,4.5vw,3.2em);font-weight:400;line-height:1.1;margin-bottom:14px;color:var(--text)}
-.hero-sub{font-size:1.05em;color:var(--muted);max-width:640px;line-height:1.65;margin-bottom:24px;text-align:left}
-.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.hero-sub{font-size:1.05em;color:var(--muted);max-width:640px;line-height:1.65;margin-bottom:24px;margin-left:auto;margin-right:auto}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;justify-content:center}
 .pill{padding:4px 12px;border-radius:99px;font-size:.72em;font-family:var(--mono);background:var(--teal-light);color:var(--teal);border:1px solid rgba(11,122,110,.2)}
-.hero-meta{display:flex;gap:28px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
 .hero-stat-num{font-family:var(--serif);font-size:1.7em;color:var(--teal);line-height:1}
 .hero-stat-label{font-size:.72em;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 
@@ -479,22 +479,22 @@ body.dark-mode .hero{border-color:#1c3050!important}
     
   <div class="fig-row" style="float:right;margin:0 0 18px 24px;max-width:320px;clear:right">
     <div class="fig-item" style="max-width:145px">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Alan_Lloyd_Hodgkin_1963.jpg/220px-Alan_Lloyd_Hodgkin_1963.jpg"
+      <img src="https://en.wikipedia.org/wiki/Special:FilePath/Alan_Lloyd_Hodgkin.jpg?width=220"
            alt="Alan Lloyd Hodgkin, 1963"
-           onerror="this.parentElement.innerHTML='<div class=\'fig-portrait\'><div class=\'fig-portrait-icon\'>🔬</div><div class=\'fig-portrait-name\'>Alan L. Hodgkin</div><div class=\'fig-portrait-dates\'>1914 – 1998</div></div><div class=\'fig-cap\'>Nobel Lecture, 1963</div>'">
+           onerror="this.style.display='none'">
       <div class="fig-cap">Alan L. Hodgkin<br>1914 – 1998</div>
     </div>
     <div class="fig-item" style="max-width:145px">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Andrew_Fielding_Huxley_1963.jpg/220px-Andrew_Fielding_Huxley_1963.jpg"
+      <img src="https://en.wikipedia.org/wiki/Special:FilePath/Andrew_Fielding_Huxley_Nobel.jpg?width=220"
            alt="Andrew Fielding Huxley, 1963"
-           onerror="this.parentElement.innerHTML='<div class=\'fig-portrait\'><div class=\'fig-portrait-icon\'>🧬</div><div class=\'fig-portrait-name\'>Andrew F. Huxley</div><div class=\'fig-portrait-dates\'>1917 – 2012</div></div><div class=\'fig-cap\'>Nobel Lecture, 1963</div>'">
+           onerror="this.style.display='none'">
       <div class="fig-cap">Andrew F. Huxley<br>1917 – 2012</div>
     </div>
   </div>
 
     <p>In the summer of 1949 at the Marine Biological Association laboratory in Plymouth, England, <strong>Alan Lloyd Hodgkin</strong> and <strong>Andrew Fielding Huxley</strong> performed a series of elegant voltage-clamp experiments on the <em>Loligo forbesi</em> giant squid axon. This particular axon — nearly 1 mm in diameter — was large enough to insert a wire electrode directly into its interior, making it the ideal preparation for measuring membrane currents with then-unprecedented precision. Their findings, published across five landmark papers in the <em>Journal of Physiology</em> in 1952, constituted the first complete quantitative description of the ionic mechanisms underlying the action potential.<sup>[1]</sup></p>
     <div class="fig-aside">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Loligo_pealeii.jpg/320px-Loligo_pealeii.jpg"
+      <img src="https://en.wikipedia.org/wiki/Special:FilePath/Loligo_vulgaris.jpg?width=300"
            alt="Loligo pealeii — longfin inshore squid"
            onerror="this.style.display='none'">
       <div class="fig-cap"><em>Loligo pealeii</em> — the longfin inshore squid. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
@@ -737,7 +737,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 
   
   <div class="fig-wrap" style="max-width:520px;margin:20px auto">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Hodgkin-Huxley.svg/600px-Hodgkin-Huxley.svg.png"
+    <img src="https://en.wikipedia.org/wiki/Special:FilePath/Action_potential_vert.png?width=300"
          alt="Hodgkin-Huxley model voltage clamp results"
          onerror="this.style.display='none'">
     <div class="fig-cap">Calculated (upper) vs. measured (lower) action potentials from the 1952 paper — the model's remarkable predictive accuracy. Reproduced from Hodgkin &amp; Huxley (1952), <em>J. Physiol.</em> 117, 500–544. Public domain.</div>
@@ -914,7 +914,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
         </div>
 
         <!-- Presets -->
-        <div style="margin-top:10px">
+        <div style="margin-top:10px;grid-column:1/-1">
           <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:6px;grid-column:1/-1">Quick Presets</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;grid-column:1/-1">
             <button onclick="applyPreset('standard')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Continuous</button>
