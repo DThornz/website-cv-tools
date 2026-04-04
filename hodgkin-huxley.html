@@ -96,7 +96,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:980px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:1020px}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
@@ -867,8 +867,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <input class="ctrl-slider" type="range" id="sl-Cm" min="0.1" max="3" step="0.05" value="1" oninput="slUpdate('Cm',this.value,'sl-Cm-val');syncSlider('sl-Cm',this.value)">
 </div>
 <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">dt<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dt-num" min="0.005" max="0.5" step="0.005" value="0.01" onchange="syncNum('sl-dt',this.value)" onblur="syncNum('sl-dt',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-dt" min="0.005" max="0.5" step="0.005" value="0.01" oninput="slUpdateDT(this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">dt<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dt-num" min="0.005" max="0.115" step="0.005" value="0.01" onchange="syncNum('sl-dt',this.value)" onblur="syncNum('sl-dt',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-dt" min="0.005" max="0.115" step="0.005" value="0.01" oninput="slUpdateDT(this.value)">
 </div>
           <div class="ctrl-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Window<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-win-num" min="50" max="500" step="10" value="120" onchange="syncNum('sl-win',this.value)" onblur="syncNum('sl-win',this.value)"></span>
@@ -1535,7 +1535,7 @@ function slUpdate(param,val,valId){
 function slUpdateDT(val){
   const v=parseFloat(val);
   if(isNaN(v)||v<=0)return;
-  DT=Math.min(0.5,Math.max(0.005,v));
+  DT=Math.min(0.115,Math.max(0.005,v));
   const dp=3;
   const spanEl=document.getElementById('sl-dt-val');if(spanEl)spanEl.textContent=DT.toFixed(dp);
   const numEl=document.getElementById('sl-dt-num');if(numEl)numEl.value=DT.toFixed(dp);
