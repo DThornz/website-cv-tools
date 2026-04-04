@@ -1711,19 +1711,39 @@ function applyPreset(name){
 }
 
 // ─── INIT ─────────────────────────────────────────────────
+// Run a fixed batch of steps synchronously to populate graphs on load —
+// avoids all race conditions with requestAnimationFrame / setTimeout chains.
+function runInitialSimulation() {
+  if (running) return;
+  // Apply standard parameters first
+  P.gNa=120; P.gK=36; P.gL=0.3;
+  P.ENa=50;  P.EK=-77; P.EL=-54.387;
+  P.Cm=1;   P.T=6.3;
+  P.blockNa=false; P.blockK=false;
+  STIM.type='step'; STIM.I0=10; STIM.tStart=10; STIM.dur=40; STIM.freq=40;
+  winMs=160; speedIdx=2;
+  viewStart=0; viewEnd=winMs; viewLocked=false;
+  initState();
+  // Run synchronously — 1500 steps = 15 ms of simulation (captures full AP)
+  for(let i=0;i<1500;i++){
+    rk4();
+    if(stepCnt%STORE_EVERY===0) storeAndDetect();
+    if(shouldAutoPause()){ viewStart=0; viewEnd=Math.max(winMs,t); viewLocked=true; break; }
+  }
+  renderAll();
+  updateStats();
+  document.getElementById('sim-status-text').textContent='Ready — click ▶ Run';
+}
+
 window.addEventListener('load',()=>{
   initState();
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
   document.getElementById('sl-speed-val').textContent=labels[speedIdx];
   renderSS(); renderTau(); renderPhase(); renderIext(0,winMs);
   updateStats();
-  // Auto-run standard simulation so graphs are populated on first view
-  // Use requestAnimationFrame to ensure layout is complete before sizing canvases
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      applyPreset('standard');
-      // applyPreset with autoStart:true calls setTimeout(startSim,150) internally
-    });
+  // Populate graphs immediately — synchronous, no race condition
+  runInitialSimulation();
+});
   });
 });
 
