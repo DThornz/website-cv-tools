@@ -435,6 +435,75 @@ body.dark-mode .hero{border-color:#1c3050!important}
 .fig-aside .fig-cap{font-size:.72em;color:var(--dim);margin-top:5px;text-align:center;font-family:var(--mono);font-style:italic;line-height:1.4}
 
 .ctrl-row.disabled{opacity:.35;pointer-events:none}
+
+/* ─── Simulator Tabs ──────────────────────────────────────── */
+.sim-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);background:var(--bg3);padding:0 24px}
+.sim-tab{padding:10px 20px;font-family:var(--mono);font-size:.78em;font-weight:600;letter-spacing:.05em;
+  color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:color .15s,border-color .15s;white-space:nowrap}
+.sim-tab:hover{color:var(--text)}
+.sim-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.sim-panel{display:none}.sim-panel.active{display:grid}
+
+/* ─── Voltage Clamp Panel ─────────────────────────────────── */
+.vc-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);
+  overflow-y:hidden;overflow-x:hidden;height:100%;min-height:0;box-sizing:border-box;
+  display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
+.vc-plots{display:flex;flex-direction:column;background:var(--bg2);overflow:hidden;min-width:0;min-height:0}
+.iv-panel{padding:12px 14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;flex:1;min-height:0}
+.iv-plot-wrap{flex:1;min-height:120px;position:relative}
+.iv-controls-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.iv-legend{display:flex;gap:12px;font-family:var(--mono);font-size:.7em;color:var(--dim);flex-wrap:wrap}
+.iv-legend span{display:flex;align-items:center;gap:4px}
+.iv-legend i{width:20px;height:3px;display:inline-block;border-radius:2px}
+.vc-run-strip{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--border);background:var(--bg3);flex-wrap:wrap;align-items:center}
+.vc-run-strip .vc-step-chip{font-family:var(--mono);font-size:.68em;padding:2px 8px;
+  border:1px solid var(--border2);border-radius:4px;cursor:pointer;color:var(--dim);background:var(--bg2)}
+.vc-run-strip .vc-step-chip:hover{color:var(--teal);border-color:var(--teal)}
+.vc-run-strip .vc-step-chip.active{color:var(--teal);border-color:var(--teal);background:rgba(11,122,110,.08)}
+.iv-table{font-family:var(--mono);font-size:.7em;color:var(--dim);overflow-y:auto;max-height:120px;
+  border:1px solid var(--border);border-radius:6px;background:var(--bg)}
+.iv-table table{width:100%;border-collapse:collapse}
+.iv-table th{padding:4px 8px;border-bottom:1px solid var(--border);color:var(--text);font-weight:600;text-align:right;position:sticky;top:0;background:var(--bg3)}
+.iv-table td{padding:3px 8px;border-bottom:1px solid var(--border2);text-align:right}
+.iv-table tr:last-child td{border-bottom:none}
+.vc-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.65em;font-family:var(--mono);
+  font-weight:700;margin-left:6px;vertical-align:middle}
+.vc-badge.na{background:rgba(220,38,38,.12);color:#dc2626}
+.vc-badge.k{background:rgba(29,78,216,.12);color:#1d4ed8}
+
+/* ─── Simulator Tabs ─────────────────────────────────────── */
+.sim-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--bg3);padding:0 20px}
+.sim-tab{padding:10px 20px;font-size:.82em;font-family:var(--mono);font-weight:600;letter-spacing:.04em;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;user-select:none;text-transform:uppercase}
+.sim-tab:hover{color:var(--text)}
+.sim-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.sim-tab-panel{display:none}
+.sim-tab-panel.active{display:flex;flex-direction:row;height:1100px;overflow:hidden}
+
+/* ─── Voltage Clamp Layout ───────────────────────────────── */
+.vc-controls{width:400px;min-width:400px;background:var(--bg3);border-right:1px solid var(--border);padding:12px 14px;box-sizing:border-box;overflow-y:hidden;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start;min-height:0}
+.vc-plots{flex:1;display:flex;flex-direction:column;background:var(--bg2);overflow:hidden;min-width:0;min-height:0}
+.vc-plot-wrap{display:flex;flex-direction:column;border-bottom:1px solid var(--border);overflow:hidden;min-width:0;flex:1;min-height:60px}
+.vc-plot-wrap:last-child{border-bottom:none;flex:1.5}
+.vc-plot-wrap canvas{display:block;width:100%;flex:1;min-height:0}
+.vc-plot-label{padding:5px 14px 0;font-family:var(--mono);font-size:.67em;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:600;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.iv-legend{display:flex;gap:14px;margin-left:auto}
+.iv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ─── Voltage Clamp Controls ─────────────────────────────── */
+.vc-btn{padding:7px 12px;border:1px solid var(--border2);border-radius:6px;background:var(--bg2);font-size:.75em;font-family:var(--mono);cursor:pointer;color:var(--muted);transition:all .15s;font-weight:600}
+.vc-btn:hover{color:var(--teal);border-color:var(--teal)}
+.vc-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+.vc-btn.primary:hover{background:#0a9082}
+.vc-btn.danger{border-color:#dc2626;color:#dc2626}
+.vc-btn.danger:hover{background:#dc2626;color:#fff}
+.vc-btn-row{display:flex;gap:6px;flex-wrap:wrap;grid-column:1/-1;margin-top:4px}
+.vc-sweep-status{font-family:var(--mono);font-size:.72em;color:var(--dim);grid-column:1/-1;min-height:18px;margin-top:2px}
+.vc-iv-table{grid-column:1/-1;font-family:var(--mono);font-size:.7em;color:var(--dim);overflow-y:auto;max-height:90px;border:1px solid var(--border);border-radius:4px;padding:4px 6px}
+.vc-iv-table table{width:100%;border-collapse:collapse}
+.vc-iv-table th{color:var(--muted);font-weight:600;padding:1px 4px;text-align:right}
+.vc-iv-table td{padding:1px 4px;text-align:right}
+.vc-iv-table tr:nth-child(even){background:var(--bg3)}
 </style>
 </head>
 <body class="light-mode">
@@ -783,7 +852,14 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <span id="sim-status-text">Ready</span>
       </div>
     </div>
+    <!-- Tab bar -->
+    <div class="sim-tabs">
+      <div class="sim-tab active" id="tab-cc" onclick="switchSimTab('cc')">▶ Current Clamp</div>
+      <div class="sim-tab" id="tab-vc" onclick="switchSimTab('vc')">⚡ Voltage Clamp</div>
+    </div>
 
+    <!-- Current Clamp Panel -->
+    <div class="sim-panel active" id="panel-cc" style="display:grid">
     <div class="sim-body">
       <!-- Controls -->
       <div class="sim-controls">
@@ -969,7 +1045,132 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <canvas id="cv-Iext" height="90"></canvas>
         </div>
       </div>
-    </div><!-- /sim-body -->
+    </div>
+    </div><!-- /panel-cc -->
+
+    <!-- Voltage Clamp Panel -->
+    <div class="sim-panel" id="panel-vc" style="display:none">
+      <div class="sim-body">
+
+        <!-- VC Controls -->
+        <div class="vc-controls">
+
+          <!-- Protocol -->
+          <div class="ctrl-group full">
+            <div class="ctrl-group-label">Clamp Protocol</div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">Protocol</span></span>
+              <select class="ctrl-select" id="vc-protocol" onchange="vcUpdateProtocol()">
+                <option value="step">Step Clamp</option>
+                <option value="ramp">Ramp</option>
+              </select>
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">V hold<span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vhold-num" min="-20" max="50" step="1" value="-65" onchange="syncVCNum('vc-vhold',this.value)" onblur="syncVCNum('vc-vhold',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vhold" min="-20" max="50" step="1" value="-65" oninput="vcSlider('vhold',this.value)">
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">V cmd<span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vcmd-num" min="-20" max="130" step="5" value="20" onchange="syncVCNum('vc-vcmd',this.value)" onblur="syncVCNum('vc-vcmd',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vcmd" min="-20" max="130" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">t step<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tstart-num" min="0" max="50" step="1" value="10" onchange="syncVCNum('vc-tstart',this.value)" onblur="syncVCNum('vc-tstart',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-tstart" min="0" max="50" step="1" value="10" oninput="vcSlider('tstart',this.value)">
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-dur-num" min="5" max="100" step="5" value="40" onchange="syncVCNum('vc-dur',this.value)" onblur="syncVCNum('vc-dur',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-dur" min="5" max="100" step="5" value="40" oninput="vcSlider('dur',this.value)">
+            </div>
+          </div>
+
+          <!-- Channel Blockers -->
+          <div class="ctrl-group full">
+            <div class="ctrl-group-label">Ion Channel Blockers</div>
+            <div class="ctrl-row">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82em;color:var(--muted)">
+                <input type="checkbox" id="vc-block-na" onchange="vcP.blockNa=this.checked"> Block Na⁺ <span class="vc-badge na">TTX</span>
+              </label>
+            </div>
+            <div class="ctrl-row">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82em;color:var(--muted)">
+                <input type="checkbox" id="vc-block-k" onchange="vcP.blockK=this.checked"> Block K⁺ <span class="vc-badge k">TEA</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Conductance params -->
+          <div class="ctrl-group">
+            <div class="ctrl-group-label">Conductances</div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>Na</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="vc-gna-num" min="0" max="200" step="10" value="120" onchange="syncVCNum('vc-gna',this.value)" onblur="syncVCNum('vc-gna',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-gna" min="0" max="200" step="10" value="120" oninput="vcSlider('gna',this.value)">
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>K</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="vc-gk-num" min="0" max="100" step="5" value="36" onchange="syncVCNum('vc-gk',this.value)" onblur="syncVCNum('vc-gk',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-gk" min="0" max="100" step="5" value="36" oninput="vcSlider('gk',this.value)">
+            </div>
+          </div>
+
+          <!-- Reversal potentials -->
+          <div class="ctrl-group">
+            <div class="ctrl-group-label">Reversals</div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ena-num" min="80" max="150" step="5" value="115" onchange="syncVCNum('vc-ena',this.value)" onblur="syncVCNum('vc-ena',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-ena" min="80" max="150" step="5" value="115" oninput="vcSlider('ena',this.value)">
+            </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-30" max="20" step="5" value="-12" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-ek" min="-30" max="20" step="5" value="-12" oninput="vcSlider('ek',this.value)">
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="sim-btns full" style="grid-column:1/-1;margin-top:4px">
+            <button class="btn-sim btn-run" onclick="vcRun()">▶ Run Clamp</button>
+            <button class="btn-sim btn-pause" onclick="vcStop()">⏸ Stop</button>
+            <button class="btn-sim btn-reset" onclick="vcReset()">↺ Reset</button>
+            <button class="btn-sim btn-reset" onclick="vcClearIV()" title="Clear all I-V data points">⊗ Clear I-V</button>
+          </div>
+
+          <!-- I-V curve builder -->
+          <div class="ctrl-group full" style="grid-column:1/-1;margin-top:4px">
+            <div class="ctrl-group-label">I–V Curve Builder <span style="font-size:.8em;color:var(--dim);font-weight:400">— run clamp at each Vcmd, peak currents accumulate below</span></div>
+            <div class="iv-legend" style="margin-bottom:8px">
+              <span><i style="background:#dc2626"></i>I<sub>Na</sub> peak</span>
+              <span><i style="background:#1d4ed8"></i>I<sub>K</sub> peak</span>
+              <span><i style="background:#374151"></i>I<sub>total</sub> peak</span>
+            </div>
+            <div class="iv-table" id="iv-table">
+              <table><thead><tr><th>V<sub>cmd</sub> (mV)</th><th>I<sub>Na</sub> peak</th><th>I<sub>K</sub> peak</th><th>I<sub>tot</sub> peak</th></tr></thead>
+              <tbody id="iv-tbody"><tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">Run clamp at different V<sub>cmd</sub> to populate</td></tr></tbody></table>
+            </div>
+          </div>
+
+        </div><!-- /vc-controls -->
+
+        <!-- VC Plots -->
+        <div class="sim-plots">
+          <div class="plot-wrap">
+            <div class="canvas-card-header"><span class="canvas-card-title">Membrane Voltage V(t)</span><span class="canvas-card-sub">Command + clamp waveform</span></div>
+            <canvas id="vc-cv-V" height="140"></canvas>
+          </div>
+          <div class="plot-wrap">
+            <div class="canvas-card-header"><span class="canvas-card-title">Ionic Currents I(t)</span><span class="canvas-card-sub">I<sub>Na</sub> (red) · I<sub>K</sub> (blue) · I<sub>L</sub> (green)</span></div>
+            <canvas id="vc-cv-I" height="140"></canvas>
+          </div>
+          <div class="plot-wrap">
+            <div class="canvas-card-header"><span class="canvas-card-title">Gating Variables m, h, n</span><span class="canvas-card-sub">At fixed clamp voltage</span></div>
+            <canvas id="vc-cv-gates" height="130"></canvas>
+          </div>
+          <div class="plot-wrap" style="flex:1.4">
+            <div class="canvas-card-header"><span class="canvas-card-title">I–V Relationship</span><span class="canvas-card-sub">Peak currents vs V<sub>cmd</sub> — accumulated across runs</span></div>
+            <canvas id="vc-cv-IV" height="160"></canvas>
+          </div>
+        </div><!-- /vc-plots -->
+
+      </div><!-- /sim-body -->
+    </div><!-- /panel-vc -->
+<!-- /sim-body -->
 
     <!-- AP stats bar -->
     <div class="ap-stats">
@@ -1863,4 +2064,295 @@ window.addEventListener('DOMContentLoaded',()=>{
 </footer>
 </body>
 </html>
+
+
+
+// ════════════════════════════════════════════════════════════════
+// VOLTAGE CLAMP SIMULATION
+// In voltage clamp, V is externally controlled (held at Vcmd).
+// We integrate only the gate ODEs at fixed V. The clamp current
+// Iclamp = INa + IK + IL is what the amplifier must inject to
+// maintain the command voltage. This recreates the original H&H
+// voltage clamp experiments.
+// ════════════════════════════════════════════════════════════════
+
+// ── VC State ────────────────────────────────────────────────────
+const vcP = {
+  gNa:120, gK:36, gL:0.3, ENa:115, EK:-12, EL:10.6,
+  Cm:1, blockNa:false, blockK:false,
+  protocol:'step',
+  Vhold:-65, Vcmd:20, tStart:10, dur:40,
+};
+const vcDT = 0.01;
+let vcT=0, vcY=[0,0,0,0]; // [V, m, h, n] — V is clamped so we track it but don't integrate it
+let vcRunning=false, vcAnimId=null;
+const vcHist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iclamp:[]};
+const vcMAX = 8000; // ~80ms at dt=0.01, STORE_EVERY=1
+
+// I-V curve data: array of {vcmd, peakINa, peakIK, peakItot}
+const ivData = [];
+
+// ── VC Helper: get clamped voltage at time t ────────────────────
+function vcVoltage(t) {
+  if (vcP.protocol === 'step') {
+    if (t < vcP.tStart) return vcP.Vhold;
+    if (t < vcP.tStart + vcP.dur) return vcP.Vcmd;
+    return vcP.Vhold; // back to hold after step
+  }
+  if (vcP.protocol === 'ramp') {
+    if (t < vcP.tStart) return vcP.Vhold;
+    if (t < vcP.tStart + vcP.dur)
+      return vcP.Vhold + (vcP.Vcmd - vcP.Vhold) * (t - vcP.tStart) / vcP.dur;
+    return vcP.Vcmd;
+  }
+  return vcP.Vhold;
+}
+
+// ── VC ODE: gate dynamics only (V is clamped) ──────────────────
+function vcDydt(y, t) {
+  const V = vcVoltage(t); // clamped voltage, not integrated
+  const ph = Math.pow(3, (6.3-6.3)/10); // T=6.3°C, phi=1
+  const [,m,h,n] = y;
+  return [
+    0, // dV/dt = 0 (clamped — V controlled by amplifier)
+    ph*(am(V)*(1-m) - bm(V)*m),
+    ph*(ah(V)*(1-h) - bh(V)*h),
+    ph*(an(V)*(1-n) - bn(V)*n),
+  ];
+}
+
+// ── VC RK4 ─────────────────────────────────────────────────────
+function vcRK4() {
+  const dt = vcDT;
+  const k1 = vcDydt(vcY, vcT);
+  const y2 = vcY.map((v,i) => v + 0.5*dt*k1[i]);
+  const k2 = vcDydt(y2, vcT+0.5*dt);
+  const y3 = vcY.map((v,i) => v + 0.5*dt*k2[i]);
+  const k3 = vcDydt(y3, vcT+0.5*dt);
+  const y4 = vcY.map((v,i) => v + dt*k3[i]);
+  const k4 = vcDydt(y4, vcT+dt);
+  vcY = vcY.map((v,i) => v + dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]));
+  vcY[0] = vcVoltage(vcT + dt); // force V to clamp value at new time
+  vcT += dt;
+}
+
+// ── VC Store ────────────────────────────────────────────────────
+function vcStore() {
+  const [V,m,h,n] = vcY;
+  const INa = vcP.blockNa ? 0 : vcP.gNa * m*m*m * h * (V - vcP.ENa);
+  const IK  = vcP.blockK  ? 0 : vcP.gK  * n*n*n*n    * (V - vcP.EK);
+  const IL  = vcP.gL * (V - vcP.EL);
+  const Iclamp = INa + IK + IL;
+  vcHist.t.push(vcT); vcHist.V.push(V);
+  vcHist.m.push(m);   vcHist.h.push(h);  vcHist.n.push(n);
+  vcHist.INa.push(INa); vcHist.IK.push(IK); vcHist.IL.push(IL);
+  vcHist.Iclamp.push(Iclamp);
+  if (vcHist.t.length > vcMAX) {
+    const drop = vcHist.t.length - vcMAX;
+    for (const k of Object.keys(vcHist)) vcHist[k].splice(0, drop);
+  }
+}
+
+// ── VC Animation ────────────────────────────────────────────────
+const VC_STEPS = 50; // steps per frame (0.5ms at dt=0.01)
+const VC_MAX_T = () => vcP.tStart + vcP.dur + 10; // run a bit past step end
+
+function vcAnimate() {
+  if (!vcRunning) return;
+  for (let i = 0; i < VC_STEPS; i++) {
+    vcRK4();
+    vcStore();
+    if (vcT >= VC_MAX_T()) { vcStop(); break; }
+  }
+  vcRenderAll();
+  // Record peak currents for I-V at end of run
+  if (!vcRunning) vcRecordIV();
+  if (vcRunning) vcAnimId = requestAnimationFrame(vcAnimate);
+}
+
+function vcRun() {
+  if (vcRunning) return;
+  vcRunning = true;
+  document.getElementById('sim-status-text').textContent = 'VC Running';
+  vcAnimId = requestAnimationFrame(vcAnimate);
+}
+
+function vcStop() {
+  vcRunning = false;
+  if (vcAnimId) { cancelAnimationFrame(vcAnimId); vcAnimId = null; }
+  document.getElementById('sim-status-text').textContent = 'VC Paused';
+}
+
+function vcReset() {
+  vcStop();
+  for (const k of Object.keys(vcHist)) vcHist[k] = [];
+  // Initial conditions: gates at steady state for Vhold
+  const V0 = vcP.Vhold;
+  const m0 = am(V0)/(am(V0)+bm(V0));
+  const h0 = ah(V0)/(ah(V0)+bh(V0));
+  const n0 = an(V0)/(an(V0)+bn(V0));
+  vcY = [V0, m0, h0, n0]; vcT = 0;
+  vcRenderAll();
+  document.getElementById('sim-status-text').textContent = 'VC Ready';
+}
+
+function vcClearIV() {
+  ivData.length = 0;
+  document.getElementById('iv-tbody').innerHTML =
+    '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">Run clamp at different V<sub>cmd</sub> to populate</td></tr>';
+  vcRenderIV();
+}
+
+// ── Record peak currents for I-V curve ──────────────────────────
+function vcRecordIV() {
+  if (!vcHist.t.length) return;
+  // Only look at data during the step (tStart..tStart+dur)
+  let peakINa = 0, peakIK = 0, peakItot = 0;
+  for (let i = 0; i < vcHist.t.length; i++) {
+    const t = vcHist.t[i];
+    if (t < vcP.tStart || t > vcP.tStart + vcP.dur) continue;
+    // Most negative INa = peak inward Na current (convention: inward negative)
+    if (vcHist.INa[i] < peakINa) peakINa = vcHist.INa[i];
+    // Most positive IK = peak outward K current
+    if (vcHist.IK[i] > peakIK) peakIK = vcHist.IK[i];
+    const itot = vcHist.INa[i] + vcHist.IK[i] + vcHist.IL[i];
+    if (Math.abs(itot) > Math.abs(peakItot)) peakItot = itot;
+  }
+  // Add / update entry for this Vcmd
+  const existing = ivData.findIndex(d => d.vcmd === vcP.Vcmd);
+  const entry = { vcmd: vcP.Vcmd, peakINa, peakIK, peakItot };
+  if (existing >= 0) ivData[existing] = entry; else ivData.push(entry);
+  ivData.sort((a,b) => a.vcmd - b.vcmd);
+  vcUpdateIVTable();
+  vcRenderIV();
+}
+
+function vcUpdateIVTable() {
+  const tbody = document.getElementById('iv-tbody');
+  if (!tbody) return;
+  if (!ivData.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">—</td></tr>'; return; }
+  tbody.innerHTML = ivData.map(d =>
+    `<tr><td>${d.vcmd}</td><td style="color:#dc2626">${d.peakINa.toFixed(2)}</td><td style="color:#1d4ed8">${d.peakIK.toFixed(2)}</td><td>${d.peakItot.toFixed(2)}</td></tr>`
+  ).join('');
+}
+
+// ── VC Rendering ─────────────────────────────────────────────────
+function vcRenderAll() {
+  vcRenderV(); vcRenderI(); vcRenderGates(); vcRenderIV();
+}
+
+function vcRenderV() {
+  const {ctx,W,H} = setupCanvas('vc-cv-V'); if (!ctx) return;
+  const tMax = VC_MAX_T();
+  drawAxes(ctx,W,H,-20,130,0,tMax,'mV');
+  if (vcHist.t.length > 1) plotTrace(ctx,vcHist.t,vcHist.V,W,H,-20,130,0,tMax,'#0b7a6e',2);
+}
+
+function vcRenderI() {
+  const {ctx,W,H} = setupCanvas('vc-cv-I'); if (!ctx) return;
+  const tMax = VC_MAX_T();
+  let mxI = 5;
+  for (const v of vcHist.INa.concat(vcHist.IK, vcHist.IL)) if (Math.abs(v) > mxI) mxI = Math.abs(v);
+  mxI = Math.max(5, mxI * 1.12);
+  drawAxes(ctx,W,H,-mxI,mxI,0,tMax,'µA/cm²');
+  if (vcHist.t.length > 1) {
+    plotTrace(ctx,vcHist.t,vcHist.INa,W,H,-mxI,mxI,0,tMax,'#dc2626',1.5);
+    plotTrace(ctx,vcHist.t,vcHist.IK, W,H,-mxI,mxI,0,tMax,'#1d4ed8',1.5);
+    plotTrace(ctx,vcHist.t,vcHist.IL, W,H,-mxI,mxI,0,tMax,'#15803d',1);
+  }
+}
+
+function vcRenderGates() {
+  const {ctx,W,H} = setupCanvas('vc-cv-gates'); if (!ctx) return;
+  const tMax = VC_MAX_T();
+  drawAxes(ctx,W,H,0,1,0,tMax,'');
+  if (vcHist.t.length > 1) {
+    plotTrace(ctx,vcHist.t,vcHist.m,W,H,0,1,0,tMax,'#dc2626',1.5);
+    plotTrace(ctx,vcHist.t,vcHist.h,W,H,0,1,0,tMax,'#f59e0b',1.5);
+    plotTrace(ctx,vcHist.t,vcHist.n,W,H,0,1,0,tMax,'#7c3aed',1.5);
+  }
+}
+
+function vcRenderIV() {
+  const {ctx,W,H} = setupCanvas('vc-cv-IV'); if (!ctx) return;
+  const p = PAD;
+  const pw = W - p.left - p.right, ph = H - p.top - p.bottom;
+
+  // Determine axis ranges from data
+  let vMin = -20, vMax = 130, iMin = -10, iMax = 10;
+  if (ivData.length > 1) {
+    iMin = Math.min(...ivData.map(d => Math.min(d.peakINa, d.peakIK, d.peakItot))) * 1.15;
+    iMax = Math.max(...ivData.map(d => Math.max(d.peakINa, d.peakIK, d.peakItot))) * 1.15;
+    iMin = Math.min(iMin, -1); iMax = Math.max(iMax, 1);
+  }
+
+  drawAxes(ctx, W, H, iMin, iMax, vMin, vMax, 'µA/cm²');
+
+  // Draw zero lines
+  const y0 = p.top + ph * (1 - (0 - iMin)/(iMax - iMin));
+  const x0 = p.left + pw * (0 - vMin)/(vMax - vMin);
+  ctx.strokeStyle = 'rgba(0,0,0,.15)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(p.left,y0); ctx.lineTo(p.left+pw,y0); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x0,p.top); ctx.lineTo(x0,p.top+ph); ctx.stroke();
+
+  if (ivData.length < 1) {
+    ctx.fillStyle = '#9ca3af'; ctx.font = "12px 'DM Sans',sans-serif"; ctx.textAlign = 'center';
+    ctx.fillText('Run clamp at multiple V commands to build the I–V curve', p.left+pw/2, p.top+ph/2);
+    return;
+  }
+
+  const xp = v => p.left + pw * (v - vMin)/(vMax - vMin);
+  const yp = i => p.top  + ph * (1 - (i - iMin)/(iMax - iMin));
+
+  const draw = (arr, color) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+    arr.forEach(({vcmd, val}, i) => {
+      i === 0 ? ctx.moveTo(xp(vcmd), yp(val)) : ctx.lineTo(xp(vcmd), yp(val));
+    });
+    ctx.stroke();
+    // Dots
+    ctx.fillStyle = color;
+    arr.forEach(({vcmd, val}) => {
+      ctx.beginPath(); ctx.arc(xp(vcmd), yp(val), 4, 0, Math.PI*2); ctx.fill();
+    });
+  };
+
+  draw(ivData.map(d => ({vcmd:d.vcmd, val:d.peakINa})), '#dc2626');
+  draw(ivData.map(d => ({vcmd:d.vcmd, val:d.peakIK})),  '#1d4ed8');
+  draw(ivData.map(d => ({vcmd:d.vcmd, val:d.peakItot})), '#374151');
+}
+
+// ── VC UI Helpers ────────────────────────────────────────────────
+function vcSlider(param, val) {
+  const v = parseFloat(val);
+  const map = {vhold:'Vhold', vcmd:'Vcmd', tstart:'tStart', dur:'dur',
+               gna:'gNa', gk:'gK', ena:'ENa', ek:'EK'};
+  if (map[param]) vcP[map[param]] = v;
+  const numEl = document.getElementById(`vc-${param}-num`);
+  if (numEl) numEl.value = v;
+}
+
+function syncVCNum(sliderId, val) {
+  const el = document.getElementById(sliderId);
+  if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+}
+
+function vcUpdateProtocol() {
+  vcP.protocol = document.getElementById('vc-protocol').value;
+}
+
+// ── Tab switching ────────────────────────────────────────────────
+function switchSimTab(tab) {
+  ['cc','vc'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    const p = document.getElementById(`panel-${t}`);
+    p.style.display = t === tab ? 'grid' : 'none';
+    p.classList.toggle('active', t === tab);
+  });
+  if (tab === 'vc') {
+    vcReset();
+    vcRenderAll();
+  }
+}
+
 
