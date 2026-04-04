@@ -958,33 +958,6 @@ function closeModalIfBg(e){
 }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 </script>
-  <div class="acc-row">
-    <div class="acc-row-label">Color Mode</div>
-    <div class="acc-toggle-row">
-      <span class="acc-toggle-label">Dark Mode</span>
-      <label class="acc-switch">
-        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
-        <span class="acc-slider"></span>
-      </label>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Size</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
-      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
-      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Style</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
-      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
-      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
-    </div>
-  </div>
-</div>
 
 <button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
 <div class="acc-panel" id="acc-panel">

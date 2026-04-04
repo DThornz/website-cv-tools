@@ -86,7 +86,7 @@ sub,sup{font-size:.72em;line-height:1}
 .circuit-wrap svg{max-width:100%;height:auto}
 
 /* ─── SIMULATOR ──────────────────────────────────────────── */
-.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px -80px;box-shadow:var(--shadow-lg);position:relative;}
+.sim-section{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:32px -100px;box-shadow:var(--shadow-lg);position:relative;}
 .sim-header{padding:18px 24px;background:linear-gradient(135deg,var(--teal) 0%,#0d8a7c 100%);color:#fff;display:flex;align-items:center;gap:12px}
 .sim-title{font-family:var(--serif);font-size:1.3em;font-weight:400}
 .sim-subtitle{font-size:.8em;opacity:.85;margin-top:2px}
@@ -95,7 +95,7 @@ sub,sup{font-size:.72em;line-height:1}
 .sim-status .dot.paused{background:#fbbf24;animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:680px}
+.sim-body{display:grid;grid-template-columns:400px 1fr;gap:0;align-items:stretch;height:820px}
 
 /* Controls panel */
 .sim-controls{padding:12px 14px 14px;border-right:1px solid var(--border);background:var(--bg3);overflow-y:auto;overflow-x:hidden;height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-content:start}
@@ -178,7 +178,7 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
   .two-col{grid-template-columns:1fr}
   .page-wrap{padding:0 16px 60px}
   .hero{padding:32px 0 28px}
-  .sim-section{margin:20px 0!important;border-radius:8px}
+  .sim-section{margin:20px 0!important;border-radius:8px;width:100%}
 }
 
 
@@ -1268,7 +1268,7 @@ function initState(){
 }
 
 // ─── CANVAS UTILITIES ─────────────────────────────────────
-const PAD={top:14,right:12,bottom:34,left:54};
+const PAD={top:18,right:16,bottom:40,left:58};
 
 function setupCanvas(id){
   const canvas=document.getElementById(id);
@@ -1718,7 +1718,10 @@ window.addEventListener('load',()=>{
   renderSS(); renderTau(); renderPhase(); renderIext(0,winMs);
   updateStats();
   // Auto-run standard simulation so graphs are populated on first view
-  setTimeout(()=>{ applyPreset('standard'); },200);
+  setTimeout(()=>{
+    applyPreset('standard');
+    setTimeout(startSim, 50); // start after preset resets state
+  },300);
 });
 
 window.addEventListener('resize',()=>{
@@ -1726,33 +1729,6 @@ window.addEventListener('resize',()=>{
   else {renderSS();renderTau();renderPhase();}
 });
 </script>
-  <div class="acc-row">
-    <div class="acc-row-label">Color Mode</div>
-    <div class="acc-toggle-row">
-      <span class="acc-toggle-label">Dark Mode</span>
-      <label class="acc-switch">
-        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
-        <span class="acc-slider"></span>
-      </label>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Size</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
-      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
-      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Style</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
-      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
-      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
-    </div>
-  </div>
-</div>
 
 <button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
 <div class="acc-panel" id="acc-panel">
