@@ -1068,7 +1068,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
               <input class="ctrl-slider" type="range" id="vc-vcmd" min="-20" max="120" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">Pre-hold<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tpre-num" min="10" max="200" step="10" value="50" onchange="syncVCNum('vc-tpre',this.value)" onblur="syncVCNum('vc-tpre',this.value)"></span>
+              <span class="ctrl-label"><span class="ctrl-label-txt">Step onset<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tpre-num" min="10" max="200" step="10" value="50" onchange="syncVCNum('vc-tpre',this.value)" onblur="syncVCNum('vc-tpre',this.value)"></span>
               <input class="ctrl-slider" type="range" id="vc-tpre" min="10" max="200" step="10" value="50" oninput="vcSlider('tpre',this.value)">
             </div>
             <div class="ctrl-row">
@@ -1862,7 +1862,7 @@ const vcP = {
   gNa:120, gK:36, gL:0.3, ENa:115, EK:-12, EL:10.6,
   Cm:1, blockNa:false, blockK:false,
   protocol:'step',
-  Vhold:-65, Vcmd:20, tStart:10, dur:40,
+  Vhold:0, Vcmd:20, tStart:10, dur:40,
 };
 const vcDT = 0.01;
 let vcT=0, vcY=[0,0,0,0]; // [V, m, h, n] — V is clamped so we track it but don't integrate it
@@ -1967,7 +1967,13 @@ function vcStop() {
 function vcReset() {
   vcStop();
   for (const k of Object.keys(vcHist)) vcHist[k] = [];
-  // Initial conditions: gates at steady state for Vhold
+  // Sync vcP from slider current values
+  const slSync2 = {vhold:'Vhold',vcmd:'Vcmd',tpre:'tStart',dur:'dur',gna:'gNa',gk:'gK',gl:'gL',ena:'ENa',ek:'EK',el:'EL'};
+  for(const [sid,field] of Object.entries(slSync2)){
+    const slEl=document.getElementById('vc-'+sid);
+    if(slEl && slEl.value) vcP[field]=parseFloat(slEl.value)||vcP[field];
+  }
+  // Initial conditions: gates at steady state for Vhold (MATLAB: Vrest=0)
   const V0 = vcP.Vhold;
   const m0 = am(V0)/(am(V0)+bm(V0));
   const h0 = ah(V0)/(ah(V0)+bh(V0));
@@ -2025,8 +2031,14 @@ function vcRenderAll() {
 function vcRenderV() {
   const {ctx,W,H} = setupCanvas('vc-cv-V'); if (!ctx) return;
   const tMax = VC_MAX_T();
-  drawAxes(ctx,W,H,-20,130,0,tMax,'mV');
-  if (vcHist.t.length > 1) plotTrace(ctx,vcHist.t,vcHist.V,W,H,-20,130,0,tMax,'#0b7a6e',2);
+  const yVMin=Math.min(-5,vcP.Vhold-5), yVMax=Math.max(130,vcP.Vcmd+15);
+  drawAxes(ctx,W,H,yVMin,yVMax,0,tMax,'mV');
+  // Red dashed line at step onset
+  const pv=PAD,pwv=W-pv.left-pv.right,phv=H-pv.top-pv.bottom;
+  const xSt=pv.left+pwv*(vcP.tStart/tMax);
+  ctx.strokeStyle='rgba(220,38,38,.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(xSt,pv.top);ctx.lineTo(xSt,pv.top+phv);ctx.stroke();ctx.setLineDash([]);
+  if (vcHist.t.length > 1) plotTrace(ctx,vcHist.t,vcHist.V,W,H,yVMin,yVMax,0,tMax,'#0b7a6e',2);
 }
 
 function vcRenderI() {
@@ -2112,8 +2124,8 @@ function vcRenderIV() {
 // ── VC UI Helpers ────────────────────────────────────────────────
 function vcSlider(param, val) {
   const v = parseFloat(val);
-  const map = {vhold:'Vhold', vcmd:'Vcmd', tstart:'tStart', dur:'dur',
-               gna:'gNa', gk:'gK', ena:'ENa', ek:'EK'};
+  const map = {vhold:'Vhold', vcmd:'Vcmd', tstart:'tStart', tpre:'tStart', dur:'dur',
+               gna:'gNa', gk:'gK', gl:'gL', ena:'ENa', ek:'EK', el:'EL'};
   if (map[param]) vcP[map[param]] = v;
   const numEl = document.getElementById(`vc-${param}-num`);
   if (numEl) numEl.value = v;
