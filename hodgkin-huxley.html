@@ -859,7 +859,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
     </div>
 
     <!-- Current Clamp Panel -->
-    <div class="sim-panel active" id="panel-cc" style="display:grid">
+    <div class="sim-panel active" id="panel-cc" class="sim-panel active">
     <div class="sim-body">
       <!-- Controls -->
       <div class="sim-controls">
@@ -1049,56 +1049,35 @@ body.dark-mode .hero{border-color:#1c3050!important}
     </div><!-- /panel-cc -->
 
     <!-- Voltage Clamp Panel -->
-    <div class="sim-panel" id="panel-vc" style="display:none">
-      <div class="sim-body">
+    <div class="sim-panel" id="panel-vc" class="sim-panel">
+      <!-- Voltage Clamp Layout: left controls + right plots -->
+      <div style="display:flex;height:1100px;overflow:hidden">
 
-        <!-- VC Controls -->
-        <div class="vc-controls">
+        <!-- VC Controls (left, same width as CC controls) -->
+        <div class="sim-controls" style="width:400px;min-width:400px;flex-shrink:0">
 
-          <!-- Protocol -->
+          <!-- Protocol group -->
           <div class="ctrl-group full">
             <div class="ctrl-group-label">Clamp Protocol</div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">Protocol</span></span>
-              <select class="ctrl-select" id="vc-protocol" onchange="vcUpdateProtocol()">
-                <option value="step">Step Clamp</option>
-                <option value="ramp">Ramp</option>
-              </select>
+              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>hold</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vhold-num" min="-20" max="50" step="1" value="0" onchange="syncVCNum('vc-vhold',this.value)" onblur="syncVCNum('vc-vhold',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vhold" min="-20" max="50" step="1" value="0" oninput="vcSlider('vhold',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">V hold<span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vhold-num" min="-20" max="50" step="1" value="-65" onchange="syncVCNum('vc-vhold',this.value)" onblur="syncVCNum('vc-vhold',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-vhold" min="-20" max="50" step="1" value="-65" oninput="vcSlider('vhold',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>cmd</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vcmd-num" min="-20" max="120" step="5" value="20" onchange="syncVCNum('vc-vcmd',this.value)" onblur="syncVCNum('vc-vcmd',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vcmd" min="-20" max="120" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">V cmd<span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vcmd-num" min="-20" max="130" step="5" value="20" onchange="syncVCNum('vc-vcmd',this.value)" onblur="syncVCNum('vc-vcmd',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-vcmd" min="-20" max="130" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">Pre-hold<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tpre-num" min="10" max="200" step="10" value="50" onchange="syncVCNum('vc-tpre',this.value)" onblur="syncVCNum('vc-tpre',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-tpre" min="10" max="200" step="10" value="50" oninput="vcSlider('tpre',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">t step<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tstart-num" min="0" max="50" step="1" value="10" onchange="syncVCNum('vc-tstart',this.value)" onblur="syncVCNum('vc-tstart',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-tstart" min="0" max="50" step="1" value="10" oninput="vcSlider('tstart',this.value)">
-            </div>
-            <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-dur-num" min="5" max="100" step="5" value="40" onchange="syncVCNum('vc-dur',this.value)" onblur="syncVCNum('vc-dur',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-dur" min="5" max="100" step="5" value="40" oninput="vcSlider('dur',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">Step dur<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-dur-num" min="5" max="150" step="5" value="40" onchange="syncVCNum('vc-dur',this.value)" onblur="syncVCNum('vc-dur',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-dur" min="5" max="150" step="5" value="40" oninput="vcSlider('dur',this.value)">
             </div>
           </div>
 
-          <!-- Channel Blockers -->
-          <div class="ctrl-group full">
-            <div class="ctrl-group-label">Ion Channel Blockers</div>
-            <div class="ctrl-row">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82em;color:var(--muted)">
-                <input type="checkbox" id="vc-block-na" onchange="vcP.blockNa=this.checked"> Block Na⁺ <span class="vc-badge na">TTX</span>
-              </label>
-            </div>
-            <div class="ctrl-row">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82em;color:var(--muted)">
-                <input type="checkbox" id="vc-block-k" onchange="vcP.blockK=this.checked"> Block K⁺ <span class="vc-badge k">TEA</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Conductance params -->
+          <!-- Conductances col 1 -->
           <div class="ctrl-group">
             <div class="ctrl-group-label">Conductances</div>
             <div class="ctrl-row">
@@ -1109,9 +1088,13 @@ body.dark-mode .hero{border-color:#1c3050!important}
               <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>K</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="vc-gk-num" min="0" max="100" step="5" value="36" onchange="syncVCNum('vc-gk',this.value)" onblur="syncVCNum('vc-gk',this.value)"></span>
               <input class="ctrl-slider" type="range" id="vc-gk" min="0" max="100" step="5" value="36" oninput="vcSlider('gk',this.value)">
             </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">ḡ<sub>L</sub><span class="ctrl-unit">mS/cm²</span></span><input type="number" class="ctrl-num" id="vc-gl-num" min="0" max="2" step="0.1" value="0.3" onchange="syncVCNum('vc-gl',this.value)" onblur="syncVCNum('vc-gl',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-gl" min="0" max="2" step="0.1" value="0.3" oninput="vcSlider('gl',this.value)">
+            </div>
           </div>
 
-          <!-- Reversal potentials -->
+          <!-- Reversals col 2 -->
           <div class="ctrl-group">
             <div class="ctrl-group-label">Reversals</div>
             <div class="ctrl-row">
@@ -1122,53 +1105,72 @@ body.dark-mode .hero{border-color:#1c3050!important}
               <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-30" max="20" step="5" value="-12" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
               <input class="ctrl-slider" type="range" id="vc-ek" min="-30" max="20" step="5" value="-12" oninput="vcSlider('ek',this.value)">
             </div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-el-num" min="-20" max="30" step="1" value="10.6" onchange="syncVCNum('vc-el',this.value)" onblur="syncVCNum('vc-el',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-el" min="-20" max="30" step="1" value="10.6" oninput="vcSlider('el',this.value)">
+            </div>
           </div>
 
-          <!-- Buttons -->
-          <div class="sim-btns full" style="grid-column:1/-1;margin-top:4px">
+          <!-- Blockers full-width -->
+          <div class="ctrl-group full">
+            <div class="ctrl-group-label">Ion Channel Blockers</div>
+            <div class="ctrl-row" style="flex-direction:row;gap:18px;align-items:center">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82em;color:var(--muted)"><input type="checkbox" id="vc-block-na" onchange="vcP.blockNa=this.checked"> Block Na⁺ <span style="font-family:var(--mono);font-size:.75em;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:3px;padding:1px 4px">TTX</span></label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.82em;color:var(--muted)"><input type="checkbox" id="vc-block-k" onchange="vcP.blockK=this.checked"> Block K⁺ <span style="font-family:var(--mono);font-size:.75em;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:3px;padding:1px 4px">TEA</span></label>
+            </div>
+          </div>
+
+          <!-- Temperature -->
+          <div class="ctrl-group full">
+            <div class="ctrl-group-label">Temperature</div>
+            <div class="ctrl-row">
+              <span class="ctrl-label"><span class="ctrl-label-txt">T<span class="ctrl-unit">°C</span></span><input type="number" class="ctrl-num" id="vc-T-num" min="0" max="40" step="1" value="6.3" onchange="syncVCNum('vc-T',this.value)" onblur="syncVCNum('vc-T',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-T" min="0" max="40" step="1" value="6.3" oninput="vcSlider('T',this.value)">
+            </div>
+          </div>
+
+          <!-- Buttons full-width -->
+          <div class="sim-btns full" style="grid-column:1/-1">
             <button class="btn-sim btn-run" onclick="vcRun()">▶ Run Clamp</button>
             <button class="btn-sim btn-pause" onclick="vcStop()">⏸ Stop</button>
             <button class="btn-sim btn-reset" onclick="vcReset()">↺ Reset</button>
-            <button class="btn-sim btn-reset" onclick="vcClearIV()" title="Clear all I-V data points">⊗ Clear I-V</button>
+            <button class="btn-sim btn-reset" onclick="vcClearIV()" style="color:#dc2626" title="Clear accumulated I-V data">⊗ Clear I–V</button>
           </div>
 
-          <!-- I-V curve builder -->
-          <div class="ctrl-group full" style="grid-column:1/-1;margin-top:4px">
-            <div class="ctrl-group-label">I–V Curve Builder <span style="font-size:.8em;color:var(--dim);font-weight:400">— run clamp at each Vcmd, peak currents accumulate below</span></div>
-            <div class="iv-legend" style="margin-bottom:8px">
-              <span><i style="background:#dc2626"></i>I<sub>Na</sub> peak</span>
-              <span><i style="background:#1d4ed8"></i>I<sub>K</sub> peak</span>
-              <span><i style="background:#374151"></i>I<sub>total</sub> peak</span>
-            </div>
-            <div class="iv-table" id="iv-table">
-              <table><thead><tr><th>V<sub>cmd</sub> (mV)</th><th>I<sub>Na</sub> peak</th><th>I<sub>K</sub> peak</th><th>I<sub>tot</sub> peak</th></tr></thead>
-              <tbody id="iv-tbody"><tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">Run clamp at different V<sub>cmd</sub> to populate</td></tr></tbody></table>
+          <!-- I-V table full-width -->
+          <div style="grid-column:1/-1;margin-top:4px">
+            <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:5px">I–V Curve Data <span style="font-weight:400;color:var(--dim);font-size:.9em">— each Run Clamp adds one row</span></div>
+            <div id="iv-table" style="font-family:var(--mono);font-size:.7em;color:var(--dim);overflow-y:auto;max-height:90px;border:1px solid var(--border);border-radius:4px;padding:3px 6px">
+              <table style="width:100%;border-collapse:collapse">
+                <thead><tr><th style="text-align:right;padding:1px 4px;color:var(--muted)">V<sub>cmd</sub>(mV)</th><th style="text-align:right;padding:1px 4px;color:#dc2626">I<sub>Na</sub> pk</th><th style="text-align:right;padding:1px 4px;color:#1d4ed8">I<sub>K</sub> pk</th><th style="text-align:right;padding:1px 4px;color:#374151">I<sub>tot</sub> pk</th></tr></thead>
+                <tbody id="iv-tbody"><tr><td colspan="4" style="text-align:center;color:var(--dim);padding:6px">Run clamp at different V<sub>cmd</sub> to build I–V curve</td></tr></tbody>
+              </table>
             </div>
           </div>
 
-        </div><!-- /vc-controls -->
+        </div><!-- /vc sim-controls -->
 
-        <!-- VC Plots -->
+        <!-- VC Plots (right) -->
         <div class="sim-plots">
           <div class="plot-wrap">
-            <div class="canvas-card-header"><span class="canvas-card-title">Membrane Voltage V(t)</span><span class="canvas-card-sub">Command + clamp waveform</span></div>
+            <div class="canvas-card-header"><span class="canvas-card-title">V(t) — Clamped Voltage</span><span class="canvas-card-sub">Pre-hold (gray) → Step to V<sub>cmd</sub> (red line = step onset)</span></div>
             <canvas id="vc-cv-V" height="140"></canvas>
           </div>
           <div class="plot-wrap">
-            <div class="canvas-card-header"><span class="canvas-card-title">Ionic Currents I(t)</span><span class="canvas-card-sub">I<sub>Na</sub> (red) · I<sub>K</sub> (blue) · I<sub>L</sub> (green)</span></div>
-            <canvas id="vc-cv-I" height="140"></canvas>
+            <div class="canvas-card-header"><span class="canvas-card-title">I(t) — Ionic Currents</span><span class="canvas-card-sub"><span style="color:#dc2626">▬ I<sub>Na</sub></span> &nbsp;<span style="color:#1d4ed8">▬ I<sub>K</sub></span> &nbsp;<span style="color:#15803d">▬ I<sub>L</sub></span> &nbsp;<span style="color:#374151">▬ I<sub>total</sub></span></span></div>
+            <canvas id="vc-cv-I" height="155"></canvas>
           </div>
           <div class="plot-wrap">
-            <div class="canvas-card-header"><span class="canvas-card-title">Gating Variables m, h, n</span><span class="canvas-card-sub">At fixed clamp voltage</span></div>
+            <div class="canvas-card-header"><span class="canvas-card-title">Gating Variables</span><span class="canvas-card-sub"><span style="color:#dc2626">m</span> &nbsp;<span style="color:#f59e0b">h</span> &nbsp;<span style="color:#7c3aed">n</span> — evolution at clamped voltage</span></div>
             <canvas id="vc-cv-gates" height="130"></canvas>
           </div>
-          <div class="plot-wrap" style="flex:1.4">
-            <div class="canvas-card-header"><span class="canvas-card-title">I–V Relationship</span><span class="canvas-card-sub">Peak currents vs V<sub>cmd</sub> — accumulated across runs</span></div>
-            <canvas id="vc-cv-IV" height="160"></canvas>
+          <div class="plot-wrap" style="flex:1.5">
+            <div class="canvas-card-header"><span class="canvas-card-title">I–V Relationship</span><span class="canvas-card-sub">Accumulated peak currents vs V<sub>cmd</sub> — change V<sub>cmd</sub> and Run Clamp to add points</span></div>
+            <canvas id="vc-cv-IV" height="175"></canvas>
           </div>
-        </div><!-- /vc-plots -->
+        </div><!-- /sim-plots -->
 
-      </div><!-- /sim-body -->
+      </div><!-- /flex layout -->
     </div><!-- /panel-vc -->
 <!-- /sim-body -->
 
@@ -1826,6 +1828,365 @@ function runInitialSimulation(){
 }
 
 // ─── LOAD ─────────────────────────────────────────────────
+
+// ════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════════════
+
+
+// ════════════════════════════════════════════════════════════
+// VOLTAGE CLAMP ENGINE
+// ════════════════════════════════════════════════════════════
+let vcInitDone = false;
+
+// VC parameters
+const vcP = {
+  vhold: 0, vcmd: 20,
+  tpre: 50,    // ms pre-step hold to let gates equilibrate
+  tstart: 10,  // ms delay after switching to command
+  dur: 40,     // ms step duration
+  gNa: 120, gK: 36, gL: 0.3,
+  ENa: 115, EK: -12, EL: 10.6,
+  Cm: 1, T: 6.3,
+  blockNa: false, blockK: false,
+};
+
+// VC simulation state
+let vcT = 0, vcY = [0, 0, 0, 0]; // [V, m, h, n]  (V fixed during clamp)
+let vcRunning = false, vcAnimId = null;
+const vcHist = { t:[], V:[], m:[], h:[], n:[], INa:[], IK:[], IL:[], Itot:[] };
+let vcStepStart = -1; // time when step begins
+
+// I-V curve data (accumulated across runs)
+const ivData = []; // [{vcmd, peakINa, peakIK, peakItot}]
+
+// Rate functions (same as main sim — reuse globals am,bm,ah,bh,an,bn,phi)
+// but VC needs its own phi using vcP.T
+function vcPhi(){ return Math.pow(3,(vcP.T-6.3)/10); }
+
+function vcDydt(y, t){
+  const [V, m, h, n] = y;
+  // During clamp V is fixed — ODE only for gating vars
+  const ph = vcPhi();
+  // For gating, V is whatever the commanded voltage is at time t
+  const Vclamp = t < vcStepStart ? vcP.vhold : vcP.vcmd;
+  return [
+    0, // V is clamped — no dV/dt
+    ph*(am(Vclamp)*(1-m) - bm(Vclamp)*m),
+    ph*(ah(Vclamp)*(1-h) - bh(Vclamp)*h),
+    ph*(an(Vclamp)*(1-n) - bn(Vclamp)*n)
+  ];
+}
+
+function vcRK4(dt){
+  const k1 = vcDydt(vcY, vcT);
+  const y2 = vcY.map((v,i) => v + 0.5*dt*k1[i]);
+  const k2 = vcDydt(y2, vcT + 0.5*dt);
+  const y3 = vcY.map((v,i) => v + 0.5*dt*k2[i]);
+  const k3 = vcDydt(y3, vcT + 0.5*dt);
+  const y4 = vcY.map((v,i) => v + dt*k3[i]);
+  const k4 = vcDydt(y4, vcT + dt);
+  vcY = vcY.map((v,i) => v + dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]));
+  vcT += dt;
+}
+
+function vcGetV(){ return vcT < vcStepStart ? vcP.vhold : vcP.vcmd; }
+
+function vcStorePoint(){
+  const [_, m, h, n] = vcY;
+  const V = vcGetV();
+  const INa = vcP.blockNa ? 0 : vcP.gNa*m*m*m*h*(V - vcP.ENa);
+  const IK  = vcP.blockK  ? 0 : vcP.gK *n*n*n*n*(V - vcP.EK);
+  const IL  = vcP.gL*(V - vcP.EL);
+  vcHist.t.push(vcT); vcHist.V.push(V);
+  vcHist.m.push(m); vcHist.h.push(h); vcHist.n.push(n);
+  vcHist.INa.push(INa); vcHist.IK.push(IK); vcHist.IL.push(IL);
+  vcHist.Itot.push(INa+IK+IL);
+}
+
+function vcAnimate(){
+  if(!vcRunning) return;
+  const simDt = 0.01;
+  const stepsPerFrame = 150;
+  const totalEnd = vcStepStart + vcP.dur;
+  for(let i=0; i<stepsPerFrame; i++){
+    if(vcT >= totalEnd){ vcStop(); break; }
+    vcRK4(simDt);
+    vcStorePoint();
+  }
+  vcRenderAll();
+  if(vcRunning) vcAnimId = requestAnimationFrame(vcAnimate);
+}
+
+function vcRun(){
+  if(vcRunning) return;
+  // Reset state: start at vhold with equilibrated gates
+  vcT = 0;
+  const ph = vcPhi();
+  const [m0, h0, n0] = [
+    am(vcP.vhold)/(am(vcP.vhold)+bm(vcP.vhold)),
+    ah(vcP.vhold)/(ah(vcP.vhold)+bh(vcP.vhold)),
+    an(vcP.vhold)/(an(vcP.vhold)+bn(vcP.vhold))
+  ];
+  vcY = [vcP.vhold, m0, h0, n0];
+  for(const k of Object.keys(vcHist)) vcHist[k] = [];
+  vcStepStart = vcP.tpre; // step begins after pre-hold
+  // Store initial point
+  vcStorePoint();
+  vcRunning = true;
+  vcAnimId = requestAnimationFrame(vcAnimate);
+  document.getElementById('vc-status')?.setAttribute('data-run','1');
+}
+
+function vcStop(){
+  vcRunning = false;
+  if(vcAnimId){ cancelAnimationFrame(vcAnimId); vcAnimId = null; }
+  // Extract peak currents during step and add to I-V data
+  vcAddToIV();
+  vcRenderAll();
+}
+
+function vcReset(){
+  vcStop();
+  for(const k of Object.keys(vcHist)) vcHist[k] = [];
+  vcT = 0; vcY = [vcP.vhold, 0, 0, 0];
+  vcRenderAll();
+}
+
+function vcClearIV(){
+  ivData.length = 0;
+  document.getElementById('iv-tbody').innerHTML =
+    '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">Run clamp at different V<sub>cmd</sub> to populate</td></tr>';
+  vcRenderIV();
+}
+
+function vcAddToIV(){
+  if(!vcHist.t.length) return;
+  // Find step phase only
+  const peakINa = vcHist.INa.reduce((min,v,i) => vcHist.t[i]>=vcStepStart ? Math.min(min,v) : min, 0);
+  const peakIK  = vcHist.IK.reduce((max,v,i)  => vcHist.t[i]>=vcStepStart ? Math.max(max,v) : max, 0);
+  const peakItot = vcHist.Itot.reduce((mn,v,i) => vcHist.t[i]>=vcStepStart ? (Math.abs(v)>Math.abs(mn)?v:mn) : mn, 0);
+  // Check if same Vcmd already exists → overwrite
+  const existing = ivData.findIndex(d => d.vcmd === vcP.vcmd);
+  const entry = { vcmd:vcP.vcmd, peakINa, peakIK, peakItot };
+  if(existing >= 0) ivData[existing] = entry; else ivData.push(entry);
+  ivData.sort((a,b) => a.vcmd - b.vcmd);
+  vcUpdateTable();
+}
+
+function vcUpdateTable(){
+  const tbody = document.getElementById('iv-tbody');
+  if(!tbody) return;
+  if(!ivData.length){
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:8px">Run clamp at different V<sub>cmd</sub> to populate</td></tr>';
+    return;
+  }
+  tbody.innerHTML = ivData.map(d =>
+    `<tr><td>${d.vcmd}</td><td style="color:#dc2626">${d.peakINa.toFixed(2)}</td><td style="color:#1d4ed8">${d.peakIK.toFixed(2)}</td><td>${d.peakItot.toFixed(2)}</td></tr>`
+  ).join('');
+}
+
+// ── VC Rendering ──────────────────────────────────────────
+function vcSetupCanvas(id){
+  const c = document.getElementById(id); if(!c) return {ctx:null,W:0,H:0};
+  if(!c.dataset.lh) c.dataset.lh = c.getAttribute('height')||'140';
+  const minH = parseInt(c.dataset.lh);
+  const W = Math.max(100, c.parentElement.clientWidth||600);
+  const H = Math.max(minH, c.clientHeight||minH);
+  const dpr = window.devicePixelRatio||1;
+  c.width = Math.round(W*dpr); c.height = Math.round(H*dpr);
+  c.style.width = W+'px'; c.style.height = H+'px';
+  const ctx = c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx,W,H};
+}
+
+const VCPAD = {top:16,right:14,bottom:36,left:56};
+
+function vcDrawAxes(ctx,W,H,yMin,yMax,xMin,xMax,yLabel,stepLine){
+  if(!ctx) return;
+  const p=VCPAD, pw=W-p.left-p.right, ph=H-p.top-p.bottom;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f9fafb'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff';    ctx.fillRect(p.left,p.top,pw,ph);
+  ctx.strokeStyle='#f3f4f6'; ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(p.left+pw*i/5,p.top);ctx.lineTo(p.left+pw*i/5,p.top+ph);ctx.stroke();
+  }
+  ctx.strokeStyle='#d1d5db'; ctx.lineWidth=1; ctx.strokeRect(p.left,p.top,pw,ph);
+  // Zero line
+  if(yMin<0 && yMax>0){
+    const y0=p.top+ph*(1-(0-yMin)/(yMax-yMin));
+    ctx.strokeStyle='rgba(0,0,0,.1)';ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(p.left,y0);ctx.lineTo(p.left+pw,y0);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // Step onset line
+  if(stepLine != null && stepLine>=xMin && stepLine<=xMax){
+    const xs=p.left+pw*(stepLine-xMin)/(xMax-xMin);
+    ctx.strokeStyle='rgba(220,38,38,.25)';ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(xs,p.top);ctx.lineTo(xs,p.top+ph);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  const font="bold 11px 'DM Mono',monospace";
+  ctx.fillStyle='#4a5568'; ctx.font=font; ctx.textAlign='right';
+  for(let i=0;i<=5;i++){
+    const val=yMin+(yMax-yMin)*(1-i/5);
+    ctx.fillText(val.toFixed(Math.abs(val)>=10||val===0?0:1), p.left-4, p.top+ph*i/5+4);
+  }
+  ctx.textAlign='center';
+  for(let i=0;i<=5;i++){
+    ctx.fillText(Math.round(xMin+(xMax-xMin)*i/5), p.left+pw*i/5, H-6);
+  }
+  ctx.save();ctx.translate(10,p.top+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle='#718096';ctx.font="bold 11px 'DM Sans',sans-serif";
+  ctx.fillText(yLabel,0,0);ctx.restore();
+}
+
+function vcPlotTrace(ctx,ts,vs,W,H,vMin,vMax,tMin,tMax,color,lw){
+  if(!ctx||!ts||ts.length<2) return;
+  const p=VCPAD, pw=W-p.left-p.right, ph=H-p.top-p.bottom;
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=lw||2;
+  ctx.beginPath(); let first=true;
+  for(let i=0;i<ts.length;i++){
+    if(ts[i]<tMin-0.1||ts[i]>tMax+0.1) continue;
+    const x=p.left+pw*(ts[i]-tMin)/(tMax-tMin);
+    const yc=p.top+ph*(1-(vs[i]-vMin)/(vMax-vMin));
+    const ycc=Math.max(p.top-2,Math.min(p.top+ph+2,yc));
+    if(first){ctx.moveTo(x,ycc);first=false;}else ctx.lineTo(x,ycc);
+  }
+  ctx.stroke(); ctx.restore();
+}
+
+function vcRenderAll(){
+  if(!vcHist.t.length){ vcDrawEmpty(); return; }
+  const tMax = vcStepStart + vcP.dur + 2;
+  const tMin = 0;
+  const stepL = vcStepStart;
+
+  // V(t)
+  const {ctx:cV,W:wV,H:hV} = vcSetupCanvas('vc-cv-V');
+  const vMin = Math.min(vcP.vhold, vcP.vcmd) - 10;
+  const vMax = Math.max(vcP.vhold, vcP.vcmd) + 10;
+  vcDrawAxes(cV,wV,hV,vMin,vMax,tMin,tMax,'mV',stepL);
+  vcPlotTrace(cV,vcHist.t,vcHist.V,wV,hV,vMin,vMax,tMin,tMax,'#0b7a6e',2.5);
+
+  // I(t)
+  const {ctx:cI,W:wI,H:hI} = vcSetupCanvas('vc-cv-I');
+  const allI = [...vcHist.INa,...vcHist.IK,...vcHist.IL,...vcHist.Itot];
+  const iMx = Math.max(5, Math.max(...allI.map(Math.abs))*1.15);
+  vcDrawAxes(cI,wI,hI,-iMx,iMx,tMin,tMax,'µA/cm²',stepL);
+  vcPlotTrace(cI,vcHist.t,vcHist.INa,wI,hI,-iMx,iMx,tMin,tMax,'#dc2626',1.5);
+  vcPlotTrace(cI,vcHist.t,vcHist.IK, wI,hI,-iMx,iMx,tMin,tMax,'#1d4ed8',1.5);
+  vcPlotTrace(cI,vcHist.t,vcHist.IL, wI,hI,-iMx,iMx,tMin,tMax,'#15803d',1);
+  vcPlotTrace(cI,vcHist.t,vcHist.Itot,wI,hI,-iMx,iMx,tMin,tMax,'#374151',1.5);
+
+  // Gates
+  const {ctx:cG,W:wG,H:hG} = vcSetupCanvas('vc-cv-gates');
+  vcDrawAxes(cG,wG,hG,0,1,tMin,tMax,'',stepL);
+  vcPlotTrace(cG,vcHist.t,vcHist.m,wG,hG,0,1,tMin,tMax,'#dc2626',1.5);
+  vcPlotTrace(cG,vcHist.t,vcHist.h,wG,hG,0,1,tMin,tMax,'#f59e0b',1.5);
+  vcPlotTrace(cG,vcHist.t,vcHist.n,wG,hG,0,1,tMin,tMax,'#7c3aed',1.5);
+
+  vcRenderIV();
+}
+
+function vcDrawEmpty(){
+  ['vc-cv-V','vc-cv-I','vc-cv-gates','vc-cv-IV'].forEach(id=>{
+    const {ctx,W,H}=vcSetupCanvas(id); if(!ctx) return;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#f9fafb'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#9ca3af'; ctx.font="13px 'DM Sans',sans-serif";
+    ctx.textAlign='center';
+    ctx.fillText('Run a voltage clamp step to see traces here', W/2, H/2);
+  });
+}
+
+function vcRenderIV(){
+  const {ctx,W,H} = vcSetupCanvas('vc-cv-IV'); if(!ctx) return;
+  const p=VCPAD, pw=W-p.left-p.right, ph=H-p.top-p.bottom;
+  if(!ivData.length){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#f9fafb'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#fff'; ctx.fillRect(p.left,p.top,pw,ph);
+    ctx.strokeStyle='#d1d5db'; ctx.strokeRect(p.left,p.top,pw,ph);
+    ctx.fillStyle='#9ca3af'; ctx.font="12px 'DM Sans',sans-serif";
+    ctx.textAlign='center';
+    ctx.fillText('Run clamp at multiple Vcmd values to build I–V curve',W/2,H/2-8);
+    ctx.fillText('Each run adds one data point per current type',W/2,H/2+12);
+    return;
+  }
+  const vCmds = ivData.map(d=>d.vcmd);
+  const vMin = Math.min(-20,...vCmds)-5, vMax = Math.max(100,...vCmds)+5;
+  const allI2 = ivData.flatMap(d=>[d.peakINa,d.peakIK,d.peakItot]);
+  const iMx2 = Math.max(5, Math.max(...allI2.map(Math.abs))*1.2);
+  vcDrawAxes(ctx,W,H,-iMx2,iMx2,vMin,vMax,'µA/cm²',null);
+  // Draw I-V curves with points + lines
+  const colours = ['#dc2626','#1d4ed8','#374151'];
+  const keys = ['peakINa','peakIK','peakItot'];
+  const lws = [2,2,1.5];
+  keys.forEach((k,ci)=>{
+    ctx.beginPath(); ctx.strokeStyle=colours[ci]; ctx.lineWidth=lws[ci];
+    ivData.forEach((d,di)=>{
+      const x=p.left+pw*(d.vcmd-vMin)/(vMax-vMin);
+      const y=p.top+ph*(1-(d[k]-(-iMx2))/(2*iMx2));
+      if(di===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // Dots
+    ivData.forEach(d=>{
+      const x=p.left+pw*(d.vcmd-vMin)/(vMax-vMin);
+      const y=p.top+ph*(1-(d[k]-(-iMx2))/(2*iMx2));
+      ctx.fillStyle=colours[ci];
+      ctx.beginPath(); ctx.arc(x,y,4,0,2*Math.PI); ctx.fill();
+    });
+  });
+  // Legend
+  ctx.font="bold 10px 'DM Mono',monospace"; ctx.textAlign='left';
+  [['#dc2626','INa peak'],['#1d4ed8','IK peak'],['#374151','Itot peak']].forEach(([c,lb],i)=>{
+    ctx.fillStyle=c; ctx.fillRect(p.left+4, p.top+6+i*14, 12, 3);
+    ctx.fillStyle='#4a5568'; ctx.fillText(lb, p.left+20, p.top+10+i*14);
+  });
+  // V=0 vertical line
+  if(0>=vMin && 0<=vMax){
+    const x0=p.left+pw*(0-vMin)/(vMax-vMin);
+    ctx.strokeStyle='rgba(0,0,0,.12)'; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x0,p.top); ctx.lineTo(x0,p.top+ph); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle='#718096'; ctx.font="bold 11px 'DM Mono',monospace";
+  ctx.textAlign='center'; ctx.fillText('Vcmd (mV)', p.left+pw/2, H-2);
+}
+
+// ── VC UI helpers ─────────────────────────────────────────
+function vcSlider(param, val){
+  const v = parseFloat(val);
+  if(isNaN(v)) return;
+  const map = {vhold:'vhold',vcmd:'vcmd',tpre:'tpre',dur:'dur',gna:'gNa',gk:'gK',gl:'gL',ena:'ENa',ek:'EK',el:'EL','T':'T'};
+  if(map[param]) vcP[map[param]] = v;
+  const numEl = document.getElementById('vc-'+param+'-num');
+  if(numEl) numEl.value = v;
+}
+
+function syncVCNum(slId, val){
+  const sl = document.getElementById(slId);
+  if(!sl) return;
+  const mn=parseFloat(sl.min), mx=parseFloat(sl.max);
+  const clamped = Math.min(mx, Math.max(mn, parseFloat(val)||0));
+  sl.value = clamped;
+  const param = slId.replace('vc-','');
+  vcSlider(param, clamped);
+}
+
+function vcUpdateProtocol(){ /* placeholder for future ramp protocol */ }
+
+// ── VC Init ───────────────────────────────────────────────
+function vcInit(){
+  vcInitDone = true;
+  vcDrawEmpty();
+}
+
+
 window.addEventListener('load',()=>{
   initState();
   const labels=['⅛×','¼×','½×','1×','2×','4×','7×','14×'];
@@ -2323,36 +2684,16 @@ function vcRenderIV() {
 }
 
 // ── VC UI Helpers ────────────────────────────────────────────────
-function vcSlider(param, val) {
-  const v = parseFloat(val);
-  const map = {vhold:'Vhold', vcmd:'Vcmd', tstart:'tStart', dur:'dur',
-               gna:'gNa', gk:'gK', ena:'ENa', ek:'EK'};
-  if (map[param]) vcP[map[param]] = v;
-  const numEl = document.getElementById(`vc-${param}-num`);
-  if (numEl) numEl.value = v;
-}
 
-function syncVCNum(sliderId, val) {
-  const el = document.getElementById(sliderId);
-  if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
-}
 
-function vcUpdateProtocol() {
-  vcP.protocol = document.getElementById('vc-protocol').value;
-}
 
 // ── Tab switching ────────────────────────────────────────────────
 function switchSimTab(tab) {
   ['cc','vc'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
-    const p = document.getElementById(`panel-${t}`);
-    p.style.display = t === tab ? 'grid' : 'none';
-    p.classList.toggle('active', t === tab);
+    document.getElementById(`panel-${t}`).classList.toggle('active', t === tab);
   });
-  if (tab === 'vc') {
-    vcReset();
-    vcRenderAll();
-  }
+  if (tab === 'vc') { vcReset(); vcRenderAll(); }
 }
 
 
