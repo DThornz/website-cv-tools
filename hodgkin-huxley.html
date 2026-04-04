@@ -433,6 +433,8 @@ body.dark-mode .hero{border-color:#1c3050!important}
 .fig-aside{float:right;margin:0 0 18px 24px;max-width:220px;clear:right}
 .fig-aside img{width:100%;border-radius:8px;border:1px solid var(--border)}
 .fig-aside .fig-cap{font-size:.72em;color:var(--dim);margin-top:5px;text-align:center;font-family:var(--mono);font-style:italic;line-height:1.4}
+
+.ctrl-row.disabled{opacity:.35;pointer-events:none}
 </style>
 </head>
 <body class="light-mode">
@@ -807,7 +809,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <span class="ctrl-label"><span class="ctrl-label-txt">Start<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-tStart-num" min="0" max="80" step="1" value="0" onchange="syncNum('sl-tStart',this.value)" onblur="syncNum('sl-tStart',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-tStart" min="0" max="80" step="1" value="0" oninput="slUpdate('tStart',this.value,'sl-tStart-val');updateStim();syncSlider('sl-tStart',this.value)">
 </div>
-          <div class="ctrl-row" id="dur-row" style="display:none">
+          <div class="ctrl-row" id="dur-row">
   <span class="ctrl-label"><span class="ctrl-label-txt">Duration<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="sl-dur-num" min="0.1" max="200" step="0.5" value="100" onchange="syncNum('sl-dur',this.value)" onblur="syncNum('sl-dur',this.value)"></span>
   <input class="ctrl-slider" type="range" id="sl-dur" min="0.1" max="200" step="0.5" value="100" oninput="slUpdate('dur',this.value,'sl-dur-val');updateStim();syncSlider('sl-dur',this.value)">
 </div>
@@ -1552,8 +1554,9 @@ function updateStim(){
   STIM.freq=parseFloat(document.getElementById('sl-freq').value);
   const showFreq=['pulse','sine'].includes(STIM.type);
   const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
-  const showDur=STIM.type!=='continuous';
-  const durRow=document.getElementById('dur-row');if(durRow)durRow.style.display=showDur?'flex':'none';
+  const isCont=STIM.type==='continuous';
+  const durRow=document.getElementById('dur-row');
+  if(durRow){ if(isCont) durRow.classList.add('disabled'); else durRow.classList.remove('disabled'); }
   const t0=STIM.tStart,t1=STIM.tStart+STIM.dur;
   const d0=document.getElementById('stim-t0'),d1=document.getElementById('stim-t1');
   if(d0)d0.textContent=t0.toFixed(0);if(d1)d1.textContent=t1.toFixed(0);
@@ -1596,8 +1599,9 @@ function applyPreset(name){
   const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx]||'—';
   const stEl=document.getElementById('stim-type');if(stEl)stEl.value=pr.type;
   // Show/hide dur row based on type
-  const showDur=pr.type!=='continuous';
-  const durRow=document.getElementById('dur-row');if(durRow)durRow.style.display=showDur?'flex':'none';
+  const isCont2=pr.type==='continuous';
+  const durRow=document.getElementById('dur-row');
+  if(durRow){ if(isCont2) durRow.classList.add('disabled'); else durRow.classList.remove('disabled'); }
   const showFreq=['pulse','sine'].includes(pr.type);
   const frEl=document.getElementById('freq-row');if(frEl)frEl.style.display=showFreq?'flex':'none';
   if(pr.keepPhase){stopSim();initState();}else{resetSim();}
@@ -1625,6 +1629,9 @@ window.addEventListener('load',()=>{
   const spV=document.getElementById('sl-speed-val');if(spV)spV.textContent=labels[speedIdx];
   // Force dt slider to 0.01 on load (avoids fp step-snapping to max)
   const dtSlEl=document.getElementById('sl-dt');if(dtSlEl)dtSlEl.value='0.01';
+  // dur-row: disabled for continuous default preset
+  const durRowInit=document.getElementById('dur-row');
+  if(durRowInit) durRowInit.classList.add('disabled');
   const dtNumEl=document.getElementById('sl-dt-num');if(dtNumEl)dtNumEl.value='0.010';
   renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
   runInitialSimulation();
