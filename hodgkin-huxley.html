@@ -1180,11 +1180,11 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <canvas id="vc-cv-V" style="cursor:default" height="140"></canvas>
           </div>
           <div class="plot-wrap">
-            <div class="canvas-card-header"><span class="canvas-card-title">I(t) — Ionic Currents</span><span class="canvas-card-sub"><span style="color:#dc2626">▬ I<sub>Na</sub></span> &nbsp;<span style="color:#1d4ed8">▬ I<sub>K</sub></span> &nbsp;<span style="color:#15803d">▬ I<sub>L</sub></span> &nbsp;<span style="color:#374151">▬ I<sub>total</sub></span></span></div>
+            <div class="canvas-card-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="canvas-card-title">I(t) — Ionic Currents</span><span class="canvas-card-sub" style="flex:1">Clamped currents over time</span><span style="display:flex;gap:8px;align-items:center"><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="i-show-na" checked onchange="vcToggleI('INa')"> <span style="color:#dc2626;font-weight:600">I<sub>Na</sub></span></label><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="i-show-k" checked onchange="vcToggleI('IK')"> <span style="color:#1d4ed8;font-weight:600">I<sub>K</sub></span></label><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="i-show-l" checked onchange="vcToggleI('IL')"> <span style="color:#15803d;font-weight:600">I<sub>L</sub></span></label></span></div>
             <canvas id="vc-cv-I" style="cursor:default" height="155"></canvas>
           </div>
           <div class="plot-wrap">
-            <div class="canvas-card-header"><span class="canvas-card-title">Gating Variables</span><span class="canvas-card-sub"><span style="color:#dc2626">m</span> &nbsp;<span style="color:#f59e0b">h</span> &nbsp;<span style="color:#7c3aed">n</span> — evolution at clamped voltage</span></div>
+            <div class="canvas-card-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="canvas-card-title">Gating Variables</span><span class="canvas-card-sub" style="flex:1">At clamped voltage</span><span style="display:flex;gap:8px;align-items:center"><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="g-show-m" checked onchange="vcToggleG('m')"> <span style="color:#dc2626;font-weight:600">m</span></label><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="g-show-h" checked onchange="vcToggleG('h')"> <span style="color:#f59e0b;font-weight:600">h</span></label><label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="g-show-n" checked onchange="vcToggleG('n')"> <span style="color:#7c3aed;font-weight:600">n</span></label></span></div>
             <canvas id="vc-cv-gates" style="cursor:default" height="130"></canvas>
           </div>
           <div class="plot-wrap" style="flex:1.5">
@@ -1925,6 +1925,8 @@ const vcMAX = 12000; // 120ms @ dt=0.01, every step stored
 const ivData = [];
 // Which curves to show on I-V plot
 const vcIVShow = {INa: true, IK: true, Itot: true};
+const vcIShow  = {INa: true, IK: true, IL: true};   // I(t) plot toggles
+const vcGShow  = {m: true, h: true, n: true};        // Gates plot toggles
 // Persistent run history — each entry is {t,V,INa,IK,IL,m,h,n,vcmd,vhold}
 const vcAllRuns = [];
 
@@ -2376,6 +2378,28 @@ function vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, field, color) {
 }
 
 
+
+function vcToggleI(key) {
+  const naEl = document.getElementById('i-show-na');
+  const kEl  = document.getElementById('i-show-k');
+  const lEl  = document.getElementById('i-show-l');
+  vcIShow.INa = naEl ? naEl.checked : true;
+  vcIShow.IK  = kEl  ? kEl.checked  : true;
+  vcIShow.IL  = lEl  ? lEl.checked  : true;
+  vcView['vc-cv-I'] = null; // reset Y auto-fit to visible curves
+  vcDrawI();
+}
+
+function vcToggleG(key) {
+  const mEl = document.getElementById('g-show-m');
+  const hEl = document.getElementById('g-show-h');
+  const nEl = document.getElementById('g-show-n');
+  vcGShow.m = mEl ? mEl.checked : true;
+  vcGShow.h = hEl ? hEl.checked : true;
+  vcGShow.n = nEl ? nEl.checked : true;
+  vcDrawGates();
+}
+
 function vcToggleIV(key) {
   // Sync all three checkbox states directly from DOM → no flip desync
   const naEl  = document.getElementById('iv-show-na');
@@ -2418,12 +2442,12 @@ function vcDrawI() {
   const tMax = vcTotalDur();
   const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-I');
   drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, 'µA/cm²');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'INa', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'IK',  '#1d4ed8');
+  if (vcIShow.INa) vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'INa', '#dc2626');
+  if (vcIShow.IK)  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'IK',  '#1d4ed8');
   if (vcHist.t.length > 1) {
-    plotTrace(ctx, vcHist.t, vcHist.INa, W, H, yMin, yMax, xMin, xMax, '#dc2626', 2);
-    plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, yMin, yMax, xMin, xMax, '#1d4ed8', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.IL,  W, H, yMin, yMax, xMin, xMax, '#15803d', 1);
+    if (vcIShow.INa) plotTrace(ctx, vcHist.t, vcHist.INa, W, H, yMin, yMax, xMin, xMax, '#dc2626', 2);
+    if (vcIShow.IK)  plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, yMin, yMax, xMin, xMax, '#1d4ed8', 1.5);
+    if (vcIShow.IL)  plotTrace(ctx, vcHist.t, vcHist.IL,  W, H, yMin, yMax, xMin, xMax, '#15803d', 1);
   }
 }
 
@@ -2432,12 +2456,12 @@ function vcDrawGates() {
   const tMax = vcTotalDur();
   const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-gates');
   drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, '');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'm', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'n', '#7c3aed');
+  if (vcGShow.m) vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'm', '#dc2626');
+  if (vcGShow.n) vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'n', '#7c3aed');
   if (vcHist.t.length > 1) {
-    plotTrace(ctx, vcHist.t, vcHist.m, W, H, yMin, yMax, xMin, xMax, '#dc2626', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.h, W, H, yMin, yMax, xMin, xMax, '#f59e0b', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.n, W, H, yMin, yMax, xMin, xMax, '#7c3aed', 1.5);
+    if (vcGShow.m) plotTrace(ctx, vcHist.t, vcHist.m, W, H, yMin, yMax, xMin, xMax, '#dc2626', 1.5);
+    if (vcGShow.h) plotTrace(ctx, vcHist.t, vcHist.h, W, H, yMin, yMax, xMin, xMax, '#f59e0b', 1.5);
+    if (vcGShow.n) plotTrace(ctx, vcHist.t, vcHist.n, W, H, yMin, yMax, xMin, xMax, '#7c3aed', 1.5);
   }
 }
 
