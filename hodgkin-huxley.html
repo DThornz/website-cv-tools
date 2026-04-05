@@ -1731,8 +1731,8 @@ function renderPhase(){
 
   // Rest is the system fixed point — analytical steady state at V=-65 mV
   // n∞(V) = αn/(αn+βn), computed at V=-65 with absolute-scale rate functions
-  restV=-65;
-  restN=0.317; // n∞(-65 mV) = αn(-65)/(αn(-65)+βn(-65))
+  restV=-65;  // fixed point, never changes
+  restN=0.317; // n∞(-65)=0.317, analytically constant
 
   if(hist.V && hist.V.length>10){
 
@@ -1771,8 +1771,8 @@ function renderPhase(){
 
   // ── Draw annotations ON TOP of trajectory ─────────────────────────
   const annotations=[
-    {V:restV,  n:restN,   label:'Rest',      align:'right',  color:'#22c55e'},
-    {V:threshV,n:threshN, label:'Threshold', align:'right',  color:'#f59e0b'},
+    {V:restV,  n:restN,   label:'Rest',      align:'left',  color:'#22c55e'},
+    {V:threshV,n:threshN, label:'Threshold', align:'left',  color:'#f59e0b'},
     {V:peakV,  n:peakN,   label:'AP Peak',   align:'center', color:'#ef4444'},
   ];
   ctx.font="bold 11px 'DM Sans',sans-serif";
@@ -1786,7 +1786,7 @@ function renderPhase(){
     // Label
     ctx.fillStyle=color;
     ctx.textAlign=align||'center';
-    const ox=align==='right'?-8:align==='left'?8:0;
+    const ox=align==='left'?8:align==='right'?-8:0;
     ctx.fillText(label,ax+ox,ay-7);
   }
 
