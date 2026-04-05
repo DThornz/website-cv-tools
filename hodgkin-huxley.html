@@ -2293,10 +2293,20 @@ function vcDrawGates() {
 function vcDrawIV() {
   const {ctx,W,H} = setupCanvas('vc-cv-IV'); if (!ctx) return;
   const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
-  const vMin = -20, vMax = 130;
+  // Dynamic axes — expand to fit actual data
+  let vMin = -20, vMax = 130;
   let iMin = -5, iMax = 5;
   if (ivData.length > 0) {
+    const allV = ivData.map(d => d.vcmd);
     const allI = ivData.flatMap(d => [d.peakINa, d.peakIK, d.peakItot]);
+    const vSpan = Math.max(...allV) - Math.min(...allV);
+    const pad = vSpan > 0 ? vSpan * 0.1 : 10;
+    vMin = Math.min(...allV) - pad;
+    vMax = Math.max(...allV) + pad;
+    // Snap to nice round numbers
+    vMin = Math.floor(vMin / 10) * 10;
+    vMax = Math.ceil(vMax  / 10) * 10;
+    const iRange = Math.max(...allI.map(Math.abs));
     iMin = Math.min(-1, Math.min(...allI) * 1.2);
     iMax = Math.max(1,  Math.max(...allI) * 1.2);
   }
