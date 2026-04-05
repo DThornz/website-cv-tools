@@ -1707,6 +1707,8 @@ function renderPhase(){
   ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
   const vMin=-85,vMax=65,nMin=0,nMax=1;
   const xp=(n)=>p.left+pw*(n-nMin)/(nMax-nMin), yp=(v)=>p.top+ph*(1-(v-vMin)/(vMax-vMin));
+
+  // ── Draw trajectory FIRST so annotations layer on top ────────────
   const cnt=Math.min(phaseCount,TRAIL_LEN);
   if(cnt>2){
     for(let i=1;i<cnt;i++){
@@ -1714,34 +1716,88 @@ function renderPhase(){
       ctx.strokeStyle=`rgba(11,122,110,${Math.pow(i/cnt,0.6)*0.9})`;ctx.lineWidth=1.5;
       ctx.beginPath();ctx.moveTo(xp(phaseN[a]),yp(phaseV[a]));ctx.lineTo(xp(phaseN[b]),yp(phaseV[b]));ctx.stroke();
     }
-    const ci=(phasePtr-1+TRAIL_LEN)%TRAIL_LEN;ctx.fillStyle='#0b7a6e';ctx.beginPath();ctx.arc(xp(phaseN[ci]),yp(phaseV[ci]),5,0,Math.PI*2);ctx.fill();
+    const ci=(phasePtr-1+TRAIL_LEN)%TRAIL_LEN;
+    ctx.fillStyle='#0b7a6e';ctx.beginPath();ctx.arc(xp(phaseN[ci]),yp(phaseV[ci]),5,0,Math.PI*2);ctx.fill();
   } else {
     ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans',sans-serif";ctx.textAlign='center';
     ctx.fillText('Run the simulation to see the phase portrait',p.left+pw/2,p.top+ph/2-8);
     ctx.fillText('or click "Phase Demo" preset',p.left+pw/2,p.top+ph/2+12);
   }
-  // Annotate key physiological points on the phase plane
+
+  // ── Compute annotation positions from live simulation data ────────
+  let restV=-65, restN=0.32;
+  let threshV=-55, threshN=0.34;
+  let peakV=20, peakN=0.42;
+
+  if(hist.V && hist.V.length>10){
+    // Rest: last stable value
+    const lastV=hist.V[hist.V.length-1];
+    if(Math.abs(lastV+65)<15){ restV=lastV; restN=hist.n[hist.n.length-1]; }
+
+    // Peak: from spike detection
+    if(apPeakV>-Infinity && apPeakV>-40){
+      peakV=apPeakV;
+      // Find n at the time of peak V
+      if(apLastSpike>0 && hist.t.length>0){
+        let bestIdx=0, bestDist=Infinity;
+        for(let i=0;i<hist.t.length;i++){
+          const d=Math.abs(hist.t[i]-apLastSpike);
+          if(d<bestDist){ bestDist=d; bestIdx=i; }
+        }
+        // Find actual peak index near apLastSpike (within ±2ms)
+        let pkIdx=bestIdx;
+        for(let i=Math.max(0,bestIdx-200);i<Math.min(hist.t.length,bestIdx+200);i++){
+          if(hist.V[i]>hist.V[pkIdx]) pkIdx=i;
+        }
+        peakN=hist.n[pkIdx];
+        peakV=hist.V[pkIdx];
+      }
+    }
+
+    // Threshold: find point with maximum dV/dt on most recent upstroke
+    if(hist.V.length>5){
+      let maxDV=0, threshIdx=-1;
+      for(let i=1;i<hist.V.length;i++){
+        const dv=hist.V[i]-hist.V[i-1];
+        if(dv>maxDV && hist.V[i]>-65 && hist.V[i]<0){
+          maxDV=dv; threshIdx=i;
+        }
+      }
+      if(threshIdx>=0){ threshV=hist.V[threshIdx]; threshN=hist.n[threshIdx]; }
+    }
+  }
+
+  // ── Draw annotations ON TOP of trajectory ─────────────────────────
   const annotations=[
-    {V:-65, n:0.32, label:'Rest',      align:'right'},
-    {V:-55, n:0.34, label:'Threshold', align:'right'},
-    {V:20,  n:0.42, label:'AP Peak',   align:'center'},
+    {V:restV,  n:restN,   label:'Rest',      align:'right',  color:'#22c55e'},
+    {V:threshV,n:threshN, label:'Threshold', align:'right',  color:'#f59e0b'},
+    {V:peakV,  n:peakN,   label:'AP Peak',   align:'center', color:'#ef4444'},
   ];
-  ctx.font="bold 10px 'DM Sans',sans-serif"; ctx.fillStyle='rgba(107,114,128,0.7)';
-  annotations.forEach(({V,n,label,align})=>{
+  ctx.font="bold 11px 'DM Sans',sans-serif";
+  for(const{V,n,label,align,color} of annotations){
     const ax=xp(n), ay=yp(V);
-    if(ax<p.left||ax>p.left+pw||ay<p.top||ay>p.top+ph) return;
+    if(ax<p.left-5||ax>p.left+pw+5||ay<p.top-5||ay>p.top+ph+5) continue;
+    // Marker circle with white outline
+    ctx.beginPath();ctx.arc(ax,ay,4,0,Math.PI*2);
+    ctx.fillStyle=color; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+    // Label
+    ctx.fillStyle=color;
     ctx.textAlign=align||'center';
-    ctx.fillText(label, ax+(align==='right'?-4:0), ay-5);
-    ctx.beginPath(); ctx.arc(ax,ay,2,0,Math.PI*2);
-    ctx.fillStyle='rgba(107,114,128,0.5)'; ctx.fill();
-    ctx.fillStyle='rgba(107,114,128,0.7)';
-  });
+    const ox=align==='right'?-8:align==='left'?8:0;
+    ctx.fillText(label,ax+ox,ay-7);
+  }
+
+  // ── Axis labels ───────────────────────────────────────────────────
   ctx.fillStyle='#6b7280';ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='right';
   for(let i=0;i<=5;i++)ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
   ctx.textAlign='center';ctx.font="bold 12px 'DM Mono',monospace";
   for(let i=0;i<=5;i++)ctx.fillText((nMin+(nMax-nMin)*i/5).toFixed(2),p.left+pw*i/5,H-8);
-  ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.fillText('V (mV)',0,0);ctx.restore();
-  ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";ctx.textAlign='center';ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
+  ctx.save();ctx.translate(12,p.top+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";
+  ctx.fillText('V (mV)',0,0);ctx.restore();
+  ctx.fillStyle='#4a5568';ctx.font="bold 12px 'DM Sans',sans-serif";
+  ctx.textAlign='center';ctx.fillText('n (K⁺ activation)',p.left+pw/2,H-2);
 }
 
 // ─── STATS ────────────────────────────────────────────────
