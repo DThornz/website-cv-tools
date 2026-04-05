@@ -1149,7 +1149,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">to</span>
               <input type="number" id="vc-sweep-to" value="100" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">step</span>
-              <input type="number" id="vc-sweep-step" value="10" min="1" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <input type="number" id="vc-sweep-step" value="5" min="1" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">mV</span>
             </div>
             <!-- Row 2: run/stop buttons + progress -->
@@ -1188,7 +1188,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <canvas id="vc-cv-gates" style="cursor:default" height="130"></canvas>
           </div>
           <div class="plot-wrap" style="flex:1.5">
-            <div class="canvas-card-header"><span class="canvas-card-title">I–V Relationship</span><span class="canvas-card-sub">Accumulated peak currents vs V<sub>cmd</sub> — change V<sub>cmd</sub> and Run Clamp to add points</span></div>
+            <div class="canvas-card-header" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span class="canvas-card-title">I–V Relationship</span>
+            <span class="canvas-card-sub" style="flex:1">Accumulated peak currents vs V<sub>cmd</sub></span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="iv-show-na" checked onchange="vcToggleIV('INa')"> <span style="color:#dc2626;font-weight:600">I<sub>Na</sub></span></label>
+              <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="iv-show-k" checked onchange="vcToggleIV('IK')"> <span style="color:#1d4ed8;font-weight:600">I<sub>K</sub></span></label>
+              <label style="display:flex;align-items:center;gap:3px;cursor:pointer;font-family:var(--mono);font-size:.7em;white-space:nowrap"><input type="checkbox" id="iv-show-tot" checked onchange="vcToggleIV('Itot')"> <span style="color:#374151;font-weight:600">I<sub>tot</sub></span></label>
+            </span>
+          </div>
             <canvas id="vc-cv-IV" style="cursor:default" height="175"></canvas>
           </div>
         </div><!-- /sim-plots -->
@@ -1914,6 +1922,8 @@ const vcMAX = 12000; // 120ms @ dt=0.01, every step stored
 
 // I–V accumulated data
 const ivData = [];
+// Which curves to show on I-V plot
+const vcIVShow = {INa: true, IK: true, Itot: true};
 // Persistent run history — each entry is {t,V,INa,IK,IL,m,h,n,vcmd,vhold}
 const vcAllRuns = [];
 
@@ -2231,26 +2241,31 @@ function vcAttachInteraction(id) {
   const el = document.getElementById(id);
   if (!el || el._vcInteract) return;
   el._vcInteract = true;
+  el.style.cursor = 'default';
 
-  // Wheel → zoom around cursor
+  // ── Wheel = zoom centered on cursor ──────────────────────────
   el.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const {ctx,W,H} = setupCanvas(id); if (!ctx) return;
-    const p = PAD;
-    const pw = W-p.left-p.right, ph = H-p.top-p.bottom;
     const rect = el.getBoundingClientRect();
-    const cx = (e.clientX - rect.left) * (W / rect.width);
-    const cy = (e.clientY - rect.top)  * (H / rect.height);
-    // Only zoom if cursor is in plot area
+    if (!rect.width) return;
+    const p = PAD;
+    // Convert cursor to canvas-logical coords
+    const scaleX = el.width / rect.width;
+    const scaleY = el.height / rect.height;
+    const cx = (e.clientX - rect.left) * scaleX / (window.devicePixelRatio||1);
+    const cy = (e.clientY - rect.top)  * scaleY / (window.devicePixelRatio||1);
+    const W = rect.width, H = rect.height;
+    const pw = W - p.left - p.right, ph = H - p.top - p.bottom;
     if (cx < p.left || cx > p.left+pw || cy < p.top || cy > p.top+ph) return;
+
     const view = vcGetView(id);
     const {xMin,xMax,yMin,yMax} = view;
-    // Cursor in data coords
+    // Fraction of plot area
     const fx = (cx - p.left) / pw;
     const fy = 1 - (cy - p.top) / ph;
     const dataX = xMin + fx*(xMax-xMin);
     const dataY = yMin + fy*(yMax-yMin);
-    const factor = e.deltaY > 0 ? 1.2 : 1/1.2;
+    const factor = e.deltaY > 0 ? 1.25 : 0.8;
     vcView[id] = {
       xMin: dataX - fx*(xMax-xMin)*factor,
       xMax: dataX + (1-fx)*(xMax-xMin)*factor,
@@ -2258,45 +2273,43 @@ function vcAttachInteraction(id) {
       yMax: dataY + (1-fy)*(yMax-yMin)*factor,
     };
     vcDrawAll();
-  }, {passive:false});
+  }, {passive: false});
 
-  // Mouse drag → pan
+  // ── Mouse drag = pan ─────────────────────────────────────────
+  let dragging = false, dragStart = null, dragView = null;
+
   el.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     const rect = el.getBoundingClientRect();
-    const W = el.clientWidth, H = el.clientHeight;
     const p = PAD;
-    const pw = W-p.left-p.right, ph = H-p.top-p.bottom;
-    const cx = (e.clientX - rect.left);
-    const cy = (e.clientY - rect.top);
+    const W = rect.width, H = rect.height;
+    const pw = W - p.left - p.right, ph = H - p.top - p.bottom;
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
     if (cx < p.left || cx > p.left+pw || cy < p.top || cy > p.top+ph) return;
-    const view = vcGetView(id);
-    vcDrag[id] = {startX: e.clientX, startY: e.clientY, view: {...view}};
+    dragging = true;
+    dragStart = {x: e.clientX, y: e.clientY};
+    dragView = {...vcGetView(id)};
     el.style.cursor = 'grabbing';
     e.preventDefault();
   });
 
   el.addEventListener('mousemove', (e) => {
-    if (!vcDrag[id]) return;
-    const {startX, startY, view} = vcDrag[id];
-    const W = el.clientWidth || 600, H = el.clientHeight || 160;
-    const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
-    const dxPx = e.clientX - startX;
-    const dyPx = e.clientY - startY;
-    const dxData = (dxPx / W) * (view.xMax - view.xMin) * -(W/pw);
-    const dyData = (dyPx / H) * (view.yMax - view.yMin) * (H/ph);
-    vcView[id] = {
-      xMin: view.xMin + dxData,
-      xMax: view.xMax + dxData,
-      yMin: view.yMin + dyData,
-      yMax: view.yMax + dyData,
-    };
+    if (!dragging) return;
+    const rect = el.getBoundingClientRect();
+    const p = PAD;
+    const pw = rect.width - p.left - p.right;
+    const ph = rect.height - p.top - p.bottom;
+    const dxPx = e.clientX - dragStart.x;
+    const dyPx = e.clientY - dragStart.y;
+    const {xMin,xMax,yMin,yMax} = dragView;
+    const dxData = -(dxPx / pw) * (xMax - xMin);
+    const dyData =  (dyPx / ph) * (yMax - yMin);
+    vcView[id] = {xMin: xMin+dxData, xMax: xMax+dxData, yMin: yMin+dyData, yMax: yMax+dyData};
     vcDrawAll();
   });
 
-  const endDrag = (e) => {
-    if (vcDrag[id]) { delete vcDrag[id]; el.style.cursor = 'default'; }
-  };
+  const endDrag = () => { dragging = false; el.style.cursor = 'default'; };
   el.addEventListener('mouseup', endDrag);
   el.addEventListener('mouseleave', endDrag);
 }
@@ -2366,6 +2379,14 @@ function vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, field, color) {
   }
   ctx.globalAlpha = 1;
   ctx.restore();
+}
+
+
+function vcToggleIV(key) {
+  vcIVShow[key] = !vcIVShow[key];
+  // Reset IV view so Y axis re-fits to visible curves
+  vcView['vc-cv-IV'] = null;
+  vcDrawIV();
 }
 
 function vcDrawAll() {
@@ -2461,9 +2482,9 @@ function vcDrawIV() {
     ctx.stroke();
     arr.forEach(({x,y}) => { ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill(); });
   };
-  drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakINa)})), '#dc2626');
-  drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakIK)})),  '#1d4ed8');
-  drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakItot)})), '#374151');
+  if (vcIVShow.INa)  drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakINa)})),  '#dc2626');
+  if (vcIVShow.IK)   drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakIK)})),   '#1d4ed8');
+  if (vcIVShow.Itot) drawLine(ivData.map(d=>({x:xp(d.vcmd),y:yp(d.peakItot)})), '#374151');
 }
 
 // ── Tab switching ────────────────────────────────────────────────
