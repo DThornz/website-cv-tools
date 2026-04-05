@@ -2351,10 +2351,12 @@ function vcInitInteraction() {
 }
 
 // Draw all previous runs faintly behind the current run
-function vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, field, color) {
+function vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, field, color) {
   if (!vcAllRuns.length) return;
   const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
   ctx.save();
+  // Clip to plot area so traces never bleed into axis labels
+  ctx.beginPath(); ctx.rect(p.left, p.top, pw, ph); ctx.clip();
   ctx.globalAlpha = 0.18;
   ctx.strokeStyle = color;
   ctx.lineWidth = 1;
@@ -2363,8 +2365,7 @@ function vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, field, color) {
     ctx.beginPath();
     let first = true;
     for (let i = 0; i < xs.length; i++) {
-      if (xs[i] < 0 || xs[i] > tMax + 0.01) continue;
-      const x = p.left + pw * (xs[i] / tMax);
+      const x = p.left + pw * ((xs[i] - xMin) / (xMax - xMin));
       const y = p.top  + ph * (1 - (ys[i] - yMin) / (yMax - yMin));
       if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
     }
@@ -2395,20 +2396,21 @@ function vcDrawAll() {
 function vcDrawV() {
   const {ctx,W,H} = setupCanvas('vc-cv-V'); if (!ctx) return;
   const tMax = vcTotalDur();
-  // Y range: show both Vhold and Vcmd with padding
-  const lo = Math.min(vcP.Vhold, vcP.Vcmd) - 10;
-  const hi = Math.max(vcP.Vhold, vcP.Vcmd) + 30;
-  const yMin = Math.min(-10, lo), yMax = Math.max(130, hi);
-  drawAxes(ctx, W, H, yMin, yMax, 0, tMax, 'mV');
-  // Step onset marker
+  const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-V');
+  drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, 'mV');
+  // Step onset marker — only if visible in current view
   const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
-  const xS = p.left + pw*(vcP.tStart/tMax);
-  ctx.strokeStyle='rgba(220,38,38,.5)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
-  ctx.beginPath(); ctx.moveTo(xS,p.top); ctx.lineTo(xS,p.top+ph); ctx.stroke();
-  ctx.setLineDash([]);
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'V', '#0b7a6e');
+  const xS = p.left + pw*((vcP.tStart - xMin)/(xMax - xMin));
+  if (xS > p.left && xS < p.left+pw) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(p.left,p.top,pw,ph); ctx.clip();
+    ctx.strokeStyle='rgba(220,38,38,.5)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(xS,p.top); ctx.lineTo(xS,p.top+ph); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+  }
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'V', '#0b7a6e');
   if (vcHist.t.length > 1)
-    plotTrace(ctx, vcHist.t, vcHist.V, W, H, yMin, yMax, 0, tMax, '#0b7a6e', 2);
+    plotTrace(ctx, vcHist.t, vcHist.V, W, H, yMin, yMax, xMin, xMax, '#0b7a6e', 2);
 }
 
 function vcDrawI() {
@@ -2416,8 +2418,8 @@ function vcDrawI() {
   const tMax = vcTotalDur();
   const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-I');
   drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, 'µA/cm²');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'INa', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'IK',  '#1d4ed8');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'INa', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'IK',  '#1d4ed8');
   if (vcHist.t.length > 1) {
     plotTrace(ctx, vcHist.t, vcHist.INa, W, H, yMin, yMax, xMin, xMax, '#dc2626', 2);
     plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, yMin, yMax, xMin, xMax, '#1d4ed8', 1.5);
@@ -2430,8 +2432,8 @@ function vcDrawGates() {
   const tMax = vcTotalDur();
   const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-gates');
   drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, '');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'm', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'n', '#7c3aed');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'm', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, xMin, xMax, 'n', '#7c3aed');
   if (vcHist.t.length > 1) {
     plotTrace(ctx, vcHist.t, vcHist.m, W, H, yMin, yMax, xMin, xMax, '#dc2626', 1.5);
     plotTrace(ctx, vcHist.t, vcHist.h, W, H, yMin, yMax, xMin, xMax, '#f59e0b', 1.5);
