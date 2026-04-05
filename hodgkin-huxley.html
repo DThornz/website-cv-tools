@@ -958,7 +958,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <!-- Speed & Display -->
         <div class="ctrl-group full">
           <div class="ctrl-group-label">Playback Speed</div>
-          
+          <div class="ctrl-row">
+  <span class="ctrl-label"><span class="ctrl-label-txt">Speed <span id="sl-speed-val">1×</span></span></span>
+  <input class="ctrl-slider" type="range" id="sl-speed" min="1" max="8" step="1" value="3" oninput="setSpeed(this.value);syncSlider('sl-speed',this.value)">
+</div>
+          <div style="font-size:.67em;color:var(--dim);margin:-2px 0 5px;line-height:1.35">Lower = slower, easier to read AP shape</div>
+          <div class="ctrl-check-row">
+            <input type="checkbox" id="auto-pause" onchange="P.autoPause=this.checked">
+            <label for="auto-pause" title="Pauses 20ms after stimulus ends when Vm stabilizes — useful for step response analysis">Auto-pause after settling (20 ms) ⓘ</label>
+          </div>
         </div>
         <!-- Channel Blocks -->
         <div class="ctrl-group full">
@@ -992,6 +1000,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <button onclick="applyPreset('step100')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Step 100ms</button>
             <button onclick="applyPreset('burst')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Burst (20µA)</button>
             <button onclick="applyPreset('subthresh')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'">Sub-threshold</button>
+            <button onclick="applyPreset('body')" style="padding:5px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--bg2);font-size:.7em;cursor:pointer;color:var(--muted);transition:all .15s" onmouseover="this.style.color='var(--teal)'" onmouseout="this.style.color='var(--muted)'" title="37°C body temperature — faster kinetics">Body Temp (37°C)</button>
             <button onclick="applyPreset('phasedemo')" style="padding:5px 4px;border:1px solid var(--teal);border-radius:5px;background:rgba(11,122,110,.08);font-size:.7em;cursor:pointer;color:var(--teal);font-weight:600;transition:all .15s;grid-column:1/-1" title="Auto-runs tonic firing to populate the phase portrait">▶ Phase Demo (auto-run)</button>
           </div>
         </div>
