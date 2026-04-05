@@ -1141,17 +1141,21 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <!-- Voltage Sweep controls (full-width) -->
           <div class="ctrl-group full" style="grid-column:1/-1;margin-top:4px">
             <div class="ctrl-group-label">Voltage Sweep <span style="font-weight:400;color:var(--dim);font-size:.85em">— auto-runs clamp across a range of V<sub>cmd</sub></span></div>
-            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">V<sub>cmd</sub> from</span>
-              <input type="number" id="vc-sweep-from" value="-20" step="5" style="width:46px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+            <!-- Row 1: range inputs, spread across full width -->
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim);white-space:nowrap">V<sub>cmd</sub> from</span>
+              <input type="number" id="vc-sweep-from" value="-20" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">to</span>
-              <input type="number" id="vc-sweep-to" value="100" step="5" style="width:46px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <input type="number" id="vc-sweep-to" value="100" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">step</span>
-              <input type="number" id="vc-sweep-step" value="10" min="1" step="5" style="width:40px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <input type="number" id="vc-sweep-step" value="10" min="1" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">mV</span>
-              <button class="btn-sim btn-run" onclick="vcStartSweep()" style="padding:4px 10px;font-size:.75em">⚡ Run Sweep</button>
-              <button class="btn-sim btn-reset" onclick="vcStopSweep()" style="padding:4px 10px;font-size:.75em">⏹ Stop</button>
-              <span id="vc-sweep-prog" style="font-family:var(--mono);font-size:.7em;color:var(--teal);display:none"></span>
+            </div>
+            <!-- Row 2: run/stop buttons + progress -->
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn-sim btn-run" onclick="vcStartSweep()" style="flex:1;font-size:.78em">⚡ Run Sweep</button>
+              <button class="btn-sim btn-reset" onclick="vcStopSweep()" style="font-size:.78em">⏹ Stop</button>
+              <span id="vc-sweep-prog" style="font-family:var(--mono);font-size:.7em;color:var(--teal);display:none;white-space:nowrap"></span>
             </div>
           </div>
 
