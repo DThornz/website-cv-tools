@@ -920,16 +920,16 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="ctrl-group">
           <div class="ctrl-group-label">Reversal Potentials</div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="50" max="200" step="1" value="115" onchange="syncNum('sl-ENa',this.value)" onblur="syncNum('sl-ENa',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-ENa" min="50" max="200" step="1" value="115" oninput="slUpdate('ENa',this.value,'sl-ENa-val');syncSlider('sl-ENa',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-ENa-num" min="-20" max="80" step="1" value="50" onchange="syncNum('sl-ENa',this.value)" onblur="syncNum('sl-ENa',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-ENa" min="-20" max="80" step="1" value="50" oninput="slUpdate('ENa',this.value,'sl-ENa-val');syncSlider('sl-ENa',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-40" max="20" step="1" value="-12" onchange="syncNum('sl-EK',this.value)" onblur="syncNum('sl-EK',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-EK" min="-40" max="20" step="1" value="-12" oninput="slUpdate('EK',this.value,'sl-EK-val');syncSlider('sl-EK',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EK-num" min="-110" max="-40" step="1" value="-77" onchange="syncNum('sl-EK',this.value)" onblur="syncNum('sl-EK',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-EK" min="-110" max="-40" step="1" value="-77" oninput="slUpdate('EK',this.value,'sl-EK-val');syncSlider('sl-EK',this.value)">
 </div>
           <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-20" max="30" step="0.1" value="10.6" onchange="syncNum('sl-EL',this.value)" onblur="syncNum('sl-EL',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-EL" min="-20" max="30" step="0.1" value="10.6" oninput="slUpdate('EL',this.value,'sl-EL-val');syncSlider('sl-EL',this.value)">
+  <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="sl-EL-num" min="-70" max="-40" step="0.1" value="-54.4" onchange="syncNum('sl-EL',this.value)" onblur="syncNum('sl-EL',this.value)"></span>
+  <input class="ctrl-slider" type="range" id="sl-EL" min="-70" max="-40" step="0.1" value="-54.4" oninput="slUpdate('EL',this.value,'sl-EL-val');syncSlider('sl-EL',this.value)">
 </div>
         </div>
 
@@ -958,19 +958,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <!-- Speed & Display -->
         <div class="ctrl-group full">
           <div class="ctrl-group-label">Playback Speed</div>
-          <div class="ctrl-row">
-  <span class="ctrl-label"><span class="ctrl-label-txt">Speed</span><input type="number" class="ctrl-num" id="sl-speed-num" min="1" max="8" step="1" value="3×" onchange="syncNum('sl-speed',this.value)" onblur="syncNum('sl-speed',this.value)"></span>
-  <input class="ctrl-slider" type="range" id="sl-speed" min="1" max="8" step="1" value="3" oninput="setSpeed(this.value);syncSlider('sl-speed',this.value)">
-</div>
-          <div style="font-size:.67em;color:var(--dim);margin:-2px 0 5px;line-height:1.35">Lower = slower, easier to read AP shape</div>
-          <div class="ctrl-check-row">
-            <input type="checkbox" id="auto-pause" onchange="P.autoPause=this.checked">
-            <label for="auto-pause">Auto-pause after settling (20 ms)</label>
-          </div>
-          <div class="ctrl-check-row">
-            <input type="checkbox" id="show-full" checked onchange="P.showFull=this.checked">
-            <label for="show-full">Show full trace (don't scroll)</label>
-          </div>
+          
         </div>
         <!-- Channel Blocks -->
         <div class="ctrl-group full">
@@ -1060,12 +1048,12 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div class="ctrl-group full">
             <div class="ctrl-group-label">Clamp Protocol</div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>hold</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vhold-num" min="-20" max="50" step="1" value="0" onchange="syncVCNum('vc-vhold',this.value)" onblur="syncVCNum('vc-vhold',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-vhold" min="-20" max="50" step="1" value="0" oninput="vcSlider('vhold',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>hold</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vhold-num" min="-85" max="0" step="1" value="-65" onchange="syncVCNum('vc-vhold',this.value)" onblur="syncVCNum('vc-vhold',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vhold" min="-85" max="0" step="1" value="-65" oninput="vcSlider('vhold',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>cmd</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vcmd-num" min="-20" max="120" step="5" value="20" onchange="syncVCNum('vc-vcmd',this.value)" onblur="syncVCNum('vc-vcmd',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-vcmd" min="-20" max="120" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">V<sub>cmd</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-vcmd-num" min="-80" max="80" step="5" value="20" onchange="syncVCNum('vc-vcmd',this.value)" onblur="syncVCNum('vc-vcmd',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-vcmd" min="-80" max="80" step="5" value="20" oninput="vcSlider('vcmd',this.value)">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-label"><span class="ctrl-label-txt">Step onset<span class="ctrl-unit">ms</span></span><input type="number" class="ctrl-num" id="vc-tpre-num" min="0" max="80" step="5" value="10" onchange="syncVCNum('vc-tpre',this.value)" onblur="syncVCNum('vc-tpre',this.value)"></span>
@@ -1098,12 +1086,12 @@ body.dark-mode .hero{border-color:#1c3050!important}
           <div class="ctrl-group">
             <div class="ctrl-group-label">Reversals</div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ena-num" min="80" max="150" step="5" value="115" onchange="syncVCNum('vc-ena',this.value)" onblur="syncVCNum('vc-ena',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-ena" min="80" max="150" step="5" value="115" oninput="vcSlider('ena',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>Na</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ena-num" min="20" max="80" step="5" value="50" onchange="syncVCNum('vc-ena',this.value)" onblur="syncVCNum('vc-ena',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-ena" min="20" max="80" step="5" value="50" oninput="vcSlider('ena',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-30" max="20" step="5" value="-12" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-ek" min="-30" max="20" step="5" value="-12" oninput="vcSlider('ek',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-30" max="20" step="5" value="-77" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-ek" min="-30" max="20" step="5" value="-77" oninput="vcSlider('ek',this.value)">
             </div>
             <div class="ctrl-row">
               <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-el-num" min="-20" max="30" step="1" value="10.6" onchange="syncVCNum('vc-el',this.value)" onblur="syncVCNum('vc-el',this.value)"></span>
@@ -1145,9 +1133,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <!-- Row 1: range inputs, spread across full width -->
             <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim);white-space:nowrap">V<sub>cmd</sub> from</span>
-              <input type="number" id="vc-sweep-from" value="-20" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <input type="number" id="vc-sweep-from" value="-70" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">to</span>
-              <input type="number" id="vc-sweep-to" value="100" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <input type="number" id="vc-sweep-to" value="50" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">step</span>
               <input type="number" id="vc-sweep-step" value="5" min="1" step="5" style="flex:1;min-width:0;padding:3px 6px;font-size:.78em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
               <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">mV</span>
@@ -1329,7 +1317,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 'use strict';
 
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
-const P={gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:false};
+const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:false};
 // Default: continuous Iext=10, 120 ms window
 const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
 let DT=0.01;
@@ -1348,7 +1336,38 @@ const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
 
 // AP detection
 let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH=50; // mV — MATLAB convention peak ~115 mV
+const AP_THRESH=-20; // mV — absolute scale, crosses on AP upstroke
+
+// Phase portrait
+const TRAIL_LEN=6000;
+const phaseV=new Float32Array(TRAIL_LEN), phaseN=new Float32Array(TRAIL_LEN);
+let phasePtr=0, phaseCount=0;
+
+// Auto-pause: trigge
+
+'use strict';
+
+// ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
+const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false};
+// Default: continuous Iext=10, 120 ms window
+const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
+let DT=0.01;
+const STORE_EVERY=2, MAX_HIST=15000;
+const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
+let speedIdx=2, winMs=120;
+
+// ─── SIM STATE ────────────────────────────────────────────
+let t=0, y=[0,0,0,0], stepCnt=0;
+let running=false, animId=null;
+let viewLocked=false;
+let currentV=0;
+
+// History arrays (rolling: capped at MAX_HIST)
+const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
+
+// AP detection
+let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
+const AP_THRESH=-20; // mV — absolute scale, crosses on AP upstroke
 
 // Phase portrait
 const TRAIL_LEN=6000;
@@ -1360,13 +1379,14 @@ const STAB_THRESH=1.0;  // mV  — negligible change threshold
 const STAB_DUR=50;      // ms  — must be stable this long
 let stabTimer=0, postStimStart=-1;
 
-// ─── RATE FUNCTIONS — MATLAB/HH original (Vrest=0) ───────
-function am(V){const x=V-25;return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1);}
-function bm(V){return 4*Math.exp(-V/18);}
-function ah(V){return 0.07*Math.exp(-V/20);}
-function bh(V){return 1/(Math.exp(-(V-30)/10)+1);}
-function an(V){const x=V-10;return Math.abs(x)<1e-7?0.1:-0.01*x/(Math.exp(-x/10)-1);}
-function bn(V){return 0.125*Math.exp(-V/80);}
+// ─── RATE FUNCTIONS — absolute voltage scale (Vrest = −65 mV) ──
+// Internally shifts V to HH convention: V' = V + 65
+function am(V){const x=(V+65)-25;return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1);}
+function bm(V){return 4*Math.exp(-(V+65)/18);}
+function ah(V){return 0.07*Math.exp(-(V+65)/20);}
+function bh(V){return 1/(Math.exp(-((V+65)-30)/10)+1);}
+function an(V){const x=(V+65)-10;return Math.abs(x)<1e-7?0.1:-0.01*x/(Math.exp(-x/10)-1);}
+function bn(V){return 0.125*Math.exp(-(V+65)/80);}
 function phi(){return Math.pow(3,(P.T-6.3)/10);}
 function ss(V){return[am(V)/(am(V)+bm(V)),ah(V)/(ah(V)+bh(V)),an(V)/(an(V)+bn(V))];}
 
@@ -1449,7 +1469,7 @@ function storeAndDetect(){
     const stimDone = t > STIM.tStart + STIM.dur + 2;
     if(stimDone){
       if(postStimStart<0) postStimStart=t;
-      if(Math.abs(V)<STAB_THRESH) stabTimer+=DT; else stabTimer=0;
+      if(Math.abs(V+65)<STAB_THRESH) stabTimer+=DT; else stabTimer=0;
     }
   }
 }
@@ -1458,7 +1478,7 @@ function shouldAutoPause(){return P.autoPause && STIM.type!=='continuous' && sta
 
 // ─── INIT ─────────────────────────────────────────────────
 function initState(){
-  y=[0,0,0,0]; t=0; stepCnt=0;
+  y=[-65,0,0,0]; t=0; stepCnt=0;
   for(const k of Object.keys(hist))hist[k]=[];
   apSpikes=0;apLastSpike=-1e9;apPeakV=-Infinity;apSpikeTs=[];
   phasePtr=0;phaseCount=0;stabTimer=0;postStimStart=-1;
@@ -1622,8 +1642,8 @@ function renderAll(){
 
 function renderV(){
   const{ctx,W,H}=setupCanvas('cv-V');if(!ctx)return;
-  drawAxes(ctx,W,H,-20,125,0,winMs,'mV');
-  plotECG(ctx,hist.t,hist.V,W,H,-20,125,'#0b7a6e',2);
+  drawAxes(ctx,W,H,-85,60,0,winMs,'mV');
+  plotECG(ctx,hist.t,hist.V,W,H,-85,60,'#0b7a6e',2);
 }
 
 function renderGates(){
@@ -1679,7 +1699,7 @@ function renderSS(){
   const{ctx,W,H}=setupCanvas('cv-ss');if(!ctx)return;
   const Vs=[];for(let V=-20;V<=130;V+=0.5)Vs.push(V);
   const p=PAD,pw=W-p.left-p.right,ph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,1,-20,130,'x∞');
+  drawAxes(ctx,W,H,0,1,-85,65,'x∞');
   const cols=['#dc2626','#f59e0b','#7c3aed'],lbls=['m∞','h∞','n∞'];
   for(let c=0;c<3;c++){
     ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
@@ -1699,7 +1719,7 @@ function renderTau(){
   const taus=Vs.map(V=>[1/((am(V)+bm(V))*ph2),1/((ah(V)+bh(V))*ph2),1/((an(V)+bn(V))*ph2)]);
   const mxT=Math.max(...taus.flat())*1.1;
   const p=PAD,pw=W-p.left-p.right,pph=H-p.top-p.bottom;
-  drawAxes(ctx,W,H,0,mxT,-20,130,'τ (ms)');
+  drawAxes(ctx,W,H,0,mxT,-85,65,'τ (ms)');
   const cols=['#dc2626','#f59e0b','#7c3aed'],lbls=['τm','τh','τn'];
   for(let c=0;c<3;c++){
     ctx.beginPath();ctx.strokeStyle=cols[c];ctx.lineWidth=2;
@@ -1717,7 +1737,7 @@ function renderPhase(){
   ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
   for(let i=0;i<=5;i++){ctx.beginPath();ctx.moveTo(p.left,p.top+ph*i/5);ctx.lineTo(p.left+pw,p.top+ph*i/5);ctx.stroke();ctx.beginPath();ctx.moveTo(p.left+pw*i/5,p.top);ctx.lineTo(p.left+pw*i/5,p.top+ph);ctx.stroke();}
   ctx.strokeStyle='#d1d5db';ctx.lineWidth=1;ctx.strokeRect(p.left,p.top,pw,ph);
-  const vMin=-20,vMax=125,nMin=0,nMax=1;
+  const vMin=-85,vMax=65,nMin=0,nMax=1;
   const xp=(n)=>p.left+pw*(n-nMin)/(nMax-nMin), yp=(v)=>p.top+ph*(1-(v-vMin)/(vMax-vMin));
   const cnt=Math.min(phaseCount,TRAIL_LEN);
   if(cnt>2){
@@ -1732,6 +1752,22 @@ function renderPhase(){
     ctx.fillText('Run the simulation to see the phase portrait',p.left+pw/2,p.top+ph/2-8);
     ctx.fillText('or click "Phase Demo" preset',p.left+pw/2,p.top+ph/2+12);
   }
+  // Annotate key physiological points on the phase plane
+  const annotations=[
+    {V:-65, n:0.32, label:'Rest',      align:'right'},
+    {V:-55, n:0.34, label:'Threshold', align:'right'},
+    {V:20,  n:0.42, label:'AP Peak',   align:'center'},
+  ];
+  ctx.font="bold 10px 'DM Sans',sans-serif"; ctx.fillStyle='rgba(107,114,128,0.7)';
+  annotations.forEach(({V,n,label,align})=>{
+    const ax=xp(n), ay=yp(V);
+    if(ax<p.left||ax>p.left+pw||ay<p.top||ay>p.top+ph) return;
+    ctx.textAlign=align||'center';
+    ctx.fillText(label, ax+(align==='right'?-4:0), ay-5);
+    ctx.beginPath(); ctx.arc(ax,ay,2,0,Math.PI*2);
+    ctx.fillStyle='rgba(107,114,128,0.5)'; ctx.fill();
+    ctx.fillStyle='rgba(107,114,128,0.7)';
+  });
   ctx.fillStyle='#6b7280';ctx.font="bold 12px 'DM Mono',monospace";ctx.textAlign='right';
   for(let i=0;i<=5;i++)ctx.fillText((vMin+(vMax-vMin)*(1-i/5)).toFixed(0),p.left-4,p.top+ph*i/5+4);
   ctx.textAlign='center';ctx.font="bold 12px 'DM Mono',monospace";
@@ -1758,6 +1794,11 @@ function setSpeed(v){
   const el=document.getElementById('sl-speed-val');if(el)el.textContent=labels[speedIdx]||v+'×';
 }
 
+function updateWindow(){
+  // Called when winMs slider changes; refit ECG view to new window size
+  if(!viewLocked){ viewStart=Math.max(0,t-winMs); viewEnd=Math.max(winMs,t); }
+}
+
 function slUpdate(param,val,valId){
   const dp=param==='EL'?1:param==='gL'?2:param==='Cm'?1:param==='T'?1:0;
   const numVal=parseFloat(val);P[param]=numVal;
@@ -1775,6 +1816,9 @@ function slUpdateDT(val){
   const dp=3;
   const spanEl=document.getElementById('sl-dt-val');if(spanEl)spanEl.textContent=DT.toFixed(dp);
   const numEl=document.getElementById('sl-dt-num');if(numEl)numEl.value=DT.toFixed(dp);
+  // Update subtitle to reflect current dt
+  const sub=document.querySelector('.sim-subtitle');
+  if(sub) sub.textContent=`4th-order Runge–Kutta · dt = ${DT.toFixed(3)} ms · Squid giant axon · V_rest = −65 mV`;
   // Warn if dt is large — likely to be numerically unstable
   const st=document.getElementById('sim-status-text');
   if(st && DT>0.1) st.textContent='⚠ Large dt — may be unstable';
@@ -1910,13 +1954,13 @@ function plotTrace(ctx, xs, ys, W, H, yMin, yMax, xMin, xMax, color, lw) {
 
 // ── State ────────────────────────────────────────────────────────
 const vcP = {
-  gNa:120, gK:36, gL:0.3, ENa:115, EK:-12, EL:10.6,
+  gNa:120, gK:36, gL:0.3, ENa:50, EK:-77, EL:-54.4,
   blockNa:false, blockK:false,
-  Vhold:0, Vcmd:20, tStart:10, dur:40, T:6.3,
+  Vhold:-65, Vcmd:20, tStart:10, dur:40, T:6.3,
 };
 const vcDT = 0.01;
 let vcT = 0;
-let vcY = [0, 0.053, 0.596, 0.318]; // [V, m, h, n] at rest (V=0)
+let vcY = [-65, 0.053, 0.596, 0.318]; // [V, m, h, n] at rest (V=-65 mV)
 let vcRunning = false, vcAnimId = null;
 const vcHist = {t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[]};
 const vcMAX = 12000; // 120ms @ dt=0.01, every step stored
@@ -2520,8 +2564,8 @@ function switchSimTab(tab) {
     vcAllRuns.length = 0;
     vcT = 0;
     // Force sweep defaults in case of cached HTML
-    const sfEl=document.getElementById('vc-sweep-from');  if(sfEl&&!sfEl._init){sfEl.value='-20';sfEl._init=true;}
-    const stEl=document.getElementById('vc-sweep-to');    if(stEl&&!stEl._init){stEl.value='100';stEl._init=true;}
+    const sfEl=document.getElementById('vc-sweep-from');  if(sfEl&&!sfEl._init){sfEl.value='-70';sfEl._init=true;}
+    const stEl=document.getElementById('vc-sweep-to');    if(stEl&&!stEl._init){stEl.value='50'; stEl._init=true;}
     const ssEl=document.getElementById('vc-sweep-step'); if(ssEl&&!ssEl._init){ssEl.value='5';  ssEl._init=true;}
     vcInitInteraction(); // attach zoom/pan listeners (safe to call multiple times)
     vcDrawAll();
@@ -2530,32 +2574,7 @@ function switchSimTab(tab) {
   }
 }
 
-</script>
-
-<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
-<div class="acc-panel" id="acc-panel">
-  <div class="acc-panel-title">⚙ Display Settings</div>
-  <div class="acc-row">
-    <div class="acc-row-label">Color Mode</div>
-    <div class="acc-toggle-row">
-      <span class="acc-toggle-label">Dark Mode</span>
-      <label class="acc-switch">
-        <input type="checkbox" id="acc-dark" onchange="accDark(this)">
-        <span class="acc-slider"></span>
-      </label>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Size</div>
-    <div class="acc-btn-group">
-      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
-      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
-      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
-    </div>
-  </div>
-  <div class="acc-row">
-    <div class="acc-row-label">Font Style</div>
-    <div class="acc-btn-group">
+ <div class="acc-btn-group">
       <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
       <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
       <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
