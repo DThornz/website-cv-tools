@@ -1729,10 +1729,12 @@ function renderPhase(){
   let threshV=-55, threshN=0.34;
   let peakV=20, peakN=0.42;
 
+  // Rest is the system fixed point — analytical steady state at V=-65 mV
+  // n∞(V) = αn/(αn+βn), computed at V=-65 with absolute-scale rate functions
+  restV=-65;
+  restN=0.317; // n∞(-65 mV) = αn(-65)/(αn(-65)+βn(-65))
+
   if(hist.V && hist.V.length>10){
-    // Rest: last stable value
-    const lastV=hist.V[hist.V.length-1];
-    if(Math.abs(lastV+65)<15){ restV=lastV; restN=hist.n[hist.n.length-1]; }
 
     // Peak: from spike detection
     if(apPeakV>-Infinity && apPeakV>-40){
