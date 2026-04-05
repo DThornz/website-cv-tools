@@ -1135,6 +1135,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <button class="btn-sim btn-pause" onclick="vcStop()">⏸ Stop</button>
             <button class="btn-sim btn-reset" onclick="vcReset()">↺ Reset</button>
             <button class="btn-sim btn-reset" onclick="vcClearIV()" style="color:#dc2626" title="Clear accumulated I-V data">⊗ Clear I–V</button>
+            <button class="btn-sim btn-reset" onclick="vcResetAllViews()" title="Reset all graph zoom/pan">⌂ Home</button>
           </div>
 
           
@@ -1176,19 +1177,19 @@ body.dark-mode .hero{border-color:#1c3050!important}
         <div class="sim-plots">
           <div class="plot-wrap">
             <div class="canvas-card-header"><span class="canvas-card-title">V(t) — Clamped Voltage</span><span class="canvas-card-sub">Pre-hold (gray) → Step to V<sub>cmd</sub> (red line = step onset)</span></div>
-            <canvas id="vc-cv-V" height="140"></canvas>
+            <canvas id="vc-cv-V" style="cursor:default" height="140"></canvas>
           </div>
           <div class="plot-wrap">
             <div class="canvas-card-header"><span class="canvas-card-title">I(t) — Ionic Currents</span><span class="canvas-card-sub"><span style="color:#dc2626">▬ I<sub>Na</sub></span> &nbsp;<span style="color:#1d4ed8">▬ I<sub>K</sub></span> &nbsp;<span style="color:#15803d">▬ I<sub>L</sub></span> &nbsp;<span style="color:#374151">▬ I<sub>total</sub></span></span></div>
-            <canvas id="vc-cv-I" height="155"></canvas>
+            <canvas id="vc-cv-I" style="cursor:default" height="155"></canvas>
           </div>
           <div class="plot-wrap">
             <div class="canvas-card-header"><span class="canvas-card-title">Gating Variables</span><span class="canvas-card-sub"><span style="color:#dc2626">m</span> &nbsp;<span style="color:#f59e0b">h</span> &nbsp;<span style="color:#7c3aed">n</span> — evolution at clamped voltage</span></div>
-            <canvas id="vc-cv-gates" height="130"></canvas>
+            <canvas id="vc-cv-gates" style="cursor:default" height="130"></canvas>
           </div>
           <div class="plot-wrap" style="flex:1.5">
             <div class="canvas-card-header"><span class="canvas-card-title">I–V Relationship</span><span class="canvas-card-sub">Accumulated peak currents vs V<sub>cmd</sub> — change V<sub>cmd</sub> and Run Clamp to add points</span></div>
-            <canvas id="vc-cv-IV" height="175"></canvas>
+            <canvas id="vc-cv-IV" style="cursor:default" height="175"></canvas>
           </div>
         </div><!-- /sim-plots -->
 
@@ -2209,6 +2210,140 @@ function vcStopSweep() {
   if (prog) { prog.textContent = 'Stopped'; }
 }
 
+
+// ─── VC Canvas Pan / Zoom state ────────────────────────────────
+// Each VC canvas has an independent view: {xMin,xMax,yMin,yMax} or null=auto
+const vcView = {'vc-cv-V':null,'vc-cv-I':null,'vc-cv-gates':null,'vc-cv-IV':null};
+const vcDrag = {}; // tracks active drag per canvas id
+
+function vcResetView(id) {
+  vcView[id] = null;
+  vcDrawAll();
+}
+
+function vcResetAllViews() {
+  for (const k of Object.keys(vcView)) vcView[k] = null;
+  vcDrawAll();
+}
+
+// Attach wheel + drag pan to a canvas
+function vcAttachInteraction(id) {
+  const el = document.getElementById(id);
+  if (!el || el._vcInteract) return;
+  el._vcInteract = true;
+
+  // Wheel → zoom around cursor
+  el.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const {ctx,W,H} = setupCanvas(id); if (!ctx) return;
+    const p = PAD;
+    const pw = W-p.left-p.right, ph = H-p.top-p.bottom;
+    const rect = el.getBoundingClientRect();
+    const cx = (e.clientX - rect.left) * (W / rect.width);
+    const cy = (e.clientY - rect.top)  * (H / rect.height);
+    // Only zoom if cursor is in plot area
+    if (cx < p.left || cx > p.left+pw || cy < p.top || cy > p.top+ph) return;
+    const view = vcGetView(id);
+    const {xMin,xMax,yMin,yMax} = view;
+    // Cursor in data coords
+    const fx = (cx - p.left) / pw;
+    const fy = 1 - (cy - p.top) / ph;
+    const dataX = xMin + fx*(xMax-xMin);
+    const dataY = yMin + fy*(yMax-yMin);
+    const factor = e.deltaY > 0 ? 1.2 : 1/1.2;
+    vcView[id] = {
+      xMin: dataX - fx*(xMax-xMin)*factor,
+      xMax: dataX + (1-fx)*(xMax-xMin)*factor,
+      yMin: dataY - fy*(yMax-yMin)*factor,
+      yMax: dataY + (1-fy)*(yMax-yMin)*factor,
+    };
+    vcDrawAll();
+  }, {passive:false});
+
+  // Mouse drag → pan
+  el.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    const rect = el.getBoundingClientRect();
+    const W = el.clientWidth, H = el.clientHeight;
+    const p = PAD;
+    const pw = W-p.left-p.right, ph = H-p.top-p.bottom;
+    const cx = (e.clientX - rect.left);
+    const cy = (e.clientY - rect.top);
+    if (cx < p.left || cx > p.left+pw || cy < p.top || cy > p.top+ph) return;
+    const view = vcGetView(id);
+    vcDrag[id] = {startX: e.clientX, startY: e.clientY, view: {...view}};
+    el.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+
+  el.addEventListener('mousemove', (e) => {
+    if (!vcDrag[id]) return;
+    const {startX, startY, view} = vcDrag[id];
+    const W = el.clientWidth || 600, H = el.clientHeight || 160;
+    const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
+    const dxPx = e.clientX - startX;
+    const dyPx = e.clientY - startY;
+    const dxData = (dxPx / W) * (view.xMax - view.xMin) * -(W/pw);
+    const dyData = (dyPx / H) * (view.yMax - view.yMin) * (H/ph);
+    vcView[id] = {
+      xMin: view.xMin + dxData,
+      xMax: view.xMax + dxData,
+      yMin: view.yMin + dyData,
+      yMax: view.yMax + dyData,
+    };
+    vcDrawAll();
+  });
+
+  const endDrag = (e) => {
+    if (vcDrag[id]) { delete vcDrag[id]; el.style.cursor = 'default'; }
+  };
+  el.addEventListener('mouseup', endDrag);
+  el.addEventListener('mouseleave', endDrag);
+}
+
+// Get current view or compute auto view for a given canvas
+function vcGetView(id) {
+  if (vcView[id]) return vcView[id];
+  // Compute auto view
+  const tMax = vcTotalDur();
+  if (id === 'vc-cv-V') {
+    const lo = Math.min(vcP.Vhold, vcP.Vcmd)-10, hi = Math.max(vcP.Vhold, vcP.Vcmd)+30;
+    return {xMin:0, xMax:tMax, yMin:Math.min(-10,lo), yMax:Math.max(130,hi)};
+  }
+  if (id === 'vc-cv-I') {
+    let mxI=2;
+    for (let i=0;i<vcHist.INa.length;i++) {
+      const t=vcHist.t[i];
+      if (t<vcP.tStart-1||t>vcP.tStart+vcP.dur+1) continue;
+      const mx=Math.max(Math.abs(vcHist.INa[i]),Math.abs(vcHist.IK[i]),Math.abs(vcHist.IL[i]));
+      if (mx>mxI) mxI=mx;
+    }
+    mxI=Math.max(2, mxI*1.2);
+    return {xMin:0, xMax:tMax, yMin:-mxI, yMax:mxI};
+  }
+  if (id === 'vc-cv-gates') return {xMin:0, xMax:tMax, yMin:0, yMax:1};
+  if (id === 'vc-cv-IV') {
+    let vMin=-20,vMax=130,iMin=-5,iMax=5;
+    if (ivData.length>0) {
+      const allV=ivData.map(d=>d.vcmd);
+      const allI=ivData.flatMap(d=>[d.peakINa,d.peakIK,d.peakItot]);
+      const vSpan=Math.max(...allV)-Math.min(...allV);
+      const pad=vSpan>0?vSpan*0.1:10;
+      vMin=Math.floor((Math.min(...allV)-pad)/10)*10;
+      vMax=Math.ceil((Math.max(...allV)+pad)/10)*10;
+      iMin=Math.min(-1,Math.min(...allI)*1.2);
+      iMax=Math.max(1,Math.max(...allI)*1.2);
+    }
+    return {xMin:vMin, xMax:vMax, yMin:iMin, yMax:iMax};
+  }
+  return {xMin:0, xMax:tMax, yMin:-10, yMax:10};
+}
+
+// Call once when switching to VC tab
+function vcInitInteraction() {
+  ['vc-cv-V','vc-cv-I','vc-cv-gates','vc-cv-IV'].forEach(vcAttachInteraction);
+}
+
 // Draw all previous runs faintly behind the current run
 function vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, field, color) {
   if (!vcAllRuns.length) return;
@@ -2259,34 +2394,28 @@ function vcDrawV() {
 function vcDrawI() {
   const {ctx,W,H} = setupCanvas('vc-cv-I'); if (!ctx) return;
   const tMax = vcTotalDur();
-  let mxI = 2;
-  for (let i = 0; i < vcHist.INa.length; i++) {
-    const t = vcHist.t[i];
-    if (t < vcP.tStart - 1 || t > vcP.tStart + vcP.dur + 1) continue;
-    const mx = Math.max(Math.abs(vcHist.INa[i]), Math.abs(vcHist.IK[i]), Math.abs(vcHist.IL[i]));
-    if (mx > mxI) mxI = mx;
-  }
-  mxI = mxI * 1.2;
-  drawAxes(ctx, W, H, -mxI, mxI, 0, tMax, 'µA/cm²');
-  vcDrawPrevRuns(ctx, W, H, -mxI, mxI, tMax, 'INa', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, -mxI, mxI, tMax, 'IK',  '#1d4ed8');
+  const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-I');
+  drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, 'µA/cm²');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'INa', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'IK',  '#1d4ed8');
   if (vcHist.t.length > 1) {
-    plotTrace(ctx, vcHist.t, vcHist.INa, W, H, -mxI, mxI, 0, tMax, '#dc2626', 2);
-    plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, -mxI, mxI, 0, tMax, '#1d4ed8', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.IL,  W, H, -mxI, mxI, 0, tMax, '#15803d', 1);
+    plotTrace(ctx, vcHist.t, vcHist.INa, W, H, yMin, yMax, xMin, xMax, '#dc2626', 2);
+    plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, yMin, yMax, xMin, xMax, '#1d4ed8', 1.5);
+    plotTrace(ctx, vcHist.t, vcHist.IL,  W, H, yMin, yMax, xMin, xMax, '#15803d', 1);
   }
 }
 
 function vcDrawGates() {
   const {ctx,W,H} = setupCanvas('vc-cv-gates'); if (!ctx) return;
   const tMax = vcTotalDur();
-  drawAxes(ctx, W, H, 0, 1, 0, tMax, '');
-  vcDrawPrevRuns(ctx, W, H, 0, 1, tMax, 'm', '#dc2626');
-  vcDrawPrevRuns(ctx, W, H, 0, 1, tMax, 'n', '#7c3aed');
+  const {xMin,xMax,yMin,yMax} = vcGetView('vc-cv-gates');
+  drawAxes(ctx, W, H, yMin, yMax, xMin, xMax, '');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'm', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'n', '#7c3aed');
   if (vcHist.t.length > 1) {
-    plotTrace(ctx, vcHist.t, vcHist.m, W, H, 0, 1, 0, tMax, '#dc2626', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.h, W, H, 0, 1, 0, tMax, '#f59e0b', 1.5);
-    plotTrace(ctx, vcHist.t, vcHist.n, W, H, 0, 1, 0, tMax, '#7c3aed', 1.5);
+    plotTrace(ctx, vcHist.t, vcHist.m, W, H, yMin, yMax, xMin, xMax, '#dc2626', 1.5);
+    plotTrace(ctx, vcHist.t, vcHist.h, W, H, yMin, yMax, xMin, xMax, '#f59e0b', 1.5);
+    plotTrace(ctx, vcHist.t, vcHist.n, W, H, yMin, yMax, xMin, xMax, '#7c3aed', 1.5);
   }
 }
 
