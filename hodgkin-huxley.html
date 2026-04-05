@@ -1137,10 +1137,28 @@ body.dark-mode .hero{border-color:#1c3050!important}
             <button class="btn-sim btn-reset" onclick="vcClearIV()" style="color:#dc2626" title="Clear accumulated I-V data">⊗ Clear I–V</button>
           </div>
 
+          
+          <!-- Voltage Sweep controls (full-width) -->
+          <div class="ctrl-group full" style="grid-column:1/-1;margin-top:4px">
+            <div class="ctrl-group-label">Voltage Sweep <span style="font-weight:400;color:var(--dim);font-size:.85em">— auto-runs clamp across a range of V<sub>cmd</sub></span></div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">V<sub>cmd</sub> from</span>
+              <input type="number" id="vc-sweep-from" value="-20" step="5" style="width:46px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">to</span>
+              <input type="number" id="vc-sweep-to" value="100" step="5" style="width:46px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">step</span>
+              <input type="number" id="vc-sweep-step" value="10" min="1" step="5" style="width:40px;padding:2px 4px;font-size:.75em;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)">
+              <span style="font-family:var(--mono);font-size:.72em;color:var(--dim)">mV</span>
+              <button class="btn-sim btn-run" onclick="vcStartSweep()" style="padding:4px 10px;font-size:.75em">⚡ Run Sweep</button>
+              <button class="btn-sim btn-reset" onclick="vcStopSweep()" style="padding:4px 10px;font-size:.75em">⏹ Stop</button>
+              <span id="vc-sweep-prog" style="font-family:var(--mono);font-size:.7em;color:var(--teal);display:none"></span>
+            </div>
+          </div>
+
           <!-- I-V table full-width -->
-          <div style="grid-column:1/-1;margin-top:4px">
+          <div style="grid-column:1/-1;margin-top:4px;display:flex;flex-direction:column;flex:1;min-height:0">
             <div style="font-family:var(--mono);font-size:.63em;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:5px">I–V Curve Data <span style="font-weight:400;color:var(--dim);font-size:.9em">— each Run Clamp adds one row</span></div>
-            <div id="iv-table" style="font-family:var(--mono);font-size:.7em;color:var(--dim);overflow-y:auto;max-height:90px;border:1px solid var(--border);border-radius:4px;padding:3px 6px">
+            <div id="iv-table" style="font-family:var(--mono);font-size:.7em;color:var(--dim);overflow-y:auto;flex:1;min-height:80px;border:1px solid var(--border);border-radius:4px;padding:3px 6px">
               <table style="width:100%;border-collapse:collapse">
                 <thead><tr><th style="text-align:right;padding:1px 4px;color:var(--muted)">V<sub>cmd</sub>(mV)</th><th style="text-align:right;padding:1px 4px;color:#dc2626">I<sub>Na</sub> pk</th><th style="text-align:right;padding:1px 4px;color:#1d4ed8">I<sub>K</sub> pk</th><th style="text-align:right;padding:1px 4px;color:#374151">I<sub>tot</sub> pk</th></tr></thead>
                 <tbody id="iv-tbody"><tr><td colspan="4" style="text-align:center;color:var(--dim);padding:6px">Run clamp at different V<sub>cmd</sub> to build I–V curve</td></tr></tbody>
@@ -1891,6 +1909,8 @@ const vcMAX = 12000; // 120ms @ dt=0.01, every step stored
 
 // I–V accumulated data
 const ivData = [];
+// Persistent run history — each entry is {t,V,INa,IK,IL,m,h,n,vcmd,vhold}
+const vcAllRuns = [];
 
 // ── Voltage waveform ─────────────────────────────────────────────
 function vcVoltage(t) {
@@ -1958,6 +1978,7 @@ function vcAnimate() {
     vcStore();
     if (vcT >= vcTotalDur()) {
       vcStop();
+      vcSaveRun();
       vcRecordIV();
       vcDrawAll();
       return;
@@ -1991,6 +2012,7 @@ function vcReset() {
   vcSyncSliders();
   vcInitGates();
   for (const k of Object.keys(vcHist)) vcHist[k] = [];
+  vcAllRuns.length = 0; // clear all trace history
   vcT = 0;
   vcDrawAll();
   const st = document.getElementById('sim-status-text');
@@ -2047,6 +2069,26 @@ function syncVCNum(sliderId, val) {
 }
 
 // ── I–V curve ────────────────────────────────────────────────────
+
+// Save completed run to persistent history
+function vcSaveRun() {
+  if (!vcHist.t.length) return;
+  vcAllRuns.push({
+    t:    [...vcHist.t],
+    V:    [...vcHist.V],
+    INa:  [...vcHist.INa],
+    IK:   [...vcHist.IK],
+    IL:   [...vcHist.IL],
+    m:    [...vcHist.m],
+    h:    [...vcHist.h],
+    n:    [...vcHist.n],
+    vcmd: vcP.Vcmd,
+    vhold: vcP.Vhold,
+  });
+  // Keep last 20 runs max
+  if (vcAllRuns.length > 20) vcAllRuns.shift();
+}
+
 function vcRecordIV() {
   if (!vcHist.t.length) return;
   let peakINa = 0, peakIK = 0, peakItot = 0;
@@ -2085,6 +2127,110 @@ function vcClearIV() {
 }
 
 // ── Drawing ───────────────────────────────────────────────────────
+
+
+// ── Voltage Sweep ────────────────────────────────────────────────
+// Runs multiple clamps sequentially at evenly-spaced Vcmd values.
+let vcSweepQueue = [];
+let vcSweepIdx = 0;
+
+function vcStartSweep() {
+  if (vcRunning) return;
+  vcSyncSliders();
+  // Read sweep range from UI
+  const vFrom  = parseFloat(document.getElementById('vc-sweep-from')?.value  ?? -20);
+  const vTo    = parseFloat(document.getElementById('vc-sweep-to')?.value    ?? 100);
+  const vStep  = parseFloat(document.getElementById('vc-sweep-step')?.value  ?? 10);
+  if (isNaN(vFrom) || isNaN(vTo) || isNaN(vStep) || vStep <= 0) return;
+  vcSweepQueue = [];
+  const sign = vTo >= vFrom ? 1 : -1;
+  for (let v = vFrom; sign*(v - vTo) <= 1e-6; v += sign * Math.abs(vStep)) {
+    vcSweepQueue.push(Math.round(v * 100) / 100);
+  }
+  if (!vcSweepQueue.length) return;
+  vcSweepIdx = 0;
+  const prog = document.getElementById('vc-sweep-prog');
+  if (prog) { prog.textContent = `0 / ${vcSweepQueue.length}`; prog.style.display=''; }
+  vcRunNextSweep();
+}
+
+function vcRunNextSweep() {
+  if (vcSweepIdx >= vcSweepQueue.length) {
+    const prog = document.getElementById('vc-sweep-prog');
+    if (prog) prog.textContent = 'Done ✓';
+    const st = document.getElementById('sim-status-text');
+    if (st) st.textContent = 'Sweep complete';
+    return;
+  }
+  const vcmd = vcSweepQueue[vcSweepIdx];
+  // Update Vcmd slider and vcP
+  vcP.Vcmd = vcmd;
+  const slEl = document.getElementById('vc-vcmd');
+  if (slEl) slEl.value = vcmd;
+  const numEl = document.getElementById('vc-vcmd-num');
+  if (numEl) numEl.value = vcmd;
+  // Re-init and run
+  vcInitGates();
+  for (const k of Object.keys(vcHist)) vcHist[k] = [];
+  vcT = 0;
+  vcRunning = true;
+  const st = document.getElementById('sim-status-text');
+  if (st) st.textContent = `Sweep ${vcSweepIdx+1}/${vcSweepQueue.length} — Vcmd = ${vcmd} mV`;
+  vcAnimId = requestAnimationFrame(() => vcSweepAnimate());
+}
+
+function vcSweepAnimate() {
+  if (!vcRunning) return; // externally stopped
+  for (let i = 0; i < VC_STEPS_PER_FRAME; i++) {
+    vcRK4(); vcStore();
+    if (vcT >= vcTotalDur()) {
+      vcRunning = false;
+      if (vcAnimId) { cancelAnimationFrame(vcAnimId); vcAnimId = null; }
+      vcSaveRun();
+      vcRecordIV();
+      vcDrawAll();
+      vcSweepIdx++;
+      const prog = document.getElementById('vc-sweep-prog');
+      if (prog) prog.textContent = `${vcSweepIdx} / ${vcSweepQueue.length}`;
+      setTimeout(vcRunNextSweep, 30); // brief pause between steps
+      return;
+    }
+  }
+  vcDrawAll();
+  vcAnimId = requestAnimationFrame(() => vcSweepAnimate());
+}
+
+function vcStopSweep() {
+  vcSweepQueue = []; vcSweepIdx = 0;
+  vcStop();
+  const prog = document.getElementById('vc-sweep-prog');
+  if (prog) { prog.textContent = 'Stopped'; }
+}
+
+// Draw all previous runs faintly behind the current run
+function vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, field, color) {
+  if (!vcAllRuns.length) return;
+  const p = PAD, pw = W-p.left-p.right, ph = H-p.top-p.bottom;
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  for (const run of vcAllRuns) {
+    const xs = run.t, ys = run[field];
+    ctx.beginPath();
+    let first = true;
+    for (let i = 0; i < xs.length; i++) {
+      if (xs[i] < 0 || xs[i] > tMax + 0.01) continue;
+      const x = p.left + pw * (xs[i] / tMax);
+      const y = p.top  + ph * (1 - (ys[i] - yMin) / (yMax - yMin));
+      if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
 function vcDrawAll() {
   vcDrawV(); vcDrawI(); vcDrawGates(); vcDrawIV();
 }
@@ -2103,6 +2249,7 @@ function vcDrawV() {
   ctx.strokeStyle='rgba(220,38,38,.5)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
   ctx.beginPath(); ctx.moveTo(xS,p.top); ctx.lineTo(xS,p.top+ph); ctx.stroke();
   ctx.setLineDash([]);
+  vcDrawPrevRuns(ctx, W, H, yMin, yMax, tMax, 'V', '#0b7a6e');
   if (vcHist.t.length > 1)
     plotTrace(ctx, vcHist.t, vcHist.V, W, H, yMin, yMax, 0, tMax, '#0b7a6e', 2);
 }
@@ -2119,6 +2266,8 @@ function vcDrawI() {
   }
   mxI = mxI * 1.2;
   drawAxes(ctx, W, H, -mxI, mxI, 0, tMax, 'µA/cm²');
+  vcDrawPrevRuns(ctx, W, H, -mxI, mxI, tMax, 'INa', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, -mxI, mxI, tMax, 'IK',  '#1d4ed8');
   if (vcHist.t.length > 1) {
     plotTrace(ctx, vcHist.t, vcHist.INa, W, H, -mxI, mxI, 0, tMax, '#dc2626', 2);
     plotTrace(ctx, vcHist.t, vcHist.IK,  W, H, -mxI, mxI, 0, tMax, '#1d4ed8', 1.5);
@@ -2130,6 +2279,8 @@ function vcDrawGates() {
   const {ctx,W,H} = setupCanvas('vc-cv-gates'); if (!ctx) return;
   const tMax = vcTotalDur();
   drawAxes(ctx, W, H, 0, 1, 0, tMax, '');
+  vcDrawPrevRuns(ctx, W, H, 0, 1, tMax, 'm', '#dc2626');
+  vcDrawPrevRuns(ctx, W, H, 0, 1, tMax, 'n', '#7c3aed');
   if (vcHist.t.length > 1) {
     plotTrace(ctx, vcHist.t, vcHist.m, W, H, 0, 1, 0, tMax, '#dc2626', 1.5);
     plotTrace(ctx, vcHist.t, vcHist.h, W, H, 0, 1, 0, tMax, '#f59e0b', 1.5);
@@ -2186,6 +2337,7 @@ function switchSimTab(tab) {
     vcSyncSliders();
     vcInitGates();
     for (const k of Object.keys(vcHist)) vcHist[k] = [];
+  vcAllRuns.length = 0; // clear all trace history
     vcT = 0;
     vcDrawAll();
     const st = document.getElementById('sim-status-text');
