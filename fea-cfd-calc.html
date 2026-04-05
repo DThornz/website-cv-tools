@@ -46,32 +46,15 @@ button{cursor:pointer;font-family:var(--serif)}
 /* ═══════════════════════════════════════════════════════════
    TOP BAR
 ═══════════════════════════════════════════════════════════ */
-.topbar{margin-top:44px;
-  position:sticky;top:44px;z-index:100;
-  background:rgba(6,14,28,.92);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:0;padding:0 24px;
-  height:52px;
-}
-.topbar-logo{
-  font-family:var(--mono);font-size:.85em;color:var(--teal);
-  font-weight:500;letter-spacing:.05em;margin-right:24px;white-space:nowrap;
-}
+
+
 .topbar-logo span{color:var(--muted)}
-.topbar-nav{display:flex;gap:2px}
-.topbar-link{
-  padding:6px 14px;border-radius:6px;font-size:.8em;
-  color:var(--muted);transition:all var(--tr);white-space:nowrap;
-  border:1px solid transparent;
-}
+
+
 .topbar-link:hover{color:var(--teal);background:var(--teal-glow);text-decoration:none}
 .topbar-link.active{color:var(--teal);background:var(--teal-glow);border-color:var(--teal-dim)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.topbar-badge{
-  font-family:var(--mono);font-size:.7em;padding:3px 10px;
-  background:var(--amber-dim);color:var(--amber);
-  border:1px solid rgba(245,158,11,.25);border-radius:99px;
-}
+
+
 
 /* ═══════════════════════════════════════════════════════════
    LAYOUT
@@ -289,10 +272,11 @@ button{cursor:pointer;font-family:var(--serif)}
 /* ── Site-wide nav ── */
 .site-nav{
   position:sticky;top:0;z-index:9999;
-  background:rgba(6,14,28,.92);backdrop-filter:blur(20px);
-  border-bottom:1px solid #1c3050;
+  background:var(--nav-bg,rgba(245,246,248,.92));backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:6px;padding:0 24px;height:44px;
 }
+body.dark-mode .site-nav{background:rgba(6,14,28,.96)!important;border-color:#1c3050!important;}
 .site-nav-logo{
   font-family:'DM Mono','JetBrains Mono',monospace;
   font-size:.8em;color:#2dd4bf;font-weight:500;
@@ -382,18 +366,15 @@ body.dark-mode{
 
 /* ── Navigation ── */
 body.dark-mode .site-nav,
-body.dark-mode .topbar{
-  background:rgba(6,14,28,.96)!important;
-  border-color:#1c3050!important;
-}
+body.dark-mode 
 body.dark-mode .site-nav-link,
-body.dark-mode .topbar-link{color:#7a90ae!important}
+body.dark-mode 
 body.dark-mode .site-nav-link:hover,
 body.dark-mode .topbar-link:hover{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
 body.dark-mode .site-nav-link.curr,
 body.dark-mode .topbar-link.active{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important;border-color:rgba(45,212,191,.2)!important}
 body.dark-mode .site-nav-logo,
-body.dark-mode .topbar-logo{color:#2dd4bf!important}
+body.dark-mode 
 body.dark-mode .nav-link{color:#7a90ae!important}
 body.dark-mode .nav-link:hover,body.dark-mode .nav-link.active{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
 body.dark-mode .nav-logo{color:#2dd4bf!important}
@@ -544,15 +525,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 </div>
 
 <!-- ─── TOP BAR ─────────────────────────────────────────────── -->
-<div class="topbar">
-  <div class="topbar-logo">A.Mirza <span>/</span> tools</div>
-  <nav class="topbar-nav">
-    <a class="topbar-link" href="interactive-cv.html">← CV</a>
-    <a class="topbar-link active" href="#">FEA / CFD</a>
-  </nav>
-  <div class="topbar-right">
-  </div>
-</div>
+
 
 <!-- ─── LAYOUT ──────────────────────────────────────────────── -->
 <div class="layout">
