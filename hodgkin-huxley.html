@@ -1872,6 +1872,7 @@ window.addEventListener('load',()=>{
   const dtNumEl=document.getElementById('sl-dt-num');if(dtNumEl)dtNumEl.value='0.010';
   renderSS();renderTau();renderPhase();renderIext_plot();updateStats();
   runInitialSimulation();
+  vcInitInteraction(); // attach zoom/pan to VC canvases on page load
 });
 
 window.addEventListener('resize',()=>{
@@ -2497,8 +2498,13 @@ function switchSimTab(tab) {
     vcSyncSliders();
     vcInitGates();
     for (const k of Object.keys(vcHist)) vcHist[k] = [];
-  vcAllRuns.length = 0; // clear all trace history
+    vcAllRuns.length = 0;
     vcT = 0;
+    // Force sweep defaults in case of cached HTML
+    const sfEl=document.getElementById('vc-sweep-from');  if(sfEl&&!sfEl._init){sfEl.value='-20';sfEl._init=true;}
+    const stEl=document.getElementById('vc-sweep-to');    if(stEl&&!stEl._init){stEl.value='100';stEl._init=true;}
+    const ssEl=document.getElementById('vc-sweep-step'); if(ssEl&&!ssEl._init){ssEl.value='5';  ssEl._init=true;}
+    vcInitInteraction(); // attach zoom/pan listeners (safe to call multiple times)
     vcDrawAll();
     const st = document.getElementById('sim-status-text');
     if (st) st.textContent = 'VC Ready — click ▶ Run Clamp';
