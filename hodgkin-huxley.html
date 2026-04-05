@@ -804,7 +804,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
     <div class="callout-title">Physical Interpretation of the Gates</div>
     <strong>m</strong> (Na⁺ activation): opens fast upon depolarization. At rest (V=0): m(0)=0, m<sub>∞</sub>→0 (closed). During AP peak (~115 mV): m<sub>∞</sub>→1.<br>
     <strong>h</strong> (Na⁺ inactivation): inactivation gate. At V=0: h(0)=0; the system builds up as it depolarizes. During AP: h→0, blocking further Na⁺ entry (absolute refractory period).<br>
-    <strong>n</strong> (K⁺ activation): delayed rectifier. At V=0: n(0)=0 (closed). Opens during depolarization, driving repolarization. Note: initial conditions 0 match the MATLAB code (0×α/… = 0).
+    <strong>n</strong> (K⁺ activation): delayed rectifier. At V=0: n(0)=0 (closed). Opens during depolarization, driving repolarization. 
   </div>
 
   
@@ -1312,40 +1312,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
 <!-- ══════════════════════════════════════════════════════════
      JAVASCRIPT — HH SIMULATION (improved)
 ══════════════════════════════════════════════════════════ -->
-<script>
-
-'use strict';
-
-// ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
-const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false,autoPause:false};
-// Default: continuous Iext=10, 120 ms window
-const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
-let DT=0.01;
-const STORE_EVERY=2, MAX_HIST=15000;
-const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
-let speedIdx=2, winMs=120;
-
-// ─── SIM STATE ────────────────────────────────────────────
-let t=0, y=[0,0,0,0], stepCnt=0;
-let running=false, animId=null;
-let viewLocked=false;
-let currentV=0;
-
-// History arrays (rolling: capped at MAX_HIST)
-const hist={t:[],V:[],m:[],h:[],n:[],INa:[],IK:[],IL:[],Iext:[]};
-
-// AP detection
-let apSpikes=0, apLastSpike=-1e9, apPeakV=-Infinity, apSpikeTs=[];
-const AP_THRESH=-20; // mV — absolute scale, crosses on AP upstroke
-
-// Phase portrait
-const TRAIL_LEN=6000;
-const phaseV=new Float32Array(TRAIL_LEN), phaseN=new Float32Array(TRAIL_LEN);
-let phasePtr=0, phaseCount=0;
-
-// Auto-pause: trigge
-
-'use strict';
+<script>'use strict';
 
 // ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
 const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false};
@@ -1355,6 +1322,7 @@ let DT=0.01;
 const STORE_EVERY=2, MAX_HIST=15000;
 const SPEED_LEVELS=[10,25,50,100,200,350,500,800];
 let speedIdx=2, winMs=120;
+let viewStart=0, viewEnd=winMs; // CC plot view state
 
 // ─── SIM STATE ────────────────────────────────────────────
 let t=0, y=[0,0,0,0], stepCnt=0;
@@ -1846,12 +1814,12 @@ function clearPhase(){phasePtr=0;phaseCount=0;renderPhase();}
 
 // ─── PRESETS ──────────────────────────────────────────────
 const PRESETS={
-  standard:  {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'continuous',freq:40,win:120,speed:3,autoStart:true},
-  step100:   {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
-  body:      {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:37, I0:10,tStart:0,dur:20, type:'continuous',freq:40,win:25, speed:2},
-  burst:     {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',    freq:40,win:220,speed:4},
-  subthresh: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
-  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:115,EK:-12,EL:10.6,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'continuous',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
+  standard:  {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'continuous',freq:40,win:120,speed:3,autoStart:true},
+  step100:   {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,I0:10,tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
+  body:      {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:37, I0:10,tStart:0,dur:20, type:'continuous',freq:40,win:25, speed:2},
+  burst:     {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,I0:20,tStart:0,dur:200,type:'step',    freq:40,win:220,speed:4},
+  subthresh: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,I0:5, tStart:0,dur:100,type:'step',    freq:40,win:140,speed:3},
+  phasedemo: {gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,I0:12,tStart:0,dur:150,type:'continuous',freq:40,win:160,speed:6,autoStart:true,keepPhase:true},
 };
 
 function applyPreset(name){
