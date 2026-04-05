@@ -2160,49 +2160,47 @@ function vcStartSweep() {
 
 function vcRunNextSweep() {
   if (vcSweepIdx >= vcSweepQueue.length) {
+    // All done — draw final result and update UI
+    vcDrawAll();
     const prog = document.getElementById('vc-sweep-prog');
     if (prog) prog.textContent = 'Done ✓';
     const st = document.getElementById('sim-status-text');
-    if (st) st.textContent = 'Sweep complete';
+    if (st) st.textContent = `Sweep complete — ${vcSweepQueue.length} steps`;
     return;
   }
   const vcmd = vcSweepQueue[vcSweepIdx];
-  // Update Vcmd slider and vcP
   vcP.Vcmd = vcmd;
-  const slEl = document.getElementById('vc-vcmd');
-  if (slEl) slEl.value = vcmd;
-  const numEl = document.getElementById('vc-vcmd-num');
-  if (numEl) numEl.value = vcmd;
-  // Re-init and run
+  const slEl = document.getElementById('vc-vcmd');   if (slEl)  slEl.value  = vcmd;
+  const numEl = document.getElementById('vc-vcmd-num'); if (numEl) numEl.value = vcmd;
+
+  // Run this voltage step SYNCHRONOUSLY — no animation, just crunch numbers
   vcInitGates();
   for (const k of Object.keys(vcHist)) vcHist[k] = [];
   vcT = 0;
-  vcRunning = true;
-  const st = document.getElementById('sim-status-text');
-  if (st) st.textContent = `Sweep ${vcSweepIdx+1}/${vcSweepQueue.length} — Vcmd = ${vcmd} mV`;
-  vcAnimId = requestAnimationFrame(() => vcSweepAnimate());
+  const nSteps = Math.ceil(vcTotalDur() / vcDT);
+  for (let i = 0; i < nSteps; i++) { vcRK4(); vcStore(); }
+  vcSaveRun();
+  vcRecordIV();
+
+  vcSweepIdx++;
+  const prog = document.getElementById('vc-sweep-prog');
+  if (prog) prog.textContent = `${vcSweepIdx} / ${vcSweepQueue.length}`;
+
+  // Yield to browser every 4 steps so UI stays responsive and shows progress
+  if (vcSweepIdx < vcSweepQueue.length) {
+    if (vcSweepIdx % 4 === 0) {
+      vcDrawAll(); // repaint to show accumulated traces so far
+      setTimeout(vcRunNextSweep, 0); // yield, then continue
+    } else {
+      vcRunNextSweep(); // next step immediately (no yield)
+    }
+  } else {
+    vcRunNextSweep(); // triggers "done" branch above
+  }
 }
 
-function vcSweepAnimate() {
-  if (!vcRunning) return; // externally stopped
-  for (let i = 0; i < VC_STEPS_PER_FRAME; i++) {
-    vcRK4(); vcStore();
-    if (vcT >= vcTotalDur()) {
-      vcRunning = false;
-      if (vcAnimId) { cancelAnimationFrame(vcAnimId); vcAnimId = null; }
-      vcSaveRun();
-      vcRecordIV();
-      vcDrawAll();
-      vcSweepIdx++;
-      const prog = document.getElementById('vc-sweep-prog');
-      if (prog) prog.textContent = `${vcSweepIdx} / ${vcSweepQueue.length}`;
-      setTimeout(vcRunNextSweep, 30); // brief pause between steps
-      return;
-    }
-  }
-  vcDrawAll();
-  vcAnimId = requestAnimationFrame(() => vcSweepAnimate());
-}
+// vcSweepAnimate no longer needed — kept as no-op for safety
+function vcSweepAnimate() {}
 
 function vcStopSweep() {
   vcSweepQueue = []; vcSweepIdx = 0;
