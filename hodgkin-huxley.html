@@ -583,9 +583,9 @@ body.dark-mode .hero{border-color:#1c3050!important}
     <p>Working at the Marine Biological Association laboratory in Plymouth, England between 1947 and 1952, <strong>Alan Lloyd Hodgkin</strong> and <strong>Andrew Fielding Huxley</strong> performed a series of elegant voltage-clamp experiments on the <em>Loligo forbesi</em> giant squid axon. This particular axon — 0.5–0.8 mm in diameter — was large enough to insert a wire electrode directly into its interior, making it the ideal preparation for measuring membrane currents with then-unprecedented precision. Their findings, published across five landmark papers in the <em>Journal of Physiology</em> in 1952, constituted the first complete quantitative description of the ionic mechanisms underlying the action potential.<sup>[1]</sup></p>
     <div class="fig-aside">
       <img src="https://en.wikipedia.org/wiki/Special:FilePath/Loligo_vulgaris.jpg?width=300"
-           alt="Loligo forbesi — European longfin squid used by Hodgkin and Huxley"
+           alt="Loligo forbesi — European longfin squid"
            onerror="this.style.display='none'">
-      <div class="fig-cap"><em>Loligo forbesi</em> — the European longfin squid used by H&amp;H. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
+      <div class="fig-cap"><em>Loligo forbesi</em> — the longfin inshore squid. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
     </div>
 
 
@@ -726,7 +726,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <rect x="468" y="218" width="12" height="3" fill="#0b7a6e" rx="1"/>
       <text x="484" y="226" font-size="9" fill="#718096">Current source (I<tspan baseline-shift="sub" font-size="7">ext</tspan>)</text>
     </svg>
-    <div style="font-size:.78em;color:var(--dim);text-align:center;margin-top:8px">Figure 1. Hodgkin–Huxley equivalent circuit (modern absolute-voltage convention; V<sub>rest</sub> = −65 mV). The dashed arrows on g<sub>Na</sub> and g<sub>K</sub> indicate voltage-dependent (variable) conductances. The battery polarity follows the convention that E<sub>Na</sub> drives inward current (depolarizing) while E<sub>K</sub> drives outward current (repolarizing).</div>
+    <div style="font-size:.78em;color:var(--dim);text-align:center;margin-top:8px">Figure 1. Hodgkin–Huxley equivalent circuit (V<sub>rest</sub> = −65 mV absolute scale). The dashed arrows on g<sub>Na</sub> and g<sub>K</sub> indicate voltage-dependent (variable) conductances. The battery polarity follows the convention that E<sub>Na</sub> drives inward current (depolarizing) while E<sub>K</sub> drives outward current (repolarizing).</div>
   </div>
 </div>
 
@@ -795,7 +795,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </div>
 
   <div class="section-body">
-    <p>The voltage-dependent rate functions (transition rates between closed and open states, in ms<sup>−1</sup>) were determined empirically by Hodgkin and Huxley from fits to their voltage-clamp data. They are expressed using the original H&amp;H convention where <strong>V = 0 corresponds to the resting potential</strong> (−65 mV absolute). At rest V = 0; at threshold V ≈ 15; at AP peak V ≈ 100. The simulator plots use absolute voltage (mV).</p>
+    <p>The voltage-dependent rate functions (transition rates between closed and open states, in ms<sup>−1</sup>) were determined empirically by Hodgkin and Huxley from fits to their voltage-clamp data. They use the original H&H convention where <strong>V = 0 at rest</strong> (= −65 mV absolute); threshold ≈ V+15 mV, AP peak ≈ V+100 mV.</p>
   </div>
 
   <div class="eq-block">
@@ -809,7 +809,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
     <div class="eq-row"><span class="eq-label">β<sub>n</sub> =</span><span class="eq-main">0.125·e<sup>−V/80</sup></span></div>
     <div class="eq-sep"></div>
     <div class="eq-row"><span class="eq-label">φ(T) =</span><span class="eq-main">3<sup>(T−6.3)/10</sup></span><span class="eq-comment">Q<sub>10</sub>=3 temperature scaling (all rates × φ)</span></div>
-    <div class="eq-note">In the equations above, V=0 corresponds to the resting potential (−65 mV absolute). Simulator initial conditions: V<sub>m</sub>=−65 mV, m<sub>0</sub>=0.053, h<sub>0</sub>=0.596, n<sub>0</sub>=0.318 (steady-state at V<sub>rest</sub>). At T=6.3°C (original squid axon experiment); at body temperature (37°C), φ≈28× faster.<sup>[3,4]</sup></div>
+    <div class="eq-note">In the equations V=0 at rest (−65 mV absolute). Simulator initial conditions: V<sub>m</sub>(0)=−65 mV, m(0)=n(0)=h(0)=0. At T=6.3°C (squid axon experiment); at body temperature (37°C), φ≈28× faster.<sup>[3,4]</sup></div>
   </div>
 
   <div class="section-body">
@@ -1329,13 +1329,18 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </ul>
 
   <div style="margin-top:24px;padding:16px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:.8em;color:var(--dim)">
-    <strong style="color:var(--text)">Implementation notes:</strong> This simulation implements the standard Hodgkin–Huxley model using 4th-order Runge–Kutta integration (dt = 0.01 ms) for numerical stability. Parameter values (ḡ<sub>Na</sub>=120, ḡ<sub>K</sub>=36, ḡ<sub>L</sub>=0.3 mS/cm², E<sub>Na</sub>=+50, E<sub>K</sub>=−77, E<sub>L</sub>=−54.4 mV, C<sub>m</sub>=1 µF/cm²) use the modern absolute-voltage convention (V<sub>rest</sub>=−65 mV) equivalent to the original H&amp;H (1952) values. Temperature scaling uses Q<sub>10</sub> = 3 as reported experimentally.<sup>[1,4]</sup> Built with vanilla JavaScript and the HTML5 Canvas API — no external libraries.
+    <strong style="color:var(--text)">Implementation notes:</strong> This simulation implements the standard Hodgkin–Huxley model using 4th-order Runge–Kutta integration (dt = 0.01 ms) for numerical stability. Parameter values: ḡ<sub>Na</sub>=120, ḡ<sub>K</sub>=36, ḡ<sub>L</sub>=0.3 mS/cm²; E<sub>Na</sub>=+50, E<sub>K</sub>=−77, E<sub>L</sub>=−54.4 mV; C<sub>m</sub>=1 µF/cm²; T=6.3°C. Uses modern absolute-voltage convention (V<sub>rest</sub>=−65 mV), equivalent to original H&amp;H (1952) values. Temperature scaling uses Q<sub>10</sub> = 3 as reported experimentally.<sup>[1,4]</sup> Built with vanilla JavaScript and the HTML5 Canvas API — no external libraries.
   </div>
 </div>
 
-</div><!-'use strict';
+</div><!-- /page-wrap -->
 
-// ─── PARAMETERS (absolute voltage: Vrest=−65 mV) ─────────
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT — HH SIMULATION (improved)
+══════════════════════════════════════════════════════════ -->
+<script>'use strict';
+
+// ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
 const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false};
 // Default: continuous Iext=10, 120 ms window
 const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
@@ -1368,8 +1373,8 @@ const STAB_THRESH=1.0;  // mV  — negligible change threshold
 const STAB_DUR=50;      // ms  — must be stable this long
 let stabTimer=0, postStimStart=-1;
 
-// ─── RATE FUNCTIONS — H&H 1952 (absolute voltage; V_rest=−65 mV) ──
-// Each function takes V_absolute (mV); internally shifts to V_HH=V+65
+// ─── RATE FUNCTIONS — absolute voltage scale (Vrest = −65 mV) ──
+// Internally shifts V to HH convention: V' = V + 65
 function am(V){const x=(V+65)-25;return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1);}
 function bm(V){return 4*Math.exp(-(V+65)/18);}
 function ah(V){return 0.07*Math.exp(-(V+65)/20);}
@@ -2733,17 +2738,6 @@ function homeView(){
   if(hist.t.length){
     const tEnd=hist.t[hist.t.length-1];
     viewStart=Math.max(0,tEnd-winMs);
-    viewEnd=Math.max(winMs,tEnd);
-  } else {
-    viewStart=0; viewEnd=winMs;
-  }
-  renderAll();
-}
-
-window.addEventListener('DOMContentLoaded',()=>{
-  attachPlotInteraction();
-});
-x(0,tEnd-winMs);
     viewEnd=Math.max(winMs,tEnd);
   } else {
     viewStart=0; viewEnd=winMs;
