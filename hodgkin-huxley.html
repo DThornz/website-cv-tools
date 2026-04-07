@@ -170,8 +170,28 @@ canvas{display:block;width:100%;image-rendering:crisp-edges}
 
 /* ─── Responsive ─────────────────────────────────────────── */
 @media(max-width:800px){
-  .sim-body{grid-template-columns:1fr}
-  .sim-controls{border-right:none;border-bottom:1px solid var(--border)}
+  .sim-body{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto;
+    height:auto;
+    min-height:unset;
+    overflow:visible;
+  }
+  .sim-controls{
+    border-right:none;
+    border-bottom:1px solid var(--border);
+    height:auto;
+    min-height:unset;
+    overflow-y:visible;
+    max-height:60vh;
+    overflow-y:auto;
+  }
+  .sim-plots{
+    min-height:420px;
+    flex:none;
+    height:420px;
+  }
+  .plot-wrap{min-height:80px;flex:1}
   .two-col{grid-template-columns:1fr}
   .page-wrap{padding:0 16px 60px}
   .hero{padding:32px 0 28px}
