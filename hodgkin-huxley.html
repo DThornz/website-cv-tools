@@ -580,12 +580,12 @@ body.dark-mode .hero{border-color:#1c3050!important}
     </div>
   </div>
 
-    <p>In the summer of 1949 at the Marine Biological Association laboratory in Plymouth, England, <strong>Alan Lloyd Hodgkin</strong> and <strong>Andrew Fielding Huxley</strong> performed a series of elegant voltage-clamp experiments on the <em>Loligo forbesi</em> giant squid axon. This particular axon — nearly 1 mm in diameter — was large enough to insert a wire electrode directly into its interior, making it the ideal preparation for measuring membrane currents with then-unprecedented precision. Their findings, published across five landmark papers in the <em>Journal of Physiology</em> in 1952, constituted the first complete quantitative description of the ionic mechanisms underlying the action potential.<sup>[1]</sup></p>
+    <p>Working at the Marine Biological Association laboratory in Plymouth, England between 1947 and 1952, <strong>Alan Lloyd Hodgkin</strong> and <strong>Andrew Fielding Huxley</strong> performed a series of elegant voltage-clamp experiments on the <em>Loligo forbesi</em> giant squid axon. This particular axon — 0.5–0.8 mm in diameter — was large enough to insert a wire electrode directly into its interior, making it the ideal preparation for measuring membrane currents with then-unprecedented precision. Their findings, published across five landmark papers in the <em>Journal of Physiology</em> in 1952, constituted the first complete quantitative description of the ionic mechanisms underlying the action potential.<sup>[1]</sup></p>
     <div class="fig-aside">
       <img src="https://en.wikipedia.org/wiki/Special:FilePath/Loligo_vulgaris.jpg?width=300"
-           alt="Loligo pealeii — longfin inshore squid"
+           alt="Loligo forbesi — European longfin squid used by Hodgkin and Huxley"
            onerror="this.style.display='none'">
-      <div class="fig-cap"><em>Loligo pealeii</em> — the longfin inshore squid. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
+      <div class="fig-cap"><em>Loligo forbesi</em> — the European longfin squid used by H&amp;H. Its giant axon (≈0.5 mm diameter) was the key preparation used by H&H.<br>© Hans Hillewaert / CC BY-SA 4.0</div>
     </div>
 
 
@@ -667,7 +667,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <text x="305" y="53" font-size="10" fill="#dc2626">· m³h</text>
       <!-- Reversal label -->
       <text x="286" y="138" font-size="11" fill="#dc2626">E<tspan font-size="8" dy="2">Na</tspan></text>
-      <text x="286" y="152" font-size="9" fill="#718096">+115 mV</text>
+      <text x="286" y="152" font-size="9" fill="#718096">+50 mV</text>
 
       <!-- ═══ K⁺ branch (x=475) ═══ -->
       <line x1="475" y1="35"  x2="475" y2="60"  stroke="#374151" stroke-width="2"/>
@@ -685,7 +685,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <text x="426" y="53" font-size="11" fill="#1d4ed8" font-weight="bold">ḡ<tspan font-size="8" dy="2">K</tspan></text>
       <text x="445" y="53" font-size="10" fill="#1d4ed8">· n⁴</text>
       <text x="428" y="138" font-size="11" fill="#1d4ed8">E<tspan font-size="8" dy="2">K</tspan></text>
-      <text x="428" y="152" font-size="9" fill="#718096">−12 mV</text>
+      <text x="428" y="152" font-size="9" fill="#718096">−77 mV</text>
 
       <!-- ═══ Leak branch (x=615) ═══ -->
       <line x1="615" y1="35"  x2="615" y2="60"  stroke="#374151" stroke-width="2"/>
@@ -699,7 +699,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <!-- Labels -->
       <text x="628" y="60" font-size="11" fill="#15803d">g<tspan font-size="8" dy="2">L</tspan></text>
       <text x="591" y="142" font-size="11" fill="#15803d">E<tspan font-size="8" dy="2">L</tspan></text>
-      <text x="586" y="156" font-size="9" fill="#718096">+10.6 mV</text>
+      <text x="586" y="156" font-size="9" fill="#718096">−54.4 mV</text>
 
       <!-- ─── Vm label between Iext and Cm ─── -->
       <text x="128" y="120" font-size="15" fill="#0b7a6e" font-weight="bold">V<tspan font-size="9" dy="3">m</tspan></text>
@@ -726,7 +726,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
       <rect x="468" y="218" width="12" height="3" fill="#0b7a6e" rx="1"/>
       <text x="484" y="226" font-size="9" fill="#718096">Current source (I<tspan baseline-shift="sub" font-size="7">ext</tspan>)</text>
     </svg>
-    <div style="font-size:.78em;color:var(--dim);text-align:center;margin-top:8px">Figure 1. Hodgkin–Huxley equivalent circuit. The dashed arrows on g<sub>Na</sub> and g<sub>K</sub> indicate voltage-dependent (variable) conductances. The battery polarity follows the convention that E<sub>Na</sub> drives inward current (depolarizing) while E<sub>K</sub> drives outward current (repolarizing).</div>
+    <div style="font-size:.78em;color:var(--dim);text-align:center;margin-top:8px">Figure 1. Hodgkin–Huxley equivalent circuit (modern absolute-voltage convention; V<sub>rest</sub> = −65 mV). The dashed arrows on g<sub>Na</sub> and g<sub>K</sub> indicate voltage-dependent (variable) conductances. The battery polarity follows the convention that E<sub>Na</sub> drives inward current (depolarizing) while E<sub>K</sub> drives outward current (repolarizing).</div>
   </div>
 </div>
 
@@ -795,7 +795,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </div>
 
   <div class="section-body">
-    <p>The voltage-dependent rate functions (transition rates between closed and open states, in ms<sup>−1</sup>) were determined empirically by Hodgkin and Huxley from fits to their voltage-clamp data. They are expressed in terms of V in mV, referenced to a resting potential of −65 mV:</p>
+    <p>The voltage-dependent rate functions (transition rates between closed and open states, in ms<sup>−1</sup>) were determined empirically by Hodgkin and Huxley from fits to their voltage-clamp data. They are expressed using the original H&amp;H convention where <strong>V = 0 corresponds to the resting potential</strong> (−65 mV absolute). At rest V = 0; at threshold V ≈ 15; at AP peak V ≈ 100. The simulator plots use absolute voltage (mV).</p>
   </div>
 
   <div class="eq-block">
@@ -809,7 +809,7 @@ body.dark-mode .hero{border-color:#1c3050!important}
     <div class="eq-row"><span class="eq-label">β<sub>n</sub> =</span><span class="eq-main">0.125·e<sup>−V/80</sup></span></div>
     <div class="eq-sep"></div>
     <div class="eq-row"><span class="eq-label">φ(T) =</span><span class="eq-main">3<sup>(T−6.3)/10</sup></span><span class="eq-comment">Q<sub>10</sub>=3 temperature scaling (all rates × φ)</span></div>
-    <div class="eq-note">V is referenced to V<sub>rest</sub>=0 mV (original Hodgkin–Huxley convention). Initial conditions: V(0)=0, m(0)=n(0)=h(0)=0. At T=6.3°C (squid axon experiment); at body temperature (37°C), φ≈28× faster.<sup>[3,4]</sup></div>
+    <div class="eq-note">In the equations above, V=0 corresponds to the resting potential (−65 mV absolute). Simulator initial conditions: V<sub>m</sub>=−65 mV, m<sub>0</sub>=0.053, h<sub>0</sub>=0.596, n<sub>0</sub>=0.318 (steady-state at V<sub>rest</sub>). At T=6.3°C (original squid axon experiment); at body temperature (37°C), φ≈28× faster.<sup>[3,4]</sup></div>
   </div>
 
   <div class="section-body">
@@ -835,14 +835,15 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <table class="param-table">
     <thead><tr><th>Parameter</th><th>Value</th><th>Units</th><th>Physical Meaning</th></tr></thead>
     <tbody>
-      <tr><td>ḡ<sub>Na</sub></td><td>120</td><td>mS/cm²</td><td>Max sodium conductance</td></tr>
-      <tr><td>ḡ<sub>K</sub></td><td>36</td><td>mS/cm²</td><td>Max potassium conductance</td></tr>
+      <tr><td>ḡ<sub>Na</sub></td><td>120</td><td>mS/cm²</td><td>Max Na⁺ conductance</td></tr>
+      <tr><td>ḡ<sub>K</sub></td><td>36</td><td>mS/cm²</td><td>Max K⁺ conductance</td></tr>
       <tr><td>ḡ<sub>L</sub></td><td>0.3</td><td>mS/cm²</td><td>Passive leak conductance</td></tr>
-      <tr><td>E<sub>Na</sub></td><td>+115</td><td>mV</td><td>Na⁺ Nernst potential (inward driving force)</td></tr>
-      <tr><td>E<sub>K</sub></td><td>−12</td><td>mV</td><td>K⁺ Nernst potential (outward driving force)</td></tr>
-      <tr><td>E<sub>L</sub></td><td>+10.6</td><td>mV</td><td>Leak reversal potential (sets V<sub>rest</sub>)</td></tr>
+      <tr><td>E<sub>Na</sub></td><td>+50</td><td>mV</td><td>Na⁺ Nernst (equilibrium) potential</td></tr>
+      <tr><td>E<sub>K</sub></td><td>−77</td><td>mV</td><td>K⁺ Nernst (equilibrium) potential</td></tr>
+      <tr><td>E<sub>L</sub></td><td>−54.4</td><td>mV</td><td>Leak reversal potential</td></tr>
       <tr><td>C<sub>m</sub></td><td>1</td><td>µF/cm²</td><td>Membrane capacitance</td></tr>
-      <tr><td>V<sub>rest</sub></td><td>0</td><td>mV</td><td>Resting membrane potential (original H&amp;H convention)</td></tr>
+      <tr><td>V<sub>rest</sub></td><td>−65</td><td>mV</td><td>Resting membrane potential (absolute scale)</td></tr>
+      <tr><td>T</td><td>6.3</td><td>°C</td><td>Temperature of original H&amp;H experiments</td></tr>
     </tbody>
   </table>
 </div>
@@ -1115,12 +1116,12 @@ body.dark-mode .hero{border-color:#1c3050!important}
               <input class="ctrl-slider" type="range" id="vc-ena" min="20" max="80" step="5" value="50" oninput="vcSlider('ena',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-30" max="20" step="5" value="-77" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-ek" min="-30" max="20" step="5" value="-77" oninput="vcSlider('ek',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>K</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-ek-num" min="-110" max="-40" step="5" value="-77" onchange="syncVCNum('vc-ek',this.value)" onblur="syncVCNum('vc-ek',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-ek" min="-110" max="-40" step="5" value="-77" oninput="vcSlider('ek',this.value)">
             </div>
             <div class="ctrl-row">
-              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-el-num" min="-20" max="30" step="1" value="10.6" onchange="syncVCNum('vc-el',this.value)" onblur="syncVCNum('vc-el',this.value)"></span>
-              <input class="ctrl-slider" type="range" id="vc-el" min="-20" max="30" step="1" value="10.6" oninput="vcSlider('el',this.value)">
+              <span class="ctrl-label"><span class="ctrl-label-txt">E<sub>L</sub><span class="ctrl-unit">mV</span></span><input type="number" class="ctrl-num" id="vc-el-num" min="-70" max="-40" step="1" value="-54.4" onchange="syncVCNum('vc-el',this.value)" onblur="syncVCNum('vc-el',this.value)"></span>
+              <input class="ctrl-slider" type="range" id="vc-el" min="-70" max="-40" step="1" value="-54.4" oninput="vcSlider('el',this.value)">
             </div>
           </div>
 
@@ -1328,18 +1329,13 @@ body.dark-mode .hero{border-color:#1c3050!important}
   </ul>
 
   <div style="margin-top:24px;padding:16px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:.8em;color:var(--dim)">
-    <strong style="color:var(--text)">Implementation notes:</strong> This simulation implements the standard Hodgkin–Huxley model using 4th-order Runge–Kutta integration (dt = 0.01 ms) for numerical stability. All equations and parameter values follow Hodgkin &amp; Huxley (1952) with the modern convention of absolute membrane potential referenced to a resting potential of −65 mV. Temperature scaling uses Q<sub>10</sub> = 3 as reported experimentally.<sup>[1,4]</sup> Built with vanilla JavaScript and the HTML5 Canvas API — no external libraries.
+    <strong style="color:var(--text)">Implementation notes:</strong> This simulation implements the standard Hodgkin–Huxley model using 4th-order Runge–Kutta integration (dt = 0.01 ms) for numerical stability. Parameter values (ḡ<sub>Na</sub>=120, ḡ<sub>K</sub>=36, ḡ<sub>L</sub>=0.3 mS/cm², E<sub>Na</sub>=+50, E<sub>K</sub>=−77, E<sub>L</sub>=−54.4 mV, C<sub>m</sub>=1 µF/cm²) use the modern absolute-voltage convention (V<sub>rest</sub>=−65 mV) equivalent to the original H&amp;H (1952) values. Temperature scaling uses Q<sub>10</sub> = 3 as reported experimentally.<sup>[1,4]</sup> Built with vanilla JavaScript and the HTML5 Canvas API — no external libraries.
   </div>
 </div>
 
-</div><!-- /page-wrap -->
+</div><!-'use strict';
 
-<!-- ══════════════════════════════════════════════════════════
-     JAVASCRIPT — HH SIMULATION (improved)
-══════════════════════════════════════════════════════════ -->
-<script>'use strict';
-
-// ─── PARAMETERS (MATLAB convention: Vrest=0) ─────────────
+// ─── PARAMETERS (absolute voltage: Vrest=−65 mV) ─────────
 const P={gNa:120,gK:36,gL:0.3,ENa:50,EK:-77,EL:-54.4,Cm:1,T:6.3,blockNa:false,blockK:false};
 // Default: continuous Iext=10, 120 ms window
 const STIM={type:'continuous',I0:10,tStart:0,dur:100,freq:40};
@@ -1372,8 +1368,8 @@ const STAB_THRESH=1.0;  // mV  — negligible change threshold
 const STAB_DUR=50;      // ms  — must be stable this long
 let stabTimer=0, postStimStart=-1;
 
-// ─── RATE FUNCTIONS — absolute voltage scale (Vrest = −65 mV) ──
-// Internally shifts V to HH convention: V' = V + 65
+// ─── RATE FUNCTIONS — H&H 1952 (absolute voltage; V_rest=−65 mV) ──
+// Each function takes V_absolute (mV); internally shifts to V_HH=V+65
 function am(V){const x=(V+65)-25;return Math.abs(x)<1e-7?1.0:-0.1*x/(Math.exp(-x/10)-1);}
 function bm(V){return 4*Math.exp(-(V+65)/18);}
 function ah(V){return 0.07*Math.exp(-(V+65)/20);}
@@ -2737,6 +2733,17 @@ function homeView(){
   if(hist.t.length){
     const tEnd=hist.t[hist.t.length-1];
     viewStart=Math.max(0,tEnd-winMs);
+    viewEnd=Math.max(winMs,tEnd);
+  } else {
+    viewStart=0; viewEnd=winMs;
+  }
+  renderAll();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  attachPlotInteraction();
+});
+x(0,tEnd-winMs);
     viewEnd=Math.max(winMs,tEnd);
   } else {
     viewStart=0; viewEnd=winMs;
