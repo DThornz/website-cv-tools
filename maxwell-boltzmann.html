@@ -196,7 +196,46 @@
 }
 .nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
 body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
-</style>
+
+    /* ── Accessibility: dark mode ── */
+    body.dark-mode {
+      --bg:#0d1117; --bg2:#0a1628; --bg3:#0f1e38;
+      --border:#1c3050; --border2:#2a3548;
+      --teal:#2dd4bf; --teal-glow:rgba(45,212,191,0.08);
+      --text:#e2e8f0; --muted:#8b98b0; --dim:#566478;
+      --blue:#60a5fa; --blue-light:#0f1e38;
+    }
+    body.dark-mode { background: var(--bg); color: var(--text); }
+    body.dark-mode .panel { background: var(--bg2); border-color: var(--border); }
+    body.dark-mode .eq-box { background: var(--bg2); }
+    body.dark-mode .stats-bar { background: var(--bg3); }
+    body.dark-mode .stat-value { background: var(--bg2); color: var(--text); }
+    body.dark-mode .btn { background: var(--bg2); border-color: var(--border2); color: var(--text); }
+    body.dark-mode .btn-primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+    body.dark-mode .btn-blue { background: var(--bg3); border-color: #334155; color: #93c5fd; }
+    body.dark-mode .slider-row { background: var(--bg3); }
+    body.dark-mode .chart-note { background: var(--bg3); color: var(--muted); }
+    body.dark-mode .theory { background: var(--bg2); border-color: var(--border); }
+    body.dark-mode .theory h2 { border-bottom-color: var(--border); }
+    body.dark-mode .theory p, body.dark-mode .theory li { color: var(--muted); }
+    body.dark-mode .deriv-box { background: var(--bg3); }
+    body.dark-mode .portrait { background: var(--bg3); border-color: var(--border); }
+    body.dark-mode .refs { background: var(--bg3); }
+    body.dark-mode .ref-item { color: var(--muted); }
+    body.dark-mode .energy-ctrl { background: var(--bg2); border-color: var(--border2); }
+    body.dark-mode .canvas-caption { color: var(--dim); }
+    body.dark-mode .panel-badge { background: var(--bg3); }
+
+    /* ── Accessibility: font size ── */
+    body.size-sm { font-size: 14px; }
+    body.size-md { font-size: 16px; }
+    body.size-lg { font-size: 18px; }
+
+    /* ── Accessibility: font style ── */
+    body.font-serif { font-family: var(--serif); }
+    body.font-mono  { font-family: var(--mono); }
+
+  </style>
 </head>
 <body>
 
