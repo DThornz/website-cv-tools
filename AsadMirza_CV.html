@@ -1933,26 +1933,6 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
           <div class="subsection-inner">
 
 
-            <!-- Hodgkin-Huxley Educational Tool -->
-            <div class="entry-card" id="hh-model">
-              <button class="entry-toggle" onclick="toggleEntry(this)">
-                <span class="entry-year">2024–2025</span>
-                <div class="entry-title-col">
-                  <div class="entry-title">Hodgkin–Huxley Interactive Neuron Model</div>
-                  <div class="entry-subtitle">Interactive educational browser simulator · FIU BME</div>
-                  <div class="entry-badges"><span class="badge badge-first">Nobel (1952) Model</span><span class="badge badge-award">RK4 · Canvas API</span></div>
-                </div>
-                <span class="chevron-xs">▼</span>
-              </button>
-              <div class="entry-body">
-                <div class="entry-inner">
-                  <div class="entry-abstract">Browser-based interactive implementation of the Hodgkin–Huxley (1952) neuron model developed as an educational resource for BME students in BME 2740 and BME 6715. Features 4th-order Runge–Kutta integration (dt = 0.01 ms) with real-time plots of membrane potential V(t), gating variables m/h/n, ionic currents INa/IK/IL, steady-state curves (x∞ vs V), time constants (τx vs V), and a V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA simulation), scale kinetics by temperature (Q10=3), and explore threshold, refractory period, and tonic firing phenomena.</div>
-                  <div class="entry-link-row">
-                    <a class="entry-link" href="hodgkin-huxley.html" target="_blank">🧠 Open Interactive Simulator</a>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <!-- BME 2740 -->
             <div class="entry-card">
@@ -2113,51 +2093,91 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
         </button>
         <div class="subsection-body">
           <div class="subsection-inner">
-            <div class="award-entry">
-              <div class="award-date">2026</div>
-              <div class="award-main">
-                <div class="award-title">Introduction to 3D Modeling &amp; Printing — Lecture &amp; Assignment</div>
-                <div class="award-sub">For Dr. Michael C. Christie · BME 4908: Senior Design Project · FIU · Spring 2026</div>
+
+            <!-- HH Simulator -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2024–2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Hodgkin–Huxley Interactive Neuron Model</div>
+                  <div class="entry-subtitle">For BME 2740 &amp; BME 6715 · FIU BME</div>
+                  <div class="entry-badges"><span class="badge badge-first">Nobel (1952) Model</span><span class="badge badge-award">RK4 · Canvas API</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Browser-based interactive implementation of the Hodgkin–Huxley (1952) neuron model developed as an educational resource for BME students. Features 4th-order Runge–Kutta integration (dt = 0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents I<sub>Na</sub>/I<sub>K</sub>/I<sub>L</sub>, steady-state curves (x<sub>∞</sub> vs V), time constants (τ<sub>x</sub> vs V), and a V–n phase portrait. Students adjust all HH parameters, apply channel blockers (TTX/TEA), scale kinetics by temperature (Q<sub>10</sub>=3), and explore threshold, refractory period, and tonic firing.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="hodgkin-huxley.html" target="_blank">🧠 Open Interactive Simulator</a>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div style="padding:4px 0 8px;color:var(--text-muted);font-size:0.85em;line-height:1.6">
-              Designed a 42-slide lecture covering 3D printing technologies (FDM, SLA, SLS, bioprinting), materials selection, a step-by-step SolidWorks bone plate modeling tutorial, slicing software (OrcaSlicer), and print optimization. Created a companion hands-on modeling assignment for senior BME students.
             </div>
 
-            <!-- BME 4503C entry -->
-            <div class="award-entry" style="margin-top:10px">
-              <div class="award-date">2025–2026</div>
-              <div class="award-main">
-                <div class="award-title">MATLAB-Based AI/ML Modules — Tutorials, Labs &amp; Datasets</div>
-                <div class="award-sub">For Dr. Jessica Ramella-Roman · BME 4503C: Medical Instrumentation · FIU · Fall 2025–Fall 2026</div>
+            <!-- MB Simulator -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2025</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Maxwell–Boltzmann Gas Simulator (2D)</div>
+                  <div class="entry-subtitle">Educational tool · FIU BME</div>
+                  <div class="entry-badges"><span class="badge badge-award">Canvas API · Chart.js · KaTeX</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection (500+ particles at 60 fps), real-time speed histogram with running average and theoretical MB curve, speed-colored particle rendering, and an adaptive x-axis. Educational content includes a full derivation from first principles, historical background on Maxwell and Boltzmann, and 6 cited references.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="maxwell-boltzmann.html" target="_blank">⚛ Open Interactive Simulator</a>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div style="padding:4px 0 8px;color:var(--text-muted);font-size:0.85em;line-height:1.6">
-              Developing a suite of three MATLAB AI/ML modules to accompany the Medical Instrumentation course. Each module includes a step-by-step tutorial (m-file + document), a graded lab assignment, and synthetic biomedical datasets:
-            </div>
-            <div style="padding:0 0 4px 12px;color:var(--text-muted);font-size:0.83em;line-height:1.7">
-              <div><strong>Module 1 — Unsupervised Learning:</strong> PCA and k-means clustering applied to clinical patient data (MATLAB patients dataset, Fisher Iris). Students explore dimensionality reduction and cluster visualization.</div>
-              <div style="margin-top:4px"><strong>Module 2 — Supervised Learning (PPG &amp; ECG):</strong> Decision Tree, SVM, and Logistic Regression classifiers for PPG-based tachycardia detection (Healthy vs. Tachycardic) and ECG-based arrhythmia classification (Healthy vs. Atrial Fibrillation). Full signal processing pipeline: load → denoise → feature extraction → classification → evaluation.</div>
-              <div style="margin-top:4px"><strong>Module 3 — Supervised Learning (PCG &amp; PFT):</strong> Phonocardiogram classification (Normal vs. Abnormal cardiac — tachycardia, bradycardia, aortic/mitral stenosis) and pulmonary function test diagnosis (Normal, Obstructive, Restrictive, Mixed). Integrates signal features with patient demographics.</div>
-            </div>
-            <div style="padding:0 0 10px 12px;color:var(--text-dim);font-size:0.8em">
-              Deliverables per module: MATLAB tutorial script · step-by-step PDF/doc · lab assignment · synthetic dataset · instructional video
             </div>
 
-            <!-- MB Simulator entry -->
-            <div class="award-entry" style="margin-top:10px">
-              <div class="award-date">2025</div>
-              <div class="award-main">
-                <div class="award-title">Maxwell–Boltzmann Gas Simulator — Interactive 2D Simulation</div>
-                <div class="award-sub">Educational tool · <a href="maxwell-boltzmann.html" style="color:var(--teal)">maxwell-boltzmann.html</a> · 2025</div>
+            <!-- 3D Printing Lecture -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Introduction to 3D Modeling &amp; Printing — Lecture &amp; Assignment</div>
+                  <div class="entry-subtitle">For Dr. Michael C. Christie · BME 4908: Senior Design Project · FIU · Spring 2026</div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Designed a 42-slide lecture covering 3D printing technologies (FDM, SLA, SLS, bioprinting), materials selection, a step-by-step SolidWorks bone plate modeling tutorial (7 steps from sketch to STL), slicing software (OrcaSlicer), and print optimization settings. Created a companion hands-on modeling assignment for senior BME students.</div>
+                </div>
               </div>
             </div>
-            <div style="padding:4px 0 10px;color:var(--text-muted);font-size:0.85em;line-height:1.6">
-              Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection, real-time histogram with running average, theoretical curve from live temperature, full mathematical derivation from first principles, and historical background on Maxwell and Boltzmann.
+
+            <!-- BME 4503C AI Modules -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2025–2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">MATLAB-Based AI/ML Modules — Tutorials, Labs &amp; Datasets</div>
+                  <div class="entry-subtitle">For Dr. Jessica Ramella-Roman · BME 4503C: Medical Instrumentation · FIU · Fall 2025–Fall 2026</div>
+                  <div class="entry-badges"><span class="badge badge-first">3 Modules</span><span class="badge badge-award">MATLAB · ML</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Developing a suite of three MATLAB AI/ML modules to accompany the Medical Instrumentation course. Each module includes a step-by-step tutorial (m-file + document), a graded lab assignment, synthetic biomedical datasets, and an instructional video:
+                    <ul style="margin:8px 0 0 18px;line-height:1.75">
+                      <li><strong>Module 1 — Unsupervised Learning:</strong> PCA and k-means clustering applied to clinical patient data (MATLAB patients dataset, Fisher Iris). Students explore dimensionality reduction and cluster visualization.</li>
+                      <li><strong>Module 2 — Supervised Learning (PPG &amp; ECG):</strong> Decision Tree, SVM, and Logistic Regression for PPG-based tachycardia detection and ECG-based AFib classification. Full signal processing pipeline: load → denoise → feature extraction → classification → evaluation.</li>
+                      <li><strong>Module 3 — Supervised Learning (PCG &amp; PFT):</strong> Phonocardiogram classification (Normal vs. Abnormal cardiac) and pulmonary function test diagnosis (Normal, Obstructive, Restrictive, Mixed), integrating signal features with patient demographics.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
+
           </div>
-        </div>
-      </div>
 
       <!-- L2: Guest Lectures -->
       <div class="subsection-wrapper">
