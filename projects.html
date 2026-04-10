@@ -460,6 +460,33 @@ body.dark-mode .callout-title{color:#7a90ae!important}
 body.dark-mode .callout-amber .callout-title{color:#f59e0b!important}
 body.dark-mode .hero{border-color:#1c3050!important}
 
+
+/* ── Nav dropdown ── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  min-width: 170px; padding: 6px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: block; padding: 7px 14px; border-radius: 6px;
+  font-size: .77em; color: var(--muted); text-decoration: none;
+  font-family: var(--sans); white-space: nowrap;
+  transition: all .15s;
+}
+.nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
+body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
 </style>
 </head>
 <body class="light-mode">
@@ -545,26 +572,25 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
 v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
 ⟨KE⟩ = k_BT    (2D equipartition)"
     data-tech="JavaScript · Canvas API · Chart.js · KaTeX"
+    data-links='[{"text":"🚀 Launch Simulator","url":"maxwell-boltzmann.html"}]'
     onclick="openModal(this)"
-    style="cursor:pointer"
   >
-    <div class="proj-inner">
-      <div class="proj-top">
-        <div class="proj-tags">
-          <span class="proj-tag tag-code">Software</span>
-          <span class="proj-tag tag-bio">Physics</span>
-        </div>
-        <span class="proj-year">2025</span>
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">⚛</span>
+        <span class="ph-text">Interactive 2D gas simulation</span>
       </div>
-      <h3 class="proj-title">Maxwell–Boltzmann Gas Simulator (2D)</h3>
-      <p class="proj-sub">Hard-disk molecular dynamics · Kinetic theory · Statistical mechanics</p>
-      <p class="proj-desc">Interactive 2D ideal-gas simulation showing emergent Maxwell–Boltzmann speed distribution from elastic collisions. Includes full mathematical derivation, live histogram, and theoretical curve.</p>
-      <div class="proj-metrics">
-        <div class="proj-metric"><div class="metric-val">2D</div><div class="metric-lbl">Ideal gas</div></div>
-        <div class="proj-metric"><div class="metric-val">O(N)</div><div class="metric-lbl">Collisions</div></div>
-        <div class="proj-metric"><div class="metric-val">500</div><div class="metric-lbl">Particles</div></div>
+      <span class="proj-media-badge">Physics · Kinetics</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag code">Software</span>
+        <span class="proj-tag bio">Physics</span>
       </div>
+      <div class="proj-title">Maxwell–Boltzmann Gas Simulator (2D)</div>
+      <div class="proj-desc">Hard-disk molecular dynamics simulation showing emergent MB speed distribution. Includes live histogram, theoretical curve, and full derivation.</div>
       <div class="proj-footer">
+        <span class="proj-year">2025</span>
         <div class="proj-links">
           <a class="proj-link" href="maxwell-boltzmann.html" target="_blank" onclick="event.stopPropagation()">Launch →</a>
         </div>

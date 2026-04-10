@@ -107,10 +107,10 @@
     .chart-note { margin-top: 10px; padding: 10px 14px; background: #f1f5f9; border-radius: 10px; font-size: .83em; color: var(--muted); text-align: center; }
 
     /* ── Stats bar ── */
-    .stats-bar { display: flex; flex-wrap: wrap; gap: 16px 36px; background: #f1f5f9; padding: 14px 24px; border-radius: 40px; margin: 16px 0 20px; align-items: center; }
-    .stat-item { display: flex; align-items: baseline; gap: 8px; }
+    .stats-bar { display: flex; flex-wrap: wrap; gap: 12px 28px; background: #f1f5f9; padding: 14px 24px; border-radius: 40px; margin: 16px 0 20px; align-items: center; }
+    .stat-item { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
     .stat-label { font-weight: 500; color: var(--muted); text-transform: uppercase; font-size: .78em; }
-    .stat-value { font-weight: 700; font-size: 1.25em; color: var(--text); background: white; padding: 2px 14px; border-radius: 40px; }
+    .stat-value { font-weight: 700; font-size: 1.25em; color: var(--text); background: white; padding: 2px 14px; border-radius: 40px; min-width: 90px; text-align: center; font-variant-numeric: tabular-nums; display: inline-block; }
     .stat-unit { font-size: .78em; color: var(--dim); }
 
     /* ── Controls ── */
@@ -169,7 +169,34 @@
       .history-row { flex-direction: column; }
       .portraits { flex-direction: row; flex-wrap: wrap; }
     }
-  </style>
+  
+/* ── Nav dropdown ── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  min-width: 170px; padding: 6px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: block; padding: 7px 14px; border-radius: 6px;
+  font-size: .77em; color: var(--muted); text-decoration: none;
+  font-family: var(--sans); white-space: nowrap;
+  transition: all .15s;
+}
+.nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
+body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
+</style>
 </head>
 <body>
 
@@ -178,7 +205,14 @@
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
   <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
-  <a class="site-nav-link" href="projects.html">Projects</a>
+  <div class="nav-dropdown">
+  <a class="site-nav-link" href="projects.html">Projects ▾</a>
+  <div class="nav-dropdown-menu">
+    <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+  </div>
+</div>
   <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="site-nav-link curr" href="maxwell-boltzmann.html">MB Simulator</a>
   <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
@@ -291,7 +325,7 @@
     <div class="slider-row">
       <div class="slider-item">
         <label for="particleCountSlider">Particles:</label>
-        <input type="range" id="particleCountSlider" min="50" max="800" value="500" step="25">
+        <input type="range" id="particleCountSlider" min="50" max="2000" value="500" step="25">
         <span id="particleCountValue">500</span>
       </div>
       <div class="slider-item">

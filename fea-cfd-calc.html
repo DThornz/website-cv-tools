@@ -512,6 +512,33 @@ body.dark-mode .callout-title{color:#7a90ae!important}
 body.dark-mode .callout-amber .callout-title{color:#f59e0b!important}
 body.dark-mode .hero{border-color:#1c3050!important}
 
+
+/* ── Nav dropdown ── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  min-width: 170px; padding: 6px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: block; padding: 7px 14px; border-radius: 6px;
+  font-size: .77em; color: var(--muted); text-decoration: none;
+  font-family: var(--sans); white-space: nowrap;
+  transition: all .15s;
+}
+.nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
+body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
 </style>
 </head>
 <body class="light-mode">
@@ -519,7 +546,14 @@ body.dark-mode .hero{border-color:#1c3050!important}
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
   <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
-  <a class="site-nav-link" href="projects.html">Projects</a>
+  <div class="nav-dropdown">
+  <a class="site-nav-link" href="projects.html">Projects ▾</a>
+  <div class="nav-dropdown-menu">
+    <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+  </div>
+</div>
   <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="site-nav-link" href="maxwell-boltzmann.html">MB Simulator</a>
   <a class="site-nav-link curr" href="fea-cfd-calc.html">FEA / CFD</a>

@@ -375,6 +375,33 @@ body.dark-mode .hero-name .grad{
 body.dark-mode .card{background:rgba(10,22,40,.7);border-color:var(--border)}
 body.dark-mode .card:hover{border-color:rgba(45,212,191,.35);box-shadow:0 20px 60px rgba(0,0,0,.4)}
 body.dark-mode .hero-badge{background:rgba(28,48,80,.6)}
+
+/* ── Nav dropdown ── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-menu {
+  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  min-width: 170px; padding: 6px;
+  opacity: 0; pointer-events: none;
+  transform: translateX(-50%) translateY(-4px);
+  transition: opacity .15s, transform .15s;
+  z-index: 9999;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown-menu:hover {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-dropdown-item {
+  display: block; padding: 7px 14px; border-radius: 6px;
+  font-size: .77em; color: var(--muted); text-decoration: none;
+  font-family: var(--sans); white-space: nowrap;
+  transition: all .15s;
+}
+.nav-dropdown-item:hover { color: var(--teal); background: var(--teal-glow); }
+body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color: #1c3050; }
 </style>
 </head>
 <body class="light-mode">
@@ -383,7 +410,14 @@ body.dark-mode .hero-badge{background:rgba(28,48,80,.6)}
   <span class="nav-logo">A.Mirza <span>/</span> site</span>
   <a class="nav-link active" href="index.html">Home</a>
   <a class="nav-link" href="AsadMirza_CV.html">CV</a>
-  <a class="nav-link" href="projects.html">Projects</a>
+  <div class="nav-dropdown">
+  <a class="nav-link" href="projects.html">Projects ▾</a>
+  <div class="nav-dropdown-menu">
+    <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+  </div>
+</div>
   <a class="nav-link" href="hodgkin-huxley.html">HH Model</a>
   <a class="nav-link" href="maxwell-boltzmann.html">MB Simulator</a>
   <a class="nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
@@ -432,33 +466,6 @@ body.dark-mode .hero-badge{background:rgba(28,48,80,.6)}
       <span class="card-arrow">↗</span>
     </a>
 
-    <a class="card" href="hodgkin-huxley.html">
-      <div class="card-icon">🧠</div>
-      <div class="card-tag">Computational Neuroscience</div>
-      <div class="card-title">Hodgkin–Huxley Model</div>
-      <div class="card-desc">Interactive 1952 Nobel Prize neuron model — real-time RK4 simulation of action potentials with parameter controls, gating kinetics, phase portraits, and channel blocker experiments (TTX/TEA).</div>
-      <div class="card-chips">
-        <span class="chip">Action Potentials</span>
-        <span class="chip">Gate Kinetics</span>
-        <span class="chip">Phase Plane</span>
-        <span class="chip">Live Plots</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
-
-    <a class="card" href="fea-cfd-calc.html">
-      <div class="card-icon">⚙️</div>
-      <div class="card-tag">Engineering Tools</div>
-      <div class="card-title">FEA / CFD Calculator</div>
-      <div class="card-desc">25+ client-side calculators for fluid mechanics, biomedical CFD, and structural FEA. Includes Y+ estimation, turbulence BCs, non-Newtonian models, WSS/OSI, and unit converters.</div>
-      <div class="card-chips">
-        <span class="chip">Y+ / Wall Dist.</span>
-        <span class="chip">Turbulence BCs</span>
-        <span class="chip">Blood Rheology</span>
-        <span class="chip">FEA</span>
-      </div>
-      <span class="card-arrow">↗</span>
-    </a>
   </div>
 </main>
 
