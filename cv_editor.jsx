@@ -201,15 +201,7 @@ const INITIAL_DATA = {
         {
           id: uid(), title: "Primary Instructor — Research Assistant Professor", defaultOpen: true,
           entries: [
-                        {
-              id: uid(), year: "2024–2025", title: "Hodgkin–Huxley Interactive Neuron Model",
-              subtitle: "Interactive educational browser simulator · FIU BME",
-              badges: [{ id: uid(), text: "Nobel (1952) Model", type: "first" }, { id: uid(), text: "RK4 · Canvas API", type: "award" }],
-              abstract: "Browser-based implementation of the Hodgkin–Huxley (1952) neuron model for BME 2740 and BME 6715 students. RK4 integration (dt=0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents, steady-state curves, time constants, and V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), and explore threshold, refractory period, and tonic firing.",
-              metaItems: [], links: [{ id: uid(), text: "🧠 Open Simulator", url: "hodgkin-huxley.html" }],
-              images: [], videos: [], notes: ""
-            },
-            { id: uid(), year: "2024–Now", title: "BME 2740 — Biomedical Engineering Modeling and Simulation", subtitle: "~40 students/semester · MATLAB ODE/PDE modeling", badges: [], abstract: "Core undergraduate BME course covering MATLAB-based numerical methods including ODE solving (Euler, RK4, stiff solvers), PDE discretization, signal processing, and biomedical system simulation. Features MATLAB Live Scripts. Sections: Fall 2024, Spring 2025, Fall 2025, Spring 2026.", metaItems: [], links: [], images: [], videos: [], notes: "" },
+                        { id: uid(), year: "2024–Now", title: "BME 2740 — Biomedical Engineering Modeling and Simulation", subtitle: "~40 students/semester · MATLAB ODE/PDE modeling", badges: [], abstract: "Core undergraduate BME course covering MATLAB-based numerical methods including ODE solving (Euler, RK4, stiff solvers), PDE discretization, signal processing, and biomedical system simulation. Features MATLAB Live Scripts. Sections: Fall 2024, Spring 2025, Fall 2025, Spring 2026.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2024–Now", title: "BME 1054L — Introduction to BME Computing", subtitle: "~70 students/semester · Introductory MATLAB for BME students", badges: [], abstract: "Introductory computing covering MATLAB fundamentals, data visualization, image processing, and biomedical signal analysis. Custom Biosignal Processing module (ECG, EEG, Fourier/filtering). Sections: Spring 2025, Fall 2025, Spring 2026.", metaItems: [], links: [], images: [], videos: [], notes: "" },
             { id: uid(), year: "2024–Now", title: "Graduate Courses — BME 6715 & BME 6705", subtitle: "Advanced computational modeling for graduate students", badges: [], abstract: "BME 6715: Mathematical Modeling of Physiological Systems (Fall 2024, 5 students). BME 6705: Nonlinear Systems with Applications to Life Sciences (Spring 2026, 4 students).", metaItems: [], links: [], images: [], videos: [], notes: "" },
           ]
@@ -223,7 +215,43 @@ const INITIAL_DATA = {
           ]
         }
       ]
-    },
+    ,
+        {
+          id: uid(), title: "Course Material Development", defaultOpen: true,
+          entries: [
+            {
+              id: uid(), year: "2024–2025", title: "Hodgkin–Huxley Interactive Neuron Model",
+              subtitle: "For BME 2740 & BME 6715 · FIU BME",
+              badges: [{ id: uid(), text: "Nobel (1952) Model", type: "first" }, { id: uid(), text: "RK4 · Canvas API", type: "award" }],
+              abstract: "Browser-based interactive implementation of the Hodgkin–Huxley (1952) neuron model. Features 4th-order Runge–Kutta integration (dt=0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents I_Na/I_K/I_L, steady-state curves (x∞ vs V), time constants (τx vs V), and V–n phase portrait. Students adjust all HH parameters, apply channel blockers (TTX/TEA), scale kinetics by temperature (Q10=3), and explore threshold, refractory period, and tonic firing.",
+              metaItems: [], links: [{ id: uid(), text: "🧠 Open Interactive Simulator", url: "hodgkin-huxley.html" }],
+              images: [], videos: [], notes: ""
+            },
+            {
+              id: uid(), year: "2025", title: "Maxwell–Boltzmann Gas Simulator (2D)",
+              subtitle: "Educational tool · FIU BME",
+              badges: [{ id: uid(), text: "Canvas API · Chart.js · KaTeX", type: "award" }],
+              abstract: "Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection, real-time histogram with running average and theoretical MB curve, speed-colored particle rendering, full derivation from first principles, and historical background with 6 cited references.",
+              metaItems: [], links: [{ id: uid(), text: "⛛ Open Interactive Simulator", url: "maxwell-boltzmann.html" }],
+              images: [], videos: [], notes: ""
+            },
+            {
+              id: uid(), year: "2026", title: "Introduction to 3D Modeling & Printing — Lecture & Assignment",
+              subtitle: "For Dr. Michael C. Christie · BME 4908: Senior Design Project · FIU · Spring 2026",
+              badges: [],
+              abstract: "Designed a 42-slide lecture covering 3D printing technologies (FDM, SLA, SLS, bioprinting), materials selection, a step-by-step SolidWorks bone plate modeling tutorial (7 steps from sketch to STL), slicing software (OrcaSlicer), and print optimization settings. Created a companion hands-on modeling assignment for senior BME students.",
+              metaItems: [], links: [], images: [], videos: [], notes: ""
+            },
+            {
+              id: uid(), year: "2025–2026", title: "MATLAB-Based AI/ML Modules — Tutorials, Labs & Datasets",
+              subtitle: "For Dr. Jessica Ramella-Roman · BME 4503C: Medical Instrumentation · FIU · Fall 2025–Fall 2026",
+              badges: [{ id: uid(), text: "3 Modules", type: "first" }, { id: uid(), text: "MATLAB · ML", type: "award" }],
+              abstract: "Developing three MATLAB AI/ML modules: (1) Unsupervised Learning — PCA and k-means clustering on clinical patient data; (2) Supervised Learning PPG & ECG — Decision Tree, SVM, Logistic Regression for tachycardia and AFib classification; (3) Supervised Learning PCG & PFT — cardiac sound classification and respiratory diagnosis. Each module includes a tutorial (m-file + doc), lab assignment, synthetic dataset, and instructional video.",
+              metaItems: [], links: [], images: [], videos: [], notes: ""
+            },
+          ]
+        }
+      },
     {
       id: "supervision", icon: "👥", title: "Supervision & Mentorship", subtitle: "3 Undergraduate Researchers · 15+ Senior Design Teams", defaultOpen: false,
       subsections: [
