@@ -17,6 +17,7 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 | **Curriculum Vitae** | `AsadMirza_CV.html` | Full interactive academic CV |
 | **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
 | **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
+| **Maxwell–Boltzmann Simulator** | `maxwell-boltzmann.html` | Interactive 2D ideal-gas simulation with speed distribution |
 | **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
@@ -106,6 +107,34 @@ The editor does **not** need to be deployed — run locally, export `AsadMirza_C
 
 ---
 
+## Maxwell–Boltzmann Gas Simulator (`maxwell-boltzmann.html`)
+
+Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an educational tool for statistical mechanics and kinetic theory.
+
+**Simulation features:**
+- Hard-disk elastic collision model with spatial-hash grid O(N) detection (scales to 800 particles at interactive frame rates)
+- Speed-colored particle rendering (blue → teal → red by speed)
+- Real-time speed histogram (green bars) with exponential running average (red line)
+- Theoretical 2D Maxwell–Boltzmann curve (gray dashed) computed from instantaneous temperature
+- Adaptive x-axis scaling based on 99th-percentile speed
+- Energy controls (± thermal energy), reshuffle, reset, pause
+
+**Educational content:**
+- Full mathematical derivation of the 2D distribution from first principles (4 steps: Gaussian components → polar transform → normalization → characteristic speeds)
+- Historical background: Maxwell (1860) and Boltzmann (1872) with portraits
+- Correct characteristic speeds: *v*\_p = √(k\_BT/m), ⟨v⟩ = √(πk\_BT/2m), *v*\_rms = √(2k\_BT/m)
+- Equipartition theorem: ⟨KE⟩ = k\_BT in 2D (2 translational DOF)
+- 6 APA-format references with clickable citation highlighting
+
+**Physics fixed from original:**
+- y-axis probability density now correctly in s/m (histogram normalized by bin width in m/s)
+- x-axis initialized from `speedScale` not hardcoded 2500 m/s
+- Theory curve: f(v) = (m/k\_BT)·v·exp(−mv²/2k\_BT) in s/m (no spurious SPEED\_CONV factor)
+- Grid-based O(N) collision detection replacing O(N²) brute force
+- Particles initialized on grid to avoid startup overlaps
+
+---
+
 ## Repository Structure
 
 ```
@@ -114,6 +143,7 @@ website-cv-tools/
 ├── AsadMirza_CV.html       ← Interactive academic CV
 ├── projects.html           ← Research project showcase
 ├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
+├── maxwell-boltzmann.html  ← Maxwell–Boltzmann 2D gas simulator
 ├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
 ├── cv_editor.jsx           ← React GUI editor (run locally)
