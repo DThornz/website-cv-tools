@@ -464,11 +464,13 @@ body.dark-mode .hero{border-color:#1c3050!important}
 /* ── Nav dropdown ── */
 .nav-dropdown { position: relative; }
 .nav-dropdown-menu {
-  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  position: absolute; top: 100%; left: 50%;
   background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
   border: 1px solid var(--border); border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,.1);
   min-width: 170px; padding: 6px;
+  padding-top: 12px;
+  margin-top: -6px;
   opacity: 0; pointer-events: none;
   transform: translateX(-50%) translateY(-4px);
   transition: opacity .15s, transform .15s;
@@ -528,8 +530,8 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
   <div class="proj-card" data-tags="code bio"
     data-title="Hodgkin–Huxley Interactive Neuron Model"
-    data-subtitle="Educational tool · hodgkin-huxley.html · 2024–2025"
-    data-year="2024–2025"
+    data-subtitle="Educational tool · hodgkin-huxley.html · 2026"
+    data-year="2026"
     data-desc="A fully interactive, browser-based implementation of the landmark 1952 Hodgkin–Huxley neuron model — the quantitative framework for action potential generation that won the Nobel Prize in Physiology or Medicine in 1963. Built as an educational tool for biomedical engineering students studying computational neuroscience and membrane biophysics."
     data-desc2="The page integrates a 4th-order Runge–Kutta solver (dt=0.01 ms) with real-time Canvas API plots showing membrane potential, gating variables (m, h, n), ionic currents (INa, IK, IL), steady-state curves (m∞, h∞, n∞), time constants (τm, τh, τn), and a V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), change temperature (Q10 scaling), switch stimulus types (step/pulse/ramp/sinusoidal), and observe threshold phenomena, refractory periods, and tonic firing."
     data-metrics='[["4","ODEs (RK4)"],["1952","Nobel model"],["6","Live plots"]]' 
@@ -555,7 +557,7 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
       <div class="proj-title">Hodgkin–Huxley Neuron Model</div>
       <div class="proj-desc">Interactive RK4 simulator of the Nobel Prize-winning 1952 action potential model with real-time plots, parameter controls, channel blockers, and phase portraits.</div>
       <div class="proj-footer">
-        <span class="proj-year">2024 – 2025</span>
+        <span class="proj-year">2026</span>
         <div class="proj-links">
           <a class="proj-link" href="hodgkin-huxley.html" onclick="event.stopPropagation()">Open →</a>
         </div>
@@ -567,8 +569,8 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
   <!-- ══ PROJECT: Maxwell–Boltzmann Simulator ══════════════════ -->
   <div class="proj-card" data-tags="code bio"
     data-title="Maxwell–Boltzmann Gas Simulator (2D)"
-    data-subtitle="Educational tool · maxwell-boltzmann.html · 2025"
-    data-year="2025"
+    data-subtitle="Educational tool · maxwell-boltzmann.html · 2026"
+    data-year="2026"
     data-desc="A browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an interactive educational tool for biomedical engineering and physics students studying statistical mechanics and kinetic gas theory."
     data-desc2="The simulation implements spatial-hash O(N) collision detection (allowing hundreds of particles at interactive frame rates), a real-time speed histogram with running average, and a theoretical Maxwell–Boltzmann curve computed from the instantaneous mean kinetic energy. The page includes a full mathematical derivation of the 2D distribution from first principles, historical background on Maxwell and Boltzmann, and properly cited figures and references."
     data-metrics='[["2D","Ideal gas"],["O(N)","Collision detection"],["500","Default particles"]]'
@@ -594,7 +596,7 @@ v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
       <div class="proj-title">Maxwell–Boltzmann Gas Simulator (2D)</div>
       <div class="proj-desc">Hard-disk molecular dynamics simulation showing emergent MB speed distribution. Includes live histogram, theoretical curve, and full derivation.</div>
       <div class="proj-footer">
-        <span class="proj-year">2025</span>
+        <span class="proj-year">2026</span>
         <div class="proj-links">
           <a class="proj-link" href="maxwell-boltzmann.html" target="_blank" onclick="event.stopPropagation()">Launch →</a>
         </div>
@@ -807,7 +809,7 @@ m = m_∞(Ca,IP₃)             # fast gate (quasi-steady)"
   <div class="proj-card" data-tags="ml code"
     data-title="SEM Fiber Diameter Analysis GUI"
     data-subtitle="FiberAnalysisGUI.m · Prasad Lab"
-    data-year="2024–2025"
+    data-year="2026"
     data-desc="Built FiberAnalysisGUI.m — a MATLAB GUI for automated fiber diameter measurement from SEM images of electrospun PCL scaffolds (Prasad Lab / PhD candidate Ariadna Herrera). The full processing pipeline runs on every parameter change: illumination correction → CLAHE → Gaussian smoothing → Gabor filter bank → adaptive binarization → bwskel pruning → distance transform diameter measurement → Normal distribution fit."
     data-desc2="Design principles: minimal abstraction, no try/catch guards, inline code, teal color scheme consistent with other lab tools. Replaces manual ImageJ workflows with a reproducible, batch-capable automated pipeline."
     data-metrics='[["8","Pipeline stages"],["Auto","Batch capable"],["MATLAB","GUI"]]'
@@ -832,7 +834,7 @@ CLAHE: local histogram equalization per tile"
       <div class="proj-title">SEM Fiber Diameter Analysis GUI</div>
       <div class="proj-desc">Automated MATLAB GUI for electrospun fiber diameter measurement from SEM images using Gabor filtering and distance transform.</div>
       <div class="proj-footer">
-        <span class="proj-year">2024 – 2025</span>
+        <span class="proj-year">2026</span>
         <div class="proj-links"></div>
       </div>
     </div>
@@ -842,7 +844,7 @@ CLAHE: local histogram equalization per tile"
   <div class="proj-card" data-tags="ml code"
     data-title="Brain Vasculature Graph Pipeline"
     data-subtitle="vascular_pipeline.m · Tsoukias Lab"
-    data-year="2024–2025"
+    data-year="2024–Present"
     data-desc="Developed vascular_pipeline.m and vascular_viz.m in MATLAB to process ~20 GB NIfTI mouse brain segmentation files (VesSAP-style, 3 µm isotropic voxels) into skeleton graphs with per-edge radius and length metadata for downstream 1D Hagen-Poiseuille flow simulation."
     data-desc2="Key engineering: stride downsampling, surface shell masking, distance transform radius estimation, tight bounding-box crop before bwskel to avoid OOM errors on 96 GB RAM machine (peak ~6× logical volume). Also developed graph-convolution diameter smoothing to suppress spurious large-radius fragments before pial vessel extraction in the VesselGraph BALBc_no1 dataset (~3.5M nodes, ~5.3M edges)."
     data-metrics='[["20 GB","NIfTI input"],["3.5M","Graph nodes"],["96 GB","RAM target"]]'
@@ -868,17 +870,17 @@ Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
       <div class="proj-title">Brain Vasculature Graph Pipeline</div>
       <div class="proj-desc">MATLAB pipeline converting 20 GB NIfTI mouse brain segmentations into skeleton graphs for 1D Hagen-Poiseuille network flow simulation.</div>
       <div class="proj-footer">
-        <span class="proj-year">2024 – 2025</span>
+        <span class="proj-year">2024 – Present</span>
         <div class="proj-links"></div>
       </div>
     </div>
   </div>
 
   <!-- ══ PROJECT 8: FEA/CFD Calculator ══════════════════════════ -->
-  <div class="proj-card" data-tags="code cfd"
+  <div class="proj-card" data-tags="code cfd fea"
     data-title="FEA / CFD Engineering Calculator"
     data-subtitle="Live on this site · fea-cfd-calc.html"
-    data-year="2025–2026"
+    data-year="2026"
     data-desc="A comprehensive single-page engineering calculator hub with 25+ client-side calculators for fluid mechanics, biomedical CFD, and structural FEA. Designed as a teaching and research aid. All calculations run in the browser — no server, no data sent."
     data-desc2="Includes: Y+ estimation (pipe/flat-plate/external), turbulence inlet BC generator (k, ε, ω, νₜ), non-Newtonian viscosity models (Carreau/Power Law), Womersley number, WSS/OSI calculator with pasted time-series, Hagen-Poiseuille, Darcy-Weisbach with Colebrook-White iteration, elastic constants converter, Von Mises / Tresca, beam deflection, and 7 live unit converters."
     data-metrics='[["25+","Calculators"],["7","Unit sets"],["0","Server needed"]]'
@@ -904,7 +906,7 @@ k = 1.5·(U·I)²              # turbulent kinetic energy
       <div class="proj-title">FEA / CFD Engineering Calculator</div>
       <div class="proj-desc">25+ client-side calculators covering Y+, turbulence BCs, blood rheology, WSS/OSI, beam deflection, and unit conversion.</div>
       <div class="proj-footer">
-        <span class="proj-year">2025 – 2026</span>
+        <span class="proj-year">2026</span>
         <div class="proj-links">
           <a class="proj-link" href="fea-cfd-calc.html" onclick="event.stopPropagation()">Open →</a>
         </div>

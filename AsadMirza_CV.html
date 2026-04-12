@@ -970,11 +970,13 @@ body.dark-mode .hero{border-color:#1c3050!important}
 /* ── Nav dropdown ── */
 .nav-dropdown { position: relative; }
 .nav-dropdown-menu {
-  position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  position: absolute; top: 100%; left: 50%;
   background: rgba(255,255,255,.97); backdrop-filter: blur(16px);
   border: 1px solid var(--border); border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,.1);
   min-width: 170px; padding: 6px;
+  padding-top: 12px; /* bridge between trigger and menu — no gap to cross */
+  margin-top: -6px;  /* overlap trigger by 6px so hover area is continuous */
   opacity: 0; pointer-events: none;
   transform: translateX(-50%) translateY(-4px);
   transition: opacity .15s, transform .15s;
@@ -1054,7 +1056,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       <div class="hero-title">Department of Biomedical Engineering · Florida International University</div>
       <div class="hero-affil">10555 West Flagler St, Miami, FL 33174 &nbsp;·&nbsp; ORCID: 0000-0003-4515-2203</div>
       <div class="hero-badges">
-        <a class="hero-badge" href="/cdn-cgi/l/email-protection#2b4a464259514a6b4d425e054e4f5e">✉ <span class="__cf_email__" data-cfemail="90f1fdf9e2eaf1d0f6f9e5bef5f4e5">[email&#160;protected]</span></a>
+        <a class="hero-badge" href="mailto:amirza@fiu.edu">✉ amirza@fiu.edu</a>
         <a class="hero-badge" href="https://github.com/DThornz" target="_blank">⌥ github/DThornz</a>
         <a class="hero-badge" href="https://orcid.org/0000-0003-4515-2203" target="_blank">🔗 ORCID</a>
         <a class="hero-badge" href="https://scholar.google.com/citations?user=a8fYPM0AAAAJ" target="_blank">📑 Scholar</a>
@@ -2086,7 +2088,8 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       </div><!-- /TA -->
 
       <!-- L2: Course Material Development -->
-      <div class="subsection-wrapper open">tton class="subsection-toggle" onclick="toggleSubsection(this)">
+      <div class="subsection-wrapper open">
+        <button class="subsection-toggle" onclick="toggleSubsection(this)">
           <div class="subsection-title">Course Material Development</div>
           <span class="chevron-sm">▼</span>
         </button>
@@ -2177,6 +2180,8 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
             </div>
 
           </div>
+        </div>
+      </div>
 
       <!-- L2: Guest Lectures -->
       <div class="subsection-wrapper">
@@ -2204,8 +2209,8 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
         </div>
       </div>
 
-    </div>
-  </div>
+    </div><!-- /section-inner -->
+  </div><!-- /section-body -->
 </div><!-- /teaching -->
 
 
@@ -2629,7 +2634,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 <!-- ============================================================
      JAVASCRIPT
 ============================================================ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ── SECTION TOGGLES ─────────────────────────────────────── */
 function toggleSection(btn) {
   btn.closest('.section-wrapper').classList.toggle('open');
