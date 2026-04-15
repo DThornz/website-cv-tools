@@ -554,6 +554,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
     <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
     <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
   </div>
 </div>
   </div>
@@ -567,23 +568,23 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 <!-- ─── SIDEBAR ─────────────────────────────────────────────── -->
 <nav class="sidebar">
   <div class="nav-section-label">Fluid Mechanics</div>
-  <button class="nav-item active" onclick="scrollTo('yplus')"><span class="nav-icon">📐</span> Y+ Estimation <span class="nav-count">1</span></button>
-  <button class="nav-item" onclick="scrollTo('reynolds')"><span class="nav-icon">🌀</span> Dimensionless Numbers <span class="nav-count">5</span></button>
-  <button class="nav-item" onclick="scrollTo('turbulence')"><span class="nav-icon">🌪</span> Turbulence BCs <span class="nav-count">3</span></button>
-  <button class="nav-item" onclick="scrollTo('boundary-layer')"><span class="nav-icon">📊</span> Boundary Layer <span class="nav-count">2</span></button>
-  <button class="nav-item" onclick="scrollTo('pipe-flow')"><span class="nav-icon">🔵</span> Pipe & Channel Flow <span class="nav-count">3</span></button>
+  <button class="nav-item active" onclick=\"scrollToSection('yplus')\"><span class="nav-icon">📐</span> Y+ Estimation <span class="nav-count">1</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('reynolds')\"><span class="nav-icon">🌀</span> Dimensionless Numbers <span class="nav-count">5</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('turbulence')\"><span class="nav-icon">🌪</span> Turbulence BCs <span class="nav-count">3</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('boundary-layer')\"><span class="nav-icon">📊</span> Boundary Layer <span class="nav-count">2</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('pipe-flow')\"><span class="nav-icon">🔵</span> Pipe & Channel Flow <span class="nav-count">3</span></button>
 
   <div class="nav-section-label">Biomedical CFD</div>
-  <button class="nav-item" onclick="scrollTo('non-newt')"><span class="nav-icon">🩸</span> Non-Newtonian Fluids <span class="nav-count">3</span></button>
-  <button class="nav-item" onclick="scrollTo('pulsatile')"><span class="nav-icon">💓</span> Pulsatile & WSS <span class="nav-count">3</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('non-newt')\"><span class="nav-icon">🩸</span> Non-Newtonian Fluids <span class="nav-count">3</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('pulsatile')\"><span class="nav-icon">💓</span> Pulsatile & WSS <span class="nav-count">3</span></button>
 
   <div class="nav-section-label">Structural FEA</div>
-  <button class="nav-item" onclick="scrollTo('elastic')"><span class="nav-icon">🔩</span> Elastic Constants <span class="nav-count">1</span></button>
-  <button class="nav-item" onclick="scrollTo('stress')"><span class="nav-icon">⚡</span> Stress & Failure <span class="nav-count">2</span></button>
-  <button class="nav-item" onclick="scrollTo('beam')"><span class="nav-icon">📏</span> Beam Deflection <span class="nav-count">2</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('elastic')\"><span class="nav-icon">🔩</span> Elastic Constants <span class="nav-count">1</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('stress')\"><span class="nav-icon">⚡</span> Stress & Failure <span class="nav-count">2</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('beam')\"><span class="nav-icon">📏</span> Beam Deflection <span class="nav-count">2</span></button>
 
   <div class="nav-section-label">Unit Converters</div>
-  <button class="nav-item" onclick="scrollTo('units')"><span class="nav-icon">🔄</span> All Converters <span class="nav-count">7</span></button>
+  <button class="nav-item" onclick=\"scrollToSection('units')\"><span class="nav-icon">🔄</span> All Converters <span class="nav-count">7</span></button>
 </nav>
 
 <!-- ─── MAIN CONTENT ─────────────────────────────────────────── -->
@@ -1372,7 +1373,7 @@ function setTab(group, tab){
 }
 
 /* ── Sidebar nav scrollTo ─────────────────────────────── */
-function scrollTo(id){
+function scrollToSection(id){
   const el=document.getElementById(id);
   if(el){ el.scrollIntoView({behavior:'smooth',block:'start'}); }
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));

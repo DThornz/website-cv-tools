@@ -504,6 +504,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
     <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
     <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
   </div>
 </div>
 </div>
@@ -526,6 +527,44 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 <!-- ── Projects Grid ─────────────────────────────────────── -->
 <div class="projects-wrap">
 <div class="projects-grid" id="grid">
+
+  <!-- ══ PROJECT: PhD Dissertation ══════════════════════════ -->
+  <div class="proj-card" data-tags="cfd bio fea"
+    data-title="PhD Dissertation — Computational CAVD Biomarker Pipeline"
+    data-subtitle="Florida International University · Defended June 26, 2024"
+    data-year="2024"
+    data-desc="Doctoral dissertation developing and validating hemodynamic biomarkers of calcific aortic valve disease (CAVD) detectable before symptomatic onset. Four aims: (1) Non-Newtonian blood modeling requirements in severely calcified valves; (2) PSIS bioscaffold early-stage CAVD model validated against in vitro hydrodynamics and nanoindentation; (3) Mouse aortic valve parametric model explaining species differences in coronary cusp calcification; (4) Parametric 50+ FSI pipeline across clinical valve sizes (22–30mm) and CAVD grades 1–6."
+    data-desc2="Key findings: TAWSS and OSI detect early-stage CAVD (28% TAWSS increase, p<0.05 stiffness change) when all conventional hydrodynamic parameters are normal. Non-Newtonian viscosity models are required for accurate WSS prediction in severe CAVD. Larger valve size shows a marginal hemodynamic protective effect. Asymmetric CAVD grades produce asymmetric aortic jets linked to downstream aortic wall stress patterns."
+    data-metrics='[["50+","FSI simulations"],["R²>0.85","Validation"],["2","Publications"]]'
+    data-equations="TAWSS = (1/T)·∫|τ_w| dt     # time-averaged wall shear stress
+OSI = 0.5·(1 − |∫τ dt| / ∫|τ| dt)   # oscillatory shear index
+Carreau-Yasuda: μ(γ̇) = μ∞ + (μ₀−μ∞)[1+(λγ̇)ᵃ]^((n−1)/a)"
+    data-links='[{"text":"📄 Bioengineering 2024","url":"https://doi.org/10.3390/bioengineering11100955"},{"text":"📄 J. Biomech. Eng. 2022","url":"https://doi.org/10.1115/1.4054630"},{"text":"🎓 Full Summary","url":"dissertation.html"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🫀</span>
+        <span class="ph-text">Aortic Valve FSI · CAVD Biomarkers</span>
+      </div>
+      <span class="proj-media-badge">CFD · FSI · Biomarkers</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD/FSI</span>
+        <span class="proj-tag bio">Cardiovascular</span>
+        <span class="proj-tag fea">FEA</span>
+      </div>
+      <div class="proj-title">PhD Dissertation — Computational CAVD Biomarker Pipeline</div>
+      <div class="proj-desc">Developed and validated TAWSS and OSI as pre-symptomatic CAVD biomarkers through patient-specific FSI simulations spanning 50+ valve geometries across clinical sizes and disease grades.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2019 – 2024</span>
+        <div class="proj-links">
+          <a class="proj-link" href="dissertation.html" onclick="event.stopPropagation()">Summary →</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
   <div class="proj-card" data-tags="code bio"

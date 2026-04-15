@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhD Dissertation | A.Mirza</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#f5f6f8; --bg2:#fff; --bg3:#eef0f4; --bg4:#fafcff;
+      --border:#d0d6e0; --border2:#e2e8f0;
+      --teal:#0b7a6e; --teal-dim:#1a8a7d; --teal-glow:rgba(11,122,110,0.07);
+      --text:#1a202c; --muted:#374151; --dim:#6b7280;
+      --red:#c0392b; --red-light:rgba(192,57,43,0.08);
+      --sans:'DM Sans',system-ui,sans-serif;
+      --mono:'DM Mono','JetBrains Mono',monospace;
+      --serif:'DM Serif Display',Georgia,serif;
+      --tr:.18s; --r:14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); padding-top: 44px; }
+
+    /* ── Site nav ── */
+    .site-nav { position:fixed;top:0;left:0;right:0;z-index:200;height:44px;background:rgba(245,246,248,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;padding:0 24px; }
+    .site-nav-logo { font-family:var(--mono);font-size:.8em;color:var(--teal);font-weight:500;letter-spacing:.04em;margin-right:auto;white-space:nowrap;text-decoration:none; }
+    .site-nav-logo span { color:var(--dim); }
+    .site-nav-link { padding:5px 12px;border-radius:6px;font-size:.77em;color:var(--muted);text-decoration:none;transition:all var(--tr);border:1px solid transparent;white-space:nowrap; }
+    .site-nav-link:hover { color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.15); }
+    .site-nav-link.curr { color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.2);font-weight:600; }
+    .nav-dropdown { position:relative; }
+    .nav-dropdown-menu { position:absolute;top:100%;left:50%;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:170px;padding:6px;padding-top:12px;margin-top:-6px;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-4px);transition:opacity .15s,transform .15s;z-index:9999; }
+    .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown-menu:hover { opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0); }
+    .nav-dropdown-item { display:block;padding:7px 14px;border-radius:6px;font-size:.77em;color:var(--muted);text-decoration:none;transition:all .15s;white-space:nowrap; }
+    .nav-dropdown-item:hover { color:var(--teal);background:var(--teal-glow); }
+
+    /* ── Gear ── */
+    .acc-btn { position:fixed;bottom:22px;right:22px;z-index:9100;width:38px;height:38px;border-radius:50%;background:#0b7a6e;color:#fff;border:none;cursor:pointer;font-size:1em;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.2);transition:transform .2s; }
+    .acc-btn:hover { transform:scale(1.1); }
+    .acc-panel { position:fixed;bottom:70px;right:22px;z-index:9100;width:220px;padding:16px 18px 12px;border-radius:12px;border:1px solid #d4d9e8;background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.13);opacity:0;transform:translateY(8px) scale(.97);pointer-events:none;transition:all .2s cubic-bezier(.4,0,.2,1); }
+    .acc-panel.open { opacity:1;transform:translateY(0) scale(1);pointer-events:all; }
+    .acc-panel-title { font-size:.77em;font-weight:600;margin-bottom:13px;color:#1a202c; }
+    .acc-row { margin-bottom:12px; }
+    .acc-row-label { font-size:.65em;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin-bottom:6px; }
+    .acc-toggle-row { display:flex;align-items:center;justify-content:space-between; }
+    .acc-toggle-label { font-size:.81em;color:#4a5568; }
+    .acc-switch { position:relative;width:38px;height:20px;flex-shrink:0; }
+    .acc-switch input { opacity:0;width:0;height:0; }
+    .acc-slider { position:absolute;inset:0;background:#d1d5db;border-radius:99px;cursor:pointer;transition:background .18s; }
+    .acc-slider::before { content:'';position:absolute;width:14px;height:14px;border-radius:50%;left:3px;top:3px;background:#fff;transition:transform .18s; }
+    .acc-switch input:checked + .acc-slider { background:#0b7a6e; }
+    .acc-switch input:checked + .acc-slider::before { transform:translateX(18px); }
+    .acc-btn-group { display:flex;gap:4px; }
+    .acc-opt { flex:1;padding:4px;border:1px solid #d4d9e8;border-radius:5px;background:#f5f6f8;color:#718096;font-size:.72em;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;line-height:1.4; }
+    .acc-opt:hover { color:#0b7a6e;border-color:#0b7a6e;background:rgba(11,122,110,.06); }
+    .acc-opt.active { color:#0b7a6e;border-color:#0b7a6e;background:rgba(11,122,110,.08);font-weight:600; }
+
+    /* ── Dark mode ── */
+    body.dark-mode { --bg:#060e1c;--bg2:#0a1628;--bg3:#0f1e38;--bg4:#0a1628;--border:#1c3050;--border2:#2a3548;--teal:#2dd4bf;--teal-glow:rgba(45,212,191,0.08);--text:#e2e8f0;--muted:#8b98b0;--dim:#566478; }
+    body.dark-mode { background:var(--bg);color:var(--text); }
+    body.dark-mode .site-nav { background:rgba(6,14,28,.96)!important;border-color:#1c3050!important; }
+    body.dark-mode .site-nav-link,.nav-dropdown-item { color:#7a90ae!important; }
+    body.dark-mode .site-nav-link:hover { color:#2dd4bf!important; }
+    body.dark-mode .site-nav-link.curr { color:#2dd4bf!important; }
+    body.dark-mode .site-nav-logo { color:#2dd4bf!important; }
+    body.dark-mode .nav-dropdown-menu { background:rgba(10,22,40,.97);border-color:#1c3050; }
+    body.dark-mode .acc-panel { background:#0a1628;border-color:#1c3050; }
+    body.dark-mode .acc-panel-title { color:#e2e8f0; }
+    body.dark-mode .acc-opt { background:#132240;border-color:#1c3050;color:#7a90ae; }
+    body.dark-mode .acc-opt.active { background:rgba(45,212,191,.15);border-color:#2dd4bf;color:#2dd4bf; }
+    body.size-sm { font-size:14px; }
+    body.size-md { font-size:16px; }
+    body.size-lg { font-size:18px; }
+    body.font-serif { font-family:var(--serif); }
+    body.font-mono  { font-family:var(--mono); }
+
+    /* ── Layout ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Hero ── */
+    .hero { background: linear-gradient(135deg, #0b1a2e 0%, #0f2740 60%, #123349 100%); border-radius: 20px; padding: 48px 52px; margin-bottom: 40px; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232dd4bf' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events:none; }
+    .hero-eyebrow { font-family:var(--mono);font-size:.78em;color:#2dd4bf;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;opacity:.85; }
+    .hero h1 { font-family:var(--serif);font-size:2.2em;font-weight:400;color:#f0f6ff;line-height:1.25;margin-bottom:14px;max-width:760px; }
+    .hero-meta { display:flex;flex-wrap:wrap;gap:12px 28px;margin-bottom:20px; }
+    .hero-meta-item { font-size:.85em;color:#7a98ba; }
+    .hero-meta-item strong { color:#a8c4dc; }
+    .hero-abstract { font-size:.93em;line-height:1.8;color:#8fafc8;max-width:780px;border-top:1px solid rgba(45,212,191,.2);padding-top:20px;margin-top:4px; }
+    .hero-badges { display:flex;flex-wrap:wrap;gap:8px;margin-top:18px; }
+    .hero-badge { padding:5px 14px;border-radius:40px;font-size:.78em;font-family:var(--mono);border:1px solid rgba(45,212,191,.25);color:#2dd4bf;background:rgba(45,212,191,.08);text-decoration:none;transition:all .15s; }
+    .hero-badge:hover { background:rgba(45,212,191,.16);border-color:rgba(45,212,191,.4); }
+    .hero-badge.pub { border-color:rgba(251,191,36,.3);color:#fbbf24;background:rgba(251,191,36,.06); }
+    .hero-badge.pub:hover { background:rgba(251,191,36,.12); }
+
+    /* ── Chapters nav ── */
+    .chapters-nav { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:36px; }
+    .chapter-btn { background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;cursor:pointer;text-align:left;transition:all .18s;font-family:var(--sans); }
+    .chapter-btn:hover { border-color:var(--teal-dim);background:var(--teal-glow);transform:translateY(-1px); }
+    .chapter-btn .ch-num { font-family:var(--mono);font-size:.7em;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px; }
+    .chapter-btn .ch-title { font-size:.82em;font-weight:500;color:var(--text);line-height:1.35; }
+    body.dark-mode .chapter-btn { background:var(--bg2);border-color:var(--border); }
+    body.dark-mode .chapter-btn:hover { border-color:var(--teal-dim); }
+
+    /* ── Section wrapper ── */
+    .section { margin-bottom: 36px; scroll-margin-top: 60px; }
+    .section-header { display:flex;align-items:baseline;gap:14px;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--border2); }
+    .section-num { font-family:var(--mono);font-size:.75em;color:var(--teal);letter-spacing:.08em; }
+    .section-title { font-family:var(--serif);font-size:1.55em;font-weight:400;color:var(--text); }
+    .section-tag { font-family:var(--mono);font-size:.68em;padding:3px 10px;border-radius:99px;background:var(--teal-glow);border:1px solid rgba(11,122,110,.2);color:var(--teal);margin-left:auto; }
+    body.dark-mode .section-header { border-color:var(--border); }
+
+    /* ── Content blocks ── */
+    .prose { font-size:.92em;line-height:1.8;color:var(--muted);margin-bottom:18px; }
+    .prose strong { color:var(--text); }
+    .prose em { color:var(--text); }
+
+    .callout { background:var(--bg4);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:14px 18px;margin:16px 0;font-size:.88em;line-height:1.7;color:var(--muted); }
+    .callout strong { color:var(--text); }
+    body.dark-mode .callout { background:var(--bg3);border-left-color:var(--teal); }
+
+    /* ── Finding cards ── */
+    .findings { display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:18px 0; }
+    .finding-card { background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;transition:border-color var(--tr); }
+    .finding-card:hover { border-color:var(--teal-dim); }
+    .finding-icon { font-size:1.6em;margin-bottom:8px; }
+    .finding-label { font-family:var(--mono);font-size:.68em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:5px; }
+    .finding-text { font-size:.85em;line-height:1.6;color:var(--muted); }
+    .finding-text strong { color:var(--text); }
+    body.dark-mode .finding-card { background:var(--bg2);border-color:var(--border); }
+
+    /* ── Metrics row ── */
+    .metrics { display:flex;flex-wrap:wrap;gap:12px;margin:16px 0; }
+    .metric { background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:12px 20px;text-align:center;min-width:110px; }
+    .metric-val { font-family:var(--mono);font-size:1.4em;font-weight:600;color:var(--teal);line-height:1; }
+    .metric-lbl { font-size:.72em;color:var(--dim);margin-top:4px;line-height:1.3; }
+    body.dark-mode .metric { background:var(--bg2);border-color:var(--border); }
+
+    /* ── Chapter image gallery ── */
+    .fig-row { display:grid;gap:16px;margin:20px 0; }
+    .fig-row.cols-2 { grid-template-columns:1fr 1fr; }
+    .fig-row.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+    .fig-row.cols-1 { grid-template-columns:1fr; }
+    .fig-item { background:var(--bg2);border:1px solid var(--border2);border-radius:12px;overflow:hidden; }
+    .fig-item img { width:100%;display:block;object-fit:cover;max-height:320px; }
+    .fig-caption { padding:10px 14px;font-size:.78em;color:var(--dim);line-height:1.5;border-top:1px solid var(--border2); }
+    .fig-caption strong { color:var(--muted); }
+    body.dark-mode .fig-item { background:var(--bg2);border-color:var(--border); }
+    body.dark-mode .fig-caption { border-color:var(--border); }
+
+    /* ── Methods box ── */
+    .methods-box { background:var(--bg3);border-radius:12px;padding:18px 22px;margin:16px 0; }
+    .methods-title { font-family:var(--mono);font-size:.72em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);margin-bottom:12px; }
+    .methods-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 20px; }
+    .methods-item { font-size:.84em;color:var(--muted);line-height:1.55; }
+    .methods-item strong { color:var(--text);display:block;font-size:.9em; }
+    body.dark-mode .methods-box { background:var(--bg3); }
+
+    /* ── Pipeline diagram ── */
+    .pipeline { display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:16px 0; }
+    .pipe-step { background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:.8em;color:var(--text);font-weight:500; }
+    .pipe-arrow { color:var(--teal);font-size:1.1em;padding:0 2px; }
+    body.dark-mode .pipe-step { background:var(--bg3);border-color:var(--border); }
+
+    /* ── Publication card ── */
+    .pub-card { background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:16px 20px;margin:12px 0;display:flex;gap:16px;align-items:flex-start;transition:border-color var(--tr); }
+    .pub-card:hover { border-color:var(--teal-dim); }
+    .pub-num { font-family:var(--mono);font-size:.72em;color:var(--teal);min-width:24px;padding-top:2px; }
+    .pub-body { flex:1; }
+    .pub-title { font-size:.88em;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.45; }
+    .pub-meta { font-size:.78em;color:var(--dim); }
+    .pub-link { font-size:.75em;font-family:var(--mono);color:var(--teal);text-decoration:none;margin-top:6px;display:inline-block; }
+    .pub-link:hover { text-decoration:underline; }
+    body.dark-mode .pub-card { background:var(--bg2);border-color:var(--border); }
+
+    /* ── Overall conclusion ── */
+    .conclusion-box { background:linear-gradient(135deg,rgba(11,122,110,.08) 0%,rgba(11,122,110,.03) 100%);border:1px solid rgba(11,122,110,.2);border-radius:14px;padding:22px 26px;margin:20px 0; }
+    body.dark-mode .conclusion-box { background:rgba(45,212,191,.05);border-color:rgba(45,212,191,.2); }
+
+    /* ── Responsive ── */
+    @media (max-width: 720px) {
+      .hero { padding: 28px 24px; }
+      .hero h1 { font-size: 1.6em; }
+      .fig-row.cols-2,.fig-row.cols-3 { grid-template-columns: 1fr; }
+      .chapters-nav { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Site nav ── -->
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link" href="index.html">Home</a>
+  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
+  <div class="nav-dropdown">
+    <a class="site-nav-link" href="projects.html">Projects ▾</a>
+    <div class="nav-dropdown-menu">
+      <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
+      <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
+      <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── Gear ── -->
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
+<div class="acc-panel" id="acc-panel">
+  <div class="acc-panel-title">⚙ Display Settings</div>
+  <div class="acc-row">
+    <div class="acc-row-label">Color Mode</div>
+    <div class="acc-toggle-row">
+      <span class="acc-toggle-label">Dark Mode</span>
+      <label class="acc-switch"><input type="checkbox" id="acc-dark" onchange="accDark(this)"><span class="acc-slider"></span></label>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Size</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt" id="acc-sm" onclick="accSize('sm')">Small</button>
+      <button class="acc-opt active" id="acc-md" onclick="accSize('md')">Medium</button>
+      <button class="acc-opt" id="acc-lg" onclick="accSize('lg')">Large</button>
+    </div>
+  </div>
+  <div class="acc-row">
+    <div class="acc-row-label">Font Style</div>
+    <div class="acc-btn-group">
+      <button class="acc-opt active" id="acc-f0" onclick="accFont(0)">Default</button>
+      <button class="acc-opt" id="acc-f1" onclick="accFont(1)">Serif</button>
+      <button class="acc-opt" id="acc-f2" onclick="accFont(2)">Mono</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <div class="hero-eyebrow">PhD Dissertation · Florida International University · 2024</div>
+    <h1>Computational Model for Aortic Valve Calcification Prediction Through Hemodynamic Biomarkers</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><strong>Author:</strong> Asad Mirza, PhD</div>
+      <div class="hero-meta-item"><strong>Advisor:</strong> Dr. Sharan Ramaswamy</div>
+      <div class="hero-meta-item"><strong>Defended:</strong> June 26, 2024</div>
+      <div class="hero-meta-item"><strong>Program:</strong> Biomedical Engineering</div>
+      <div class="hero-meta-item"><strong>Committee:</strong> Tsoukias · Hutcheson · Dickerson · Adjouadi</div>
+    </div>
+    <div class="hero-abstract">
+      Calcific aortic valve disease (CAVD) is a progressive cardiovascular disorder affecting over 12.6 million people worldwide, yet it remains undetected until advanced stages when observable changes in hydrodynamics emerge. This dissertation proposes and validates hemodynamic wall metrics — <strong>time-averaged wall shear stress (TAWSS)</strong> and <strong>oscillatory shear index (OSI)</strong> — as pre-symptomatic biomarkers of CAVD, detectable through computational fluid-structure interaction (FSI) simulations before conventional hydrodynamic parameters show any sign of disease.
+    </div>
+    <div class="hero-badges">
+      <a class="hero-badge pub" href="https://doi.org/10.3390/bioengineering11100955" target="_blank">📄 Bioengineering 2024</a>
+      <a class="hero-badge pub" href="https://doi.org/10.1115/1.4054630" target="_blank">📄 J. Biomechanical Engineering 2022</a>
+      <a class="hero-badge" href="https://www.proquest.com/dissertations-theses/computational-model-aortic-valve-calcification/docview/3139400754/" target="_blank">🎓 ProQuest</a>
+    </div>
+  </div>
+
+  <!-- ── Chapter navigation ── -->
+  <div class="chapters-nav">
+    <button class="chapter-btn" onclick="document.getElementById('background').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 2–3</div>
+      <div class="ch-title">Biological & Engineering Background</div>
+    </button>
+    <button class="chapter-btn" onclick="document.getElementById('ch4').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 4</div>
+      <div class="ch-title">Non-Newtonian Blood Modeling</div>
+    </button>
+    <button class="chapter-btn" onclick="document.getElementById('ch5').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 5</div>
+      <div class="ch-title">PSIS Bioscaffold & Early-Stage Biomarkers</div>
+    </button>
+    <button class="chapter-btn" onclick="document.getElementById('ch6').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 6</div>
+      <div class="ch-title">Mouse Valve — Coronary Cusp Discrepancy</div>
+    </button>
+    <button class="chapter-btn" onclick="document.getElementById('ch7').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 7</div>
+      <div class="ch-title">Parametric Pipeline: Size × CAVD Severity</div>
+    </button>
+    <button class="chapter-btn" onclick="document.getElementById('conclusions').scrollIntoView({behavior:'smooth'})">
+      <div class="ch-num">Ch. 8</div>
+      <div class="ch-title">Overall Conclusions & Future Directions</div>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       BACKGROUND
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="background">
+    <div class="section-header">
+      <span class="section-num">CH. 2–3</span>
+      <h2 class="section-title">Biological & Engineering Background</h2>
+      <span class="section-tag">Context</span>
+    </div>
+
+    <p class="prose">
+      The <strong>aortic valve (AV)</strong> is a tri-leaflet structure separating the left ventricle from the aortic outflow tract. Each leaflet comprises three ECM layers — the <em>ventricularis</em> (elastin-rich, flow-facing), <em>spongiosa</em> (proteoglycan-rich core), and <em>fibrosa</em> (collagen-rich, pressure-bearing) — each serving distinct mechanical roles. <strong>Calcific aortic valve disease (CAVD)</strong> begins as asymptomatic aortic valve sclerosis: calcific nodules form primarily along the coaptation lines and spread toward the leaflet belly, progressively restricting leaflet motion and narrowing the outflow tract (aortic stenosis, AS).
+    </p>
+
+    <p class="prose">
+      CAVD affects <strong>12.6 million people globally</strong> (2017) and prevalence is expected to double over the next 50 years. No pharmacological treatment exists — the only definitive therapy is <strong>surgical aortic valve replacement (SAVR)</strong> or, increasingly, <strong>transcatheter AV replacement (TAVR)</strong>. TAVR has surpassed SAVR as the preferred approach since it is minimally invasive, requires no cardiopulmonary bypass, and patients are often discharged the same day. However, both approaches intervene only after disease has progressed to a symptomatic, surgically operable stage.
+    </p>
+
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-icon">🫀</div>
+        <div class="finding-label">The Clinical Problem</div>
+        <div class="finding-text">CAVD is asymptomatic in its early stages. Standard hydrodynamic parameters (ΔP, EOA, Q<sub>rms</sub>, RF) show <strong>no significant deviation from normal</strong> until the disease has advanced — making early intervention impossible without better biomarkers.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">🔬</div>
+        <div class="finding-label">Hemodynamic Hypothesis</div>
+        <div class="finding-text">Abnormal <strong>wall shear stress (WSS)</strong> drives adverse endothelial cell remodeling and has been linked to atherosclerosis in arteries. This dissertation tests whether TAWSS and OSI serve similar roles as pre-symptomatic CAVD biomarkers at the <em>valve leaflet</em> surface.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">⚙️</div>
+        <div class="finding-label">Computational Methods</div>
+        <div class="finding-text">Patient-specific <strong>fluid-structure interaction (FSI)</strong> simulations in LS-DYNA and ANSYS using the <strong>arbitrary Lagrangian-Eulerian (ALE)</strong> method — Lagrangian solid domain tracking leaflet deformation, Eulerian fluid domain capturing blood flow through a deforming mesh.</div>
+      </div>
+    </div>
+
+    <div class="fig-row cols-2">
+      <div class="fig-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Diagram_of_the_human_heart_%28cropped%29.svg/800px-Diagram_of_the_human_heart_%28cropped%29.svg.png" alt="Heart anatomy diagram" loading="lazy">
+        <div class="fig-caption"><strong>Figure:</strong> Human heart anatomy showing the aortic valve position between the left ventricle and aorta. The aortic valve leaflets (right coronary cusp, left coronary cusp, non-coronary cusp) open during systole and close during diastole.</div>
+      </div>
+      <div class="fig-item">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Aortic_stenosis_video.gif/280px-Aortic_stenosis_video.gif" alt="Aortic stenosis animation" loading="lazy">
+        <div class="fig-caption"><strong>Figure:</strong> Echocardiographic visualization of aortic stenosis — restricted leaflet opening due to calcific deposits. In healthy valves, leaflets open fully; in CAVD, calcification progressively limits motion.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       CHAPTER 4
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="ch4">
+    <div class="section-header">
+      <span class="section-num">CH. 4</span>
+      <h2 class="section-title">Non-Newtonian Blood Modeling in Severely Calcified Valves</h2>
+      <span class="section-tag">Published · J. Biomech. Eng. 2022</span>
+    </div>
+
+    <p class="prose">
+      Wall shear stress predictions in cardiovascular CFD depend critically on the fluid viscosity model. In <strong>arteries</strong>, high shear rates keep blood in the Newtonian regime (constant viscosity), making the Newtonian approximation acceptable. The aortic valve, however, features complex geometry, dynamic motion, and crevice regions between calcific nodules where blood slows dramatically — conditions that may break the Newtonian assumption.
+    </p>
+    <p class="prose">
+      A patient-specific CT-reconstructed severely calcified human aortic valve (82-year-old female, Materialise Heart Print catalog) was computationally modeled across three configurations (diastole, early systole, peak systole) under both <strong>Newtonian</strong> and <strong>non-Newtonian (Carreau-Yasuda)</strong> viscosity models. The Carreau-Yasuda model captures shear-thinning: at low shear rates, blood viscosity rises substantially above the Newtonian constant.
+    </p>
+
+    <div class="methods-box">
+      <div class="methods-title">Methods Summary</div>
+      <div class="methods-grid">
+        <div class="methods-item"><strong>Geometry Source</strong>CT reconstruction, de-identified patient, Materialise Heart Print</div>
+        <div class="methods-item"><strong>Software</strong>ANSYS SpaceClaim (CAD), LS-DYNA (CFD), ANSYS EnSight (post)</div>
+        <div class="methods-item"><strong>Meshes</strong>4.02×10⁶ – 5.91×10⁶ quadratic 10-node elements</div>
+        <div class="methods-item"><strong>Fluid Models</strong>Newtonian (μ = const) vs. Carreau-Yasuda (shear-thinning)</div>
+        <div class="methods-item"><strong>Configurations</strong>Closed (diastole), partial open (early systole), full open (peak systole)</div>
+        <div class="methods-item"><strong>BCs</strong>120 mmHg ventricularis pressure (peak systole); 100 mmHg outlet</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Key Finding:</strong> The fibrosa (pressure-bearing) surface of severely calcified leaflets, particularly within the crevice regions between nodules, experiences <strong>shear rates below the Newtonian threshold</strong>. Under these conditions, blood viscosity is significantly higher than the Newtonian constant — leading Newtonian models to <strong>artificially underpredict WSS</strong> in precisely the regions most relevant to CAVD progression. Accurate FSI modeling of severely calcified valves therefore <strong>requires</strong> a non-Newtonian viscosity model.
+    </div>
+
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-icon">📉</div>
+        <div class="finding-label">Newtonian Underprediction</div>
+        <div class="finding-text">Newtonian models produced <strong>artificially lower WSS</strong> in fibrosa crevice regions compared to non-Newtonian models — because they cannot capture the increased viscosity at low shear rates.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">⚠️</div>
+        <div class="finding-label">Clinical Implication</div>
+        <div class="finding-text">If biomarker studies use Newtonian models for severe CAVD, WSS predictions will be systematically biased — potentially masking the true hemodynamic signal linked to calcification and thrombosis risk.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">✅</div>
+        <div class="finding-label">Design Decision</div>
+        <div class="finding-text">All subsequent FSI simulations in this dissertation use non-Newtonian blood models where appropriate, informed by local shear rate assessments.</div>
+      </div>
+    </div>
+
+    <div class="pub-card">
+      <div class="pub-num">1</div>
+      <div class="pub-body">
+        <div class="pub-title">Mirza A*, Ramaswamy S. Importance of Non-Newtonian Computational Fluid Modeling on Severely Calcified Aortic Valve Geometries.</div>
+        <div class="pub-meta"><em>Journal of Biomechanical Engineering.</em> 2022;144(11). ASME.</div>
+        <a class="pub-link" href="https://doi.org/10.1115/1.4054630" target="_blank">doi: 10.1115/1.4054630 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       CHAPTER 5
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="ch5">
+    <div class="section-header">
+      <span class="section-num">CH. 5</span>
+      <h2 class="section-title">Early-Stage CAVD Biomarkers Using PSIS Bioscaffold Valves</h2>
+      <span class="section-tag">Core Aim 1</span>
+    </div>
+
+    <p class="prose">
+      The central challenge of CAVD biomarker development is capturing the <em>pre-symptomatic</em> stage — when standard clinical parameters show no abnormality but calcification is already altering the valve's mechanical and hemodynamic environment. This chapter creates and characterizes an <em>in vitro</em> early-stage CAVD model using <strong>porcine small intestinal submucosa (PSIS)</strong> bioscaffolds seeded with valve interstitial cells (VICs) and valve endothelial cells (VECs) cultured in pro-calcific media, then evaluates whether TAWSS and OSI can detect disease that hydrodynamics cannot.
+    </p>
+
+    <div class="pipeline">
+      <div class="pipe-step">PSIS scaffold preparation</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">VIC/VEC seeding</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">Pro-calcific media (7 days)</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">Hydrodynamic testing (Vivitro)</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">Nanoindentation</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">FSI simulation</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">TAWSS / OSI analysis</div>
+    </div>
+
+    <div class="methods-box">
+      <div class="methods-title">Experimental Groups (n=3 per group)</div>
+      <div class="methods-grid">
+        <div class="methods-item"><strong>Group A — Raw PSIS</strong>Healthy control; no cells, no culture</div>
+        <div class="methods-item"><strong>Group B — Static Calcific</strong>PSIS + VIC/VEC in pro-calcific media, no flow (OSI = 0, static culture, 7 days)</div>
+        <div class="methods-item"><strong>Group C — Bioreactor Calcific</strong>PSIS + VIC/VEC in pro-calcific media + oscillatory shear (OSI = 0.5, 3–4 dyn/cm², 7 days)</div>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-val">p&lt;0.05</div><div class="metric-lbl">Nanoindentation stiffness difference: healthy vs. calcified</div></div>
+      <div class="metric"><div class="metric-val">+28%</div><div class="metric-lbl">TAWSS increase: healthy → mildly calcified</div></div>
+      <div class="metric"><div class="metric-val">↓ OSI</div><div class="metric-lbl">Reduction in oscillatory shear index with calcification</div></div>
+      <div class="metric"><div class="metric-val">No Δ</div><div class="metric-lbl">Hydrodynamic parameters (ΔP, RF, EOA, Q) between groups</div></div>
+    </div>
+
+    <div class="callout">
+      <strong>Key Finding:</strong> Conventional hydrodynamic parameters (ΔP, RF, Q<sub>rms</sub>, EOA) showed <strong>no statistically significant differences</strong> between healthy and mildly calcified PSIS valves — consistent with clinical observations of CAVD's asymptomatic early phase. However, <strong>nanoindentation revealed significantly increased stiffness</strong> (p&lt;0.05) in calcified valves, and <strong>FSI simulations showed a 28% increase in TAWSS and reduction in OSI</strong>. TAWSS and OSI are therefore measurable hemodynamic biomarkers of early-stage, pre-symptomatic CAVD.
+    </div>
+
+    <p class="prose">
+      The Alizarin Red staining confirmed calcification in Groups B and C but not Group A. The Vivitro Pulse Duplicator system (70 bpm, 100 mmHg mean arterial pressure, 35% systolic fraction) verified that all valves functioned similarly at the macro hydrodynamic level. FSI simulations used a three-parameter incompressible Mooney-Rivlin hyperelastic model for valve leaflets and a variational multiscale turbulence model for the saline fluid domain (Re ≈ 9,800).
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       CHAPTER 6
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="ch6">
+    <div class="section-header">
+      <span class="section-num">CH. 6</span>
+      <h2 class="section-title">Mouse Aortic Valve Model — Coronary Cusp Calcification Discrepancy</h2>
+      <span class="section-tag">Core Aim 2</span>
+    </div>
+
+    <p class="prose">
+      In human CAVD, the <strong>non-coronary cusp (NCC)</strong> consistently shows greater calcification severity than the right coronary cusp (RCC) or left coronary cusp (LCC). Paradoxically, in many mouse models of CAVD, the <strong>RCC shows the greatest calcification</strong> — the reverse of the human pattern. This discrepancy has limited mouse-to-human translational inference in CAVD research. Understanding <em>why</em> requires interrogating the hemodynamic environment of the mouse coronary ostia — the small openings through which blood enters the coronary arteries.
+    </p>
+
+    <p class="prose">
+      A <strong>parametrized mouse aortic valve</strong> model was developed in SolidWorks. The key variable: the <strong>right coronary ostium height</strong> (R<sub>OH</sub>) relative to the coaptation point. In mice, this distance varies considerably compared to humans. The hypothesis: when R<sub>OH</sub> is below the coaptation point, blood actively perfuses through the RCC region, generating higher shear rates and protective hemodynamics on the RCC. When R<sub>OH</sub> exceeds the coaptation point, the RCC's hemodynamic environment mirrors the NCC — low-shear, oscillatory — predisposing it to greater calcification.
+    </p>
+
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-icon">🐭</div>
+        <div class="finding-label">Mouse vs. Human</div>
+        <div class="finding-text">Mice have <strong>greater variability in right coronary ostium height</strong> relative to the coaptation point compared to humans. This anatomical variability, not an intrinsic species difference, drives the reversed calcification pattern.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">🌊</div>
+        <div class="finding-label">Mechanism</div>
+        <div class="finding-text">When the right ostium height exceeds the coaptation point, <strong>blood perfusion through the RCC region is reduced</strong> — causing RCC hemodynamics to resemble the NCC (low shear, high OSI) rather than showing the protective high-shear pattern typical of coronary-side cusps in humans.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">🔬</div>
+        <div class="finding-label">Translational Impact</div>
+        <div class="finding-text">This computational finding offers a mechanistic explanation for why mouse CAVD models cannot be assumed to replicate human calcification patterns — and suggests controlling coronary ostium geometry when selecting or engineering mouse models for valve research.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       CHAPTER 7
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="ch7">
+    <div class="section-header">
+      <span class="section-num">CH. 7</span>
+      <h2 class="section-title">Parametric Pipeline: Valve Size × CAVD Severity</h2>
+      <span class="section-tag">Core Aim 3 · Published · Bioengineering 2024</span>
+    </div>
+
+    <p class="prose">
+      The final aim scales the biomarker framework to a clinically representative population by systematically varying both <strong>valve annular size</strong> (22–30 mm, the full clinical range) and <strong>CAVD severity</strong> (Grades 1–6). This required two major computational contributions: (1) a <strong>parametrized healthy aortic valve model</strong> that automatically scales all anatomy to any given annulus diameter, and (2) a <strong>Python-based calcification generator</strong> running in Blender that programmatically deposits calcific nodules of varying grade onto any leaflet geometry.
+    </p>
+
+    <div class="methods-box">
+      <div class="methods-title">Calcification Grading Schema (Bahler et al.)</div>
+      <div class="methods-grid">
+        <div class="methods-item"><strong>Grade 1 — None</strong>No nodules</div>
+        <div class="methods-item"><strong>Grade 2 — Minimal</strong>Localized deposits, no dense areas</div>
+        <div class="methods-item"><strong>Grade 3 — Mild</strong>One leaflet predominantly affected, free-edge deposits</div>
+        <div class="methods-item"><strong>Grade 4 — Moderate</strong>Two leaflets with notable deposits</div>
+        <div class="methods-item"><strong>Grade 5 — Significant</strong>All leaflets affected, belly involvement</div>
+        <div class="methods-item"><strong>Grade 6 — Severe</strong>Nodules on all leaflets, both ventricularis and fibrosa surfaces</div>
+      </div>
+    </div>
+
+    <p class="prose">
+      The calcification generator used <strong>Blender's metaball objects</strong> (non-mesh clay-like forms that merge organically) to place nodules along leaflet free edges and belly regions, then converted and remeshed the result with a Perlin noise displacement modifier to eliminate artificial surface regularities — producing morphologically realistic calcific deposits. All deposits were scaled consistently by the annulus diameter (d<sub>Annulus</sub>) to ensure cross-size comparability.
+    </p>
+
+    <div class="metrics">
+      <div class="metric"><div class="metric-val">50+</div><div class="metric-lbl">Total FSI simulations across all size–grade combinations</div></div>
+      <div class="metric"><div class="metric-val">4</div><div class="metric-lbl">Valve annular sizes (22, 25, 27, 30 mm)</div></div>
+      <div class="metric"><div class="metric-val">6</div><div class="metric-lbl">CAVD grades (1–6, None→Severe)</div></div>
+      <div class="metric"><div class="metric-val">R²&gt;0.85</div><div class="metric-lbl">Validation against ex vivo hydrodynamic data</div></div>
+    </div>
+
+    <div class="callout">
+      <strong>Key Finding — Hemodynamic gradient:</strong> TAWSS increased and OSI decreased monotonically with CAVD grade across <em>all</em> valve sizes. These metrics were trackable across the full severity spectrum, from pre-symptomatic (Grade 1–2) to severe (Grade 5–6), providing a computational framework for CAVD staging.
+    </div>
+    <div class="callout">
+      <strong>Key Finding — Valve size effect:</strong> Larger annular valves showed marginally lower TAWSS and higher OSI than smaller valves at equivalent CAVD grades — suggesting a <strong>slight hemodynamic protective effect of larger valve size</strong>, possibly related to the larger sinus volume reducing the severity of jet-driven shear concentration. Hydrodynamic metrics (ΔP, V<sub>max</sub>, EOA) were consistent with established echocardiographic thresholds for AS grading.
+    </div>
+    <div class="callout">
+      <strong>Key Finding — Flow asymmetry:</strong> Grade 3 and Grade 5 valves, where only one or two leaflets are predominantly affected, produced <strong>highly asymmetric aortic jets</strong> and recirculating turbulent zones — a pattern linked in the literature to aortic dilation morphotypes and elevated aortic wall WSS downstream.
+    </div>
+
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="https://www.mdpi.com/bioengineering/bioengineering-11-00955/article_deploy/html/images/bioengineering-11-00955-g007.png" alt="TAWSS and OSI heatmaps across CAVD grades" loading="lazy">
+        <div class="fig-caption"><strong>Figure (from Bioengineering 2024):</strong> Distribution of hemodynamic outcomes (TAWSS and OSI) across valve sizes and CAVD grades. TAWSS increases and OSI decreases with increasing grade severity, providing a hemodynamic signature of disease progression consistent across all clinically relevant valve sizes.</div>
+      </div>
+    </div>
+
+    <div class="pub-card">
+      <div class="pub-num">2</div>
+      <div class="pub-body">
+        <div class="pub-title">Mirza A*, Hsu C-PD, Rodriguez A, Alvarez P, Lou L, Sey M, Agarwal A, Hutcheson JD*, Ramaswamy S. Computational Model for Early-Stage Aortic Valve Calcification Shows Hemodynamic Biomarkers.</div>
+        <div class="pub-meta"><em>Bioengineering.</em> 2024;11(10):955. MDPI.</div>
+        <a class="pub-link" href="https://doi.org/10.3390/bioengineering11100955" target="_blank">doi: 10.3390/bioengineering11100955 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       OVERALL CONCLUSIONS
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="conclusions">
+    <div class="section-header">
+      <span class="section-num">CH. 8</span>
+      <h2 class="section-title">Overall Conclusions & Future Directions</h2>
+      <span class="section-tag">Synthesis</span>
+    </div>
+
+    <div class="conclusion-box">
+      <p class="prose" style="margin-bottom:12px">
+        <strong>This dissertation establishes the computational and experimental foundation for TAWSS and OSI as pre-symptomatic hemodynamic biomarkers of CAVD</strong> — measurable through FSI simulation before conventional clinical parameters detect any disease.
+      </p>
+      <p class="prose" style="margin-bottom:0">
+        The four-chapter research arc demonstrates: (1) the viscosity model matters in severe CAVD — non-Newtonian modeling is required for accurate WSS prediction; (2) TAWSS and OSI detect early-stage CAVD when hydrodynamics cannot; (3) coronary ostium geometry explains the paradoxical mouse calcification pattern; and (4) a scalable parametric pipeline quantifies hemodynamic biomarker signatures across the full clinical spectrum of valve sizes and disease severities.
+      </p>
+    </div>
+
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-icon">🔬</div>
+        <div class="finding-label">Immediate Next Step</div>
+        <div class="finding-text">Validate the parametric FSI model against <strong>pre- and post-TAVR MRI/CT data</strong> from at least 3 patients per valve size category (22–30 mm) across CAVD grades — correlating computational TAWSS/OSI with physician calcium scoring and post-operative hemodynamics.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">🏥</div>
+        <div class="finding-label">Clinical Translation</div>
+        <div class="finding-text">Develop a <strong>patient-specific CAVD tracking pipeline</strong>: CT/MRI → parametrized valve reconstruction → FSI simulation → TAWSS/OSI biomarker extraction → longitudinal disease trajectory prediction. Target: identify candidates for early intervention before symptomatic threshold.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-icon">💊</div>
+        <div class="finding-label">Therapeutic Development</div>
+        <div class="finding-text">The computational framework provides a testbed for evaluating <strong>proposed pharmacological treatments</strong> for CAVD. By simulating early-stage disease under intervention (lipid-lowering, anti-calcification agents), the pipeline could predict hemodynamic response before costly in vivo trials.</div>
+      </div>
+    </div>
+
+    <p class="prose">
+      The work presented here represents the first systematic computational demonstration that hemodynamic biomarkers can delineate CAVD severity across the clinical spectrum of valve sizes — providing a theoretical framework for pre-symptomatic CAVD detection and a scalable tool for population-level hemodynamic modeling of aortic valve disease.
+    </p>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div style="text-align:center;margin-top:48px;padding-top:20px;border-top:1px solid var(--border2);font-family:var(--mono);font-size:.72em;color:var(--dim)">
+    PhD Dissertation · Asad Mirza · FIU Biomedical Engineering · Defended June 26, 2024 ·
+    Advisor: Dr. Sharan Ramaswamy
+  </div>
+</div>
+
+<script>
+(function(){
+  var FONTS=['','font-serif','font-mono'];
+  var LS=window.localStorage;
+  function lsGet(k){try{return LS?LS.getItem(k):null;}catch(e){return null;}}
+  function lsSet(k,v){try{if(LS)LS.setItem(k,v);}catch(e){}}
+  function applyPrefs(){
+    var dark=lsGet('acc_dark')==='1';
+    var sz=lsGet('acc_sz')||'md';
+    var fi=parseInt(lsGet('acc_fi')||'0');
+    var b=document.body;
+    b.classList.toggle('dark-mode',dark);
+    b.classList.toggle('light-mode',!dark);
+    b.classList.remove('size-sm','size-md','size-lg');
+    b.classList.add('size-'+sz);
+    b.classList.remove('font-serif','font-mono');
+    if(FONTS[fi]) b.classList.add(FONTS[fi]);
+    var cb=document.getElementById('acc-dark');
+    if(cb) cb.checked=dark;
+    ['sm','md','lg'].forEach(function(s){var el=document.getElementById('acc-'+s);if(el)el.classList.toggle('active',s===sz);});
+    [0,1,2].forEach(function(i){var el=document.getElementById('acc-f'+i);if(el)el.classList.toggle('active',i===fi);});
+  }
+  window.accToggle=function(){var p=document.getElementById('acc-panel');if(p)p.classList.toggle('open');};
+  window.accDark=function(cb){lsSet('acc_dark',cb.checked?'1':'0');applyPrefs();};
+  window.accSize=function(s){lsSet('acc_sz',s);applyPrefs();};
+  window.accFont=function(i){lsSet('acc_fi',i);applyPrefs();};
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('acc-panel');var b2=document.getElementById('acc-btn');
+    if(p&&b2&&p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b2)p.classList.remove('open');
+  });
+  applyPrefs();
+  document.addEventListener('DOMContentLoaded',applyPrefs);
+})();
+</script>
+</body>
+</html>
