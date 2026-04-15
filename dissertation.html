@@ -301,14 +301,24 @@
  CAVD affects <strong>12.6 million people globally</strong> (2017) and prevalence is expected to double over the next 50 years. No pharmacological treatment exists — the only definitive therapy is <strong>surgical aortic valve replacement (SAVR)</strong> or, increasingly, <strong>transcatheter AV replacement (TAVR)</strong>. TAVR has surpassed SAVR as the preferred approach since it is minimally invasive, requires no cardiopulmonary bypass, and patients are often discharged the same day. However, both approaches intervene only after disease has progressed to a symptomatic, surgically operable stage.
  </p>
 
- 
-    <div class="fig-row cols-1">
+    <div class="fig-row cols-2">
       <div class="fig-item">
-        <img src="src/Dissertation/fig2_3_leaflet_layers.jpg" alt="Figure 2-3: Aortic valve leaflet tri-layer ECM cross-section — ventricularis, spongiosa, fibrosa" loading="lazy">
-        <div class="fig-caption"><strong>Figure 2-3:</strong> Cross-section of a human aortic valve leaflet showing the tri-layer extracellular matrix (ECM): the <em>ventricularis</em> (elastin-rich, flow-facing), the <em>spongiosa</em> (proteoglycan core), and the <em>fibrosa</em> (collagen-rich, pressure-bearing). Valve interstitial cells (VICs) and valve endothelial cells (VECs) maintain structural integrity and are the primary cellular mediators of calcification.</div>
+        <img src="src/Dissertation/fig2_1_circulation.jpg" alt="Human blood circulation — systemic and pulmonary circuits" loading="lazy">
+        <div class="fig-caption"><strong>Figure 2-1.</strong> Human blood circulation diagram showing the heart and both the systemic and pulmonary circuits. The aortic valve is located at the exit of the left ventricle, controlling outflow into the aorta.</div>
+      </div>
+      <div class="fig-item">
+        <img src="src/Dissertation/fig2_2_aortic_valve.jpg" alt="Aortic valve anatomy — cut-open view" loading="lazy">
+        <div class="fig-caption"><strong>Figure 2-2.</strong> Cut-open view of the aortic and mitral valve leaflets, showing the right coronary (R), left coronary (L), and non-coronary (N) cusps, along with the coronary outflow locations and fibrous trigones.</div>
       </div>
     </div>
-<div class="findings">
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig2_3_leaflet_layers.jpg" alt="Aortic valve leaflet tri-layer ECM cross-section" loading="lazy">
+        <div class="fig-caption"><strong>Figure 2-3.</strong> Cross-section of a human aortic valve leaflet showing the tri-layer extracellular matrix (ECM): the <em>ventricularis</em> (elastin-rich, flow-facing), the <em>spongiosa</em> (proteoglycan-rich core), and the <em>fibrosa</em> (collagen-rich, pressure-bearing). Valve interstitial cells (VICs) and endothelial cells (VECs) populate each layer and are the primary cellular mediators of calcification.</div>
+      </div>
+    </div>
+
+    <div class="findings">
  <div class="finding-card">
  
  <div class="finding-label">The Clinical Problem</div>
@@ -323,17 +333,6 @@
  
  <div class="finding-label">Computational Methods</div>
  <div class="finding-text">Patient-specific <strong>fluid-structure interaction (FSI)</strong> simulations in LS-DYNA and ANSYS using the <strong>arbitrary Lagrangian-Eulerian (ALE)</strong> method — Lagrangian solid domain tracking leaflet deformation, Eulerian fluid domain capturing blood flow through a deforming mesh.</div>
- </div>
- </div>
-
- <div class="fig-row cols-2">
- <div class="fig-item">
- <img src="src/Dissertation/fig2_1_circulation.jpg" alt="Human blood circulation diagram — systemic and pulmonary circuits" loading="lazy">
- <div class="fig-caption"><strong>Figure:</strong> Human heart anatomy showing the aortic valve position between the left ventricle and aorta. The aortic valve leaflets (right coronary cusp, left coronary cusp, non-coronary cusp) open during systole and close during diastole.</div>
- </div>
- <div class="fig-item">
- <img src="src/Dissertation/fig2_2_aortic_valve.jpg" alt="Aortic valve cut-open view showing coronary cusps, mitral valve, and fibrous trigones" loading="lazy">
- <div class="fig-caption"><strong>Figure:</strong> Echocardiographic visualization of aortic stenosis — restricted leaflet opening due to calcific deposits. In healthy valves, leaflets open fully; in CAVD, calcification progressively limits motion.</div>
  </div>
  </div>
  </div>
@@ -389,18 +388,21 @@
  </div>
  </div>
 
- <div class="fig-row cols-2">
- <div class="fig-item">
-  <img src="src/Dissertation/fig4_1_cfd_model.jpg" alt="Figure 4-1: CFD model — diastolic, early-systolic, and peak-systolic configurations with non-Newtonian model fittings" loading="lazy">
-  <div class="fig-caption"><strong>Figure 4-1:</strong> CT-reconstructed severely calcified human aortic valve preprocessed in ANSYS SpaceClaim. Shown in diastolic, early-systolic, and peak-systolic configurations for quasi-static CFD analysis.</div>
- </div>
- <div class="fig-item">
-  <img src="src/Dissertation/fig4_3_wss_comparison.jpg" alt="Figure 4-3: Fibrosa-side quasi-static WSS for each configuration — Newtonian vs Carreau vs Quemada models" loading="lazy">
-  <div class="fig-caption"><strong>Figure 4-2:</strong> Wall shear stress (WSS) distribution on the fibrosa surface — Newtonian vs. Carreau-Yasuda non-Newtonian models. Crevice regions between calcific nodules show substantially different predictions; the Newtonian model artificially underpredicts WSS where shear rates are low.</div>
- </div>
- </div>
+ 
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig4_1_cfd_model.jpg" alt="Figure 4-1: CFD model preparation" loading="lazy">
+        <div class="fig-caption"><strong>Figure 4-1.</strong> CFD model preparation. (a–c) CT-reconstructed severely calcified human aortic valve in diastolic, early-systolic, and peak-systolic configurations. (d) Inlet velocity profile boundary condition. (e) Non-Newtonian viscosity model fittings — Carreau (R²=0.9954) and Quemada (R²=0.9931) models fitted to experimental blood rheology data.</div>
+      </div>
+    </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig4_3_wss_comparison.jpg" alt="Figure 4-3: WSS distribution comparison — Newtonian vs non-Newtonian" loading="lazy">
+        <div class="fig-caption"><strong>Figure 4-3.</strong> Fibrosa-side quasi-static wall shear stress (WSS) for each valve configuration — closed (A), partially open (B), and fully open (C) — comparing Newtonian (i), Carreau (ii), and Quemada (iii) models. Crevice regions around calcific nodules show substantially higher WSS under non-Newtonian models, where increased viscosity at low shear rates amplifies the predicted stress.</div>
+      </div>
+    </div>
 
- <div class="pub-card">
+    <div class="pub-card">
  <div class="pub-num">1</div>
  <div class="pub-body">
  <div class="pub-title">Mirza A*, Ramaswamy S. Importance of Non-Newtonian Computational Fluid Modeling on Severely Calcified Aortic Valve Geometries.</div>
@@ -468,7 +470,23 @@
  <!-- ══════════════════════════════════════════════════════
  CHAPTER 6
  ══════════════════════════════════════════════════════ -->
- <div class="section" id="ch6">
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig5_2_computational_model.jpg" alt="Figure 5-2: Computational model" loading="lazy">
+        <div class="fig-caption"><strong>Figure 5-2.</strong> Computational model information. (A) Aortic valve conduit and scaffold geometry with dimensions scaled to valve diameter D. (B) Inlet pressure differential boundary conditions for Raw (red), Static (green), and Bioreactor (blue) groups across a cardiac cycle. (C) Cross-sectional view of the finalized volume mesh showing boundary layers inflated along the scaffold surface.</div>
+      </div>
+    </div>
+    <div class="fig-row cols-2">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig5_3_hydrodynamics.jpg" alt="Figure 5-3: Hydrodynamic results from pulse duplicator" loading="lazy">
+        <div class="fig-caption"><strong>Figure 5-3.</strong> Hydrodynamic results from the Vivitro Pulse Duplicator. Bar graphs of RF, &Delta;P, Q<sub>rms</sub>, and EOA show no statistically significant differences between Raw, Static, and Bioreactor groups — confirming that early-stage CAVD is hemodynamically silent at the macro level. n.s. = p > 0.05.</div>
+      </div>
+      <div class="fig-item">
+        <img src="src/Dissertation/fig5_4_nanoindentation.jpg" alt="Figure 5-4: Nanoindentation mechanical results" loading="lazy">
+        <div class="fig-caption"><strong>Figure 5-4.</strong> Nanoindentation results. (A–C) Load vs. displacement curves for Raw, Static, and Bioreactor PSIS groups. (D) Young's Modulus comparison — both calcified groups show significantly elevated stiffness versus the Raw control (** p&lt;0.01, *** p&lt;0.001, **** p&lt;0.0001), confirming a measurable mechanical signal of early CAVD that hydrodynamics cannot detect.</div>
+      </div>
+    </div>
+<div class="section" id="ch6">
  <div class="section-header">
  <span class="section-num">CH. 6</span>
  <h2 class="section-title">Mouse Aortic Valve Model — Coronary Cusp Calcification Discrepancy</h2>
@@ -500,12 +518,25 @@
  <div class="finding-text">This computational finding offers a mechanistic explanation for why mouse CAVD models cannot be assumed to replicate human calcification patterns — and suggests controlling coronary ostium geometry when selecting or engineering mouse models for valve research.</div>
  </div>
  </div>
- </div>
+ 
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig6_1_mouse_valve.jpg" alt="Figure 6-1: Mouse aortic valve CAD model, BCs, and mesh" loading="lazy">
+        <div class="fig-caption"><strong>Figure 6-1.</strong> Mouse aortic valve model components. (A) Parametrized CAD model showing anatomical features and the right coronary ostium height (h<sub>RightCO</sub>) variable. (B) Inlet velocity waveform from pulsed-wave Doppler recordings — raw data (circles), spline fit (gray), and constant diastolic average (red). (C) Murine-specific Carreau-Yasuda viscosity fit. (D) Polyhedral mesh with boundary layers inflated around the coaptation point.</div>
+      </div>
+    </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig6_2_mouse_wss.jpg" alt="Figure 6-2: Right coronary ostium height variation — shear rate and WSS" loading="lazy">
+        <div class="fig-caption"><strong>Figure 6-2.</strong> Right coronary ostium variation wall metrics. (A) Valve geometries across five h<sub>RightCO</sub> values (0.3130–1.2870 mm). (B) Fibrosa-side shear rate distributions. (C) Fibrosa-side wall shear stress distributions. As h<sub>RightCO</sub> increases past the coaptation point, the RCC shear distribution converges toward the low-shear, oscillatory NCC pattern — mechanistically explaining the reversed cusp calcification pattern in mouse CAVD models.</div>
+      </div>
+    </div>
+
+  </div>
 
  <!-- ══════════════════════════════════════════════════════
  CHAPTER 7
- ══════════════════════════════════════════════════════ -->
- <div class="section" id="ch7">
+ ══════════════════════════════════════════════════════ --><div class="section" id="ch7">
  <div class="section-header">
  <span class="section-num">CH. 7</span>
  <h2 class="section-title">Parametric Pipeline: Valve Size × CAVD Severity</h2>
@@ -532,17 +563,6 @@
  The calcification generator used <strong>Blender's metaball objects</strong> (non-mesh clay-like forms that merge organically) to place nodules along leaflet free edges and belly regions, then converted and remeshed the result with a Perlin noise displacement modifier to eliminate artificial surface regularities — producing morphologically realistic calcific deposits. All deposits were scaled consistently by the annulus diameter (d<sub>Annulus</sub>) to ensure cross-size comparability.
  </p>
 
- <div class="fig-row cols-2">
- <div class="fig-item">
-  <img src="src/Dissertation/fig7_1_calc_grades_matrix.jpg" alt="Figure 7-1: CAVD grades (1,3,5,6) × valve sizes (22–30mm) — short axis view of calcification model" loading="lazy">
-  <div class="fig-caption"><strong>Figure 7-1:</strong> Parametrized healthy aortic valve model scaled to four annular diameters (22–30 mm). All features — sinus height, leaflet dimensions, coronary ostia — scale proportionally to d<sub>Annulus</sub>.</div>
- </div>
- <div class="fig-item">
-  <img src="src/Dissertation/fig7_1_calc_grades_matrix.jpg" alt="Figure 7-1: CAVD grades (1,3,5,6) × valve sizes (22–30mm) — short axis view of calcification model" loading="lazy">
-  <div class="fig-caption"><strong>Figure 7-2:</strong> Calcification generator output, Grades 1–6. Python/Blender metaball algorithm deposits nodules along free edges and belly regions with Perlin noise displacement for morphological realism. Deposits scale with d<sub>Annulus</sub>.</div>
- </div>
- </div>
-
  <div class="metrics">
  <div class="metric"><div class="metric-val">50+</div><div class="metric-lbl">Total FSI simulations across all size–grade combinations</div></div>
  <div class="metric"><div class="metric-val">4</div><div class="metric-lbl">Valve annular sizes (22, 25, 27, 30 mm)</div></div>
@@ -550,17 +570,30 @@
  <div class="metric"><div class="metric-val">R²&gt;0.85</div><div class="metric-lbl">Validation against ex vivo hydrodynamic data</div></div>
  </div>
 
+    <div class="fig-row cols-2">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_1_calc_grades_matrix.jpg" alt="Figure 7-1: CAVD grades × valve sizes matrix" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-1.</strong> Short-axis view from the aortic side depicting CAVD intensities across multiple valve sizes. Rows: Grade 1 (None), Grade 3 (Mild), Grade 5 (Medium), Grade 6 (Severe). Columns: 22–30 mm annular diameters. N, R, L = non-coronary, right coronary, left coronary cusps.</div>
+      </div>
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_2_pressure_bcs.jpg" alt="Figure 7-2: Inlet pressure BCs per CAVD grade" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-2.</strong> Inlet differential pressure boundary conditions for each CAVD grade across one cardiac cycle. Grade 6 peaks at 100 mmHg; Grade 1 peaks at ~7 mmHg — consistent with clinical AS grading thresholds. Systolic and diastolic peaks are marked with vertical lines (t = 0.10 s and t = 0.65 s).</div>
+      </div>
+    </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_3_streamlines.jpg" alt="Figure 7-3: Velocity streamlines" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-3.</strong> Velocity streamlines at peak systole (t<sub>s</sub> = 0.10 s) and peak diastole (t<sub>D</sub> = 0.65 s) across all CAVD grades and valve sizes. Grade 1 shows symmetric outflow. Grades 3 and 5 produce asymmetric jets. Grade 6 shows the most turbulent flow with the largest reverse streamlines during diastole.</div>
+      </div>
+    </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_4_vortex_formations.jpg" alt="Figure 7-4: Q-criterion vortex formations" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-4.</strong> Q-criterion vortex formations at peak systole across all grades and sizes. Grade 1 shows a symmetric ring vortex. Higher grades produce larger, more disturbed ring structures extending past the sinotubular junction. Asymmetric grades (3, 5) generate eccentric wakes linked to downstream aortic wall stress.</div>
+      </div>
+    </div>
 
- <div class="fig-row cols-2">
- <div class="fig-item">
-  <img src="src/Dissertation/fig7_4_vortex_formations.jpg" alt="Figure 7-4: Q-criterion vortex formations at peak systole across all CAVD grades and valve sizes" loading="lazy">
-  <div class="fig-caption"><strong>Figure 7-3:</strong> Velocity streamlines at peak systole across CAVD grades (25 mm valve). Grade 1 shows symmetric outflow. Grades 3 and 5 produce highly asymmetric jets. Grade 6 shows the most turbulent, recirculating flow.</div>
- </div>
- <div class="fig-item">
-  <img src="src/Dissertation/fig7_5_hemodynamic_heatmap.jpg" alt="Figure 7-5: TAWSS and OSI distribution heatmaps across CAVD grades and valve sizes" loading="lazy">
-  <div class="fig-caption"><strong>Figure 7-4:</strong> Inlet differential pressure boundary conditions per CAVD grade across a cardiac cycle. Higher grades require greater driving pressure — consistent with clinical AS severity thresholds from echocardiography.</div>
- </div>
- </div>
+
  <div class="callout">
  <strong>Key Finding — Hemodynamic gradient:</strong> TAWSS increased and OSI decreased monotonically with CAVD grade across <em>all</em> valve sizes. These metrics were trackable across the full severity spectrum, from pre-symptomatic (Grade 1–2) to severe (Grade 5–6), providing a computational framework for CAVD staging.
  </div>
@@ -571,12 +604,20 @@
  <strong>Key Finding — Flow asymmetry:</strong> Grade 3 and Grade 5 valves, where only one or two leaflets are predominantly affected, produced <strong>highly asymmetric aortic jets</strong> and recirculating turbulent zones — a pattern linked in the literature to aortic dilation morphotypes and elevated aortic wall WSS downstream.
  </div>
 
- <div class="fig-row cols-1">
- <div class="fig-item">
- <img src="src/Dissertation/fig7_5_hemodynamic_heatmap.jpg" alt="Figure 7-5: TAWSS and OSI distribution heatmaps across CAVD grades and valve sizes" loading="lazy">
- <div class="fig-caption"><strong>Figure (from Bioengineering 2024):</strong> Distribution of hemodynamic outcomes (TAWSS and OSI) across valve sizes and CAVD grades. TAWSS increases and OSI decreases with increasing grade severity, providing a hemodynamic signature of disease progression consistent across all clinically relevant valve sizes.</div>
- </div>
- </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_5_hemodynamic_heatmap.jpg" alt="Figure 7-5: TAWSS and OSI heatmaps" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-5.</strong> Hemodynamic outcome distributions. (A) TAWSS (dynes/cm²) increases with CAVD grade and decreases with valve size. (B) OSI decreases with grade and increases with size. Together, TAWSS and OSI provide a trackable hemodynamic signature of CAVD severity across all clinically relevant valve sizes.</div>
+      </div>
+    </div>
+    <div class="fig-row cols-1">
+      <div class="fig-item">
+        <img src="src/Dissertation/fig7_6_hydrodynamic_heatmap.jpg" alt="Figure 7-6: Hydrodynamic outcomes heatmaps" loading="lazy">
+        <div class="fig-caption"><strong>Figure 7-6.</strong> Hydrodynamic outcome distributions. (A) Pressure gradient &Delta;P. (B) Peak aortic jet velocity V<sub>Max</sub>. (C) Regurgitant fraction RF%. (D) Effective orifice area EOA. Results match established clinical echocardiographic thresholds for AS severity grading, validating the computational model.</div>
+      </div>
+    </div>
+
+
 
  <div class="pub-card">
  <div class="pub-num">2</div>
