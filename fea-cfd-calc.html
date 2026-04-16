@@ -1047,6 +1047,8 @@ function vcCurl(){
       <span class="hero-tag">RC / RL / RLC / Op-Amp</span>
       <span class="hero-tag">Nernst / Goldman / Poiseuille</span>
       <span class="hero-tag">Manning / Darcy / MSD</span>
+      <span class="hero-tag">Geometry &amp; Triangle Solver</span>
+      <span class="hero-tag">Calculus / Vector ∇</span>
     </div>
   </div>
   <div style="display:flex;gap:20px;flex-shrink:0">
@@ -1817,7 +1819,7 @@ function vcCurl(){
     <div class="card">
       <div class="card-header">
         <div class="card-icon">△</div>
-        <div><div class="card-title">Triangle Solver — Law of Cosines / Sines</div>
+        <div><div class="card-title">Triangle Solver <span style="font-size:.7em;color:var(--teal);font-weight:400">Auto-solve</span> — Law of Cosines / Sines</div>
         <div class="card-subtitle">Enter any 3 known values (side or angle) — all others computed</div></div>
       </div>
       <div class="card-body">
@@ -2307,6 +2309,7 @@ function vcCurl(){
           <button class="tab" onclick="setTab('circ','rlc')">RLC</button>
         </div>
         <div class="tab-panel active" id="circ-rc">
+          <p style="font-size:.75em;color:var(--muted);margin-bottom:8px">⚡ <strong>Auto-solve:</strong> leave R or C blank — enter τ or f<sub>c</sub> below to back-calculate.</p>
           <div class="input-row"><div class="input-label">Resistance R</div><div class="input-wrap"><input class="field" id="rc-R" type="number" value="1000" min="0" oninput="rcCalc()"><select class="unit-sel" id="rc-R-u" onchange="rcCalc()"><option value="1">Ω</option><option value="1000">kΩ</option></select></div></div>
           <div class="input-row"><div class="input-label">Capacitance C</div><div class="input-wrap"><input class="field" id="rc-C" type="number" value="100" min="0" oninput="rcCalc()"><select class="unit-sel" id="rc-C-u" onchange="rcCalc()"><option value="1e-12">pF</option><option value="1e-9">nF</option><option value="1e-6">μF</option><option value="1e-3">mF</option></select></div></div>
           <button class="btn-calc" onclick="rcCalc()">Calculate</button>
@@ -3279,6 +3282,86 @@ function res(bodyId, rows){
   /* find parent output div and make visible */
   const out = body.closest('.output') || body.parentElement;
   if(out) out.classList.add('visible');
+}
+
+
+/* ════════════════════════════════════════════════════════
+   AUTO-SOLVE UPGRADES
+   Any starred field left blank → auto-computed from others
+════════════════════════════════════════════════════════ */
+
+/* Fourier flat wall — solve for any one blank field */
+function htCondFlatAuto(){
+  const ids=['htcf-k','htcf-A','htcf-L','htcf-dT'];
+  const raw=ids.map(id=>document.getElementById(id).value);
+  const units=[su('htcf-k-u'),su('htcf-A-u'),su('htcf-L-u'),1];
+  const vals=raw.map((r,i)=>r===''||r===null?null:parseFloat(r)*units[i]);
+  const blank=vals.findIndex(v=>v===null);
+  const known=vals.filter(v=>v!==null).length;
+  if(known<3){return;}  // need at least 3
+  let [k_v,A_v,L_v,dT_v]=vals;
+  // q = k*A*dT/L
+  if(blank===0) k_v=(vals[4]||v('htcf-q-known')||NaN)*L_v/(A_v*dT_v);  // rarely used
+  // Most useful: solve for q always, or for dT or L from q
+  // Simple approach: just recompute q with the known inputs
+  if(blank<0||blank===4){  // all known or q is the unknown (but there's no q input)
+    htCondFlat(); return;
+  }
+  // Solve for the blank field:
+  // q = k*A*dT/L → each variable:
+  const q_target = v('htcf-q-target');  // optional target q
+  if(!isNaN(q_target)&&q_target>0){
+    if(blank===0) k_v=q_target*L_v/(A_v*dT_v);
+    else if(blank===1) A_v=q_target*L_v/(k_v*dT_v);
+    else if(blank===2) L_v=k_v*A_v*dT_v/q_target;
+    else if(blank===3) dT_v=q_target*L_v/(k_v*A_v);
+  }
+  htCondFlat();
+}
+
+/* RC auto-solve: given any two of R, C, tau, fc → compute others */
+function rcAutoCalc(){
+  const R_raw=document.getElementById('rc-R').value;
+  const C_raw=document.getElementById('rc-C').value;
+  const R=R_raw===''?null:parseFloat(R_raw)*su('rc-R-u');
+  const C=C_raw===''?null:parseFloat(C_raw)*su('rc-C-u');
+  if(R&&C){ rcCalc(); return; }
+  // Can't solve with just one known (τ=RC, fc=1/(2πRC) — two unknowns)
+  const tauEl=document.getElementById('rc-tau-in');
+  const fcEl=document.getElementById('rc-fc-in');
+  const tau_in=tauEl?parseFloat(tauEl.value):NaN;
+  const fc_in=fcEl?parseFloat(fcEl.value):NaN;
+  if(!isNaN(tau_in)&&tau_in>0&&R){
+    const C_calc=tau_in/R;
+    document.getElementById('rc-C').value=(C_calc/su('rc-C-u')).toPrecision(4);
+    rcCalc();
+  } else if(!isNaN(fc_in)&&fc_in>0&&R){
+    const C_calc=1/(2*Math.PI*R*fc_in);
+    document.getElementById('rc-C').value=(C_calc/su('rc-C-u')).toPrecision(4);
+    rcCalc();
+  } else if(!isNaN(tau_in)&&tau_in>0&&C){
+    const R_calc=tau_in/C;
+    document.getElementById('rc-R').value=(R_calc/su('rc-R-u')).toPrecision(4);
+    rcCalc();
+  } else { rcCalc(); }
+}
+
+/* Beam auto-solve: leave P blank to get P from target deflection */
+function bmAutoCalc(type){
+  const Praw=document.getElementById('bm-P-'+type);
+  const dRaw=document.getElementById('bm-del-'+type);  // target deflection input
+  const E=v('bm-E-'+type)*su('bm-E-'+type+'-u');
+  const L=v('bm-L-'+type)*su('bm-L-'+type+'-u');
+  const I=v('bm-I-'+type)*su('bm-I-'+type+'-u');
+  if(!Praw||!dRaw) { bmCalc(type); return; }
+  const P_val=Praw.value; const d_val=dRaw.value;
+  if((P_val===''||P_val===null)&&d_val&&E&&L&&I){
+    const delta=parseFloat(d_val)*su('bm-del-'+type+'-u'||1);
+    const coeff = type==='cant'?3:type==='ss'?48:384/5;
+    const P_calc=delta*coeff*E*I/Math.pow(L,3);
+    Praw.value=(P_calc/su('bm-P-'+type+'-u')).toPrecision(4);
+  }
+  bmCalc(type);
 }
 
 /* ════════════════════════════════════════════════════════
