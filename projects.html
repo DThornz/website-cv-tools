@@ -521,6 +521,11 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <button class="filter-btn" onclick="filter('bio',this)">Biomedical</button>
     <button class="filter-btn" onclick="filter('ml',this)">Image / ML</button>
     <button class="filter-btn" onclick="filter('code',this)">Software</button>
+      <button class="filter-btn" onclick="filter('cardio',this)">Cardiovascular</button>
+      <button class="filter-btn" onclick="filter('sim',this)">Simulation</button>
+      <button class="filter-btn" onclick="filter('edu',this)">Educational</button>
+      <button class="filter-btn" onclick="filter('phys',this)">Physics</button>
+      <button class="filter-btn" onclick="filter('neuro',this)">Neuroscience</button>
   </div>
 </div>
 
@@ -529,7 +534,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 <div class="projects-grid" id="grid">
 
   <!-- ══ PROJECT: PhD Dissertation ══════════════════════════ -->
-  <div class="proj-card" data-tags="cfd bio fea"
+  <div class="proj-card" data-tags="cfd bio fea cardio sim"
     data-title="PhD Dissertation — Computational CAVD Biomarker Pipeline"
     data-subtitle="Florida International University · Defended June 26, 2024"
     data-year="2024"
@@ -567,7 +572,7 @@ Carreau-Yasuda: μ(γ̇) = μ∞ + (μ₀−μ∞)[1+(λγ̇)ᵃ]^((n−1)/a)"
   </div>
 
   <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
-  <div class="proj-card" data-tags="code bio"
+  <div class="proj-card" data-tags="code bio edu phys sim"
     data-title="Hodgkin–Huxley Interactive Neuron Model"
     data-subtitle="Educational tool · hodgkin-huxley.html · 2026"
     data-year="2026"
@@ -606,7 +611,7 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
 
 
   <!-- ══ PROJECT: Maxwell–Boltzmann Simulator ══════════════════ -->
-  <div class="proj-card" data-tags="code bio"
+  <div class="proj-card" data-tags="code edu phys sim"
     data-title="Maxwell–Boltzmann Gas Simulator (2D)"
     data-subtitle="Educational tool · maxwell-boltzmann.html · 2026"
     data-year="2026"
@@ -654,7 +659,7 @@ v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
     LINKS:          edit data-links JSON array
     EQUATIONS:      edit data-equations (use \n for line breaks)
   -->
-  <div class="proj-card" data-tags="cfd bio"
+  <div class="proj-card" data-tags="cfd bio cardio sim"
     data-title="CAVD Hemodynamic Biomarkers"
     data-subtitle="Bioengineering 2024 · Journal of Biomechanical Engineering 2022"
     data-year="2019–2024"
@@ -698,7 +703,7 @@ TAWSS = (1/T)·∫|τ| dt              # time-averaged WSS"
   </div>
 
   <!-- ══ PROJECT 2: Non-Newtonian Modeling ════════════════════════ -->
-  <div class="proj-card" data-tags="cfd bio"
+  <div class="proj-card" data-tags="cfd bio cardio sim"
     data-title="Non-Newtonian Blood Flow Modeling"
     data-subtitle="Journal of Biomechanical Engineering 2022"
     data-year="2021–2022"
@@ -735,7 +740,7 @@ TAWSS = (1/T)·∫|τ| dt              # time-averaged WSS"
   </div>
 
   <!-- ══ PROJECT 3: AVF Model ════════════════════════════════════ -->
-  <div class="proj-card" data-tags="cfd bio"
+  <div class="proj-card" data-tags="cfd bio cardio sim"
     data-title="Arteriovenous Fistula Bypass Flow Model"
     data-subtitle="Acta Biomaterialia 2026"
     data-year="2023–2026"
@@ -772,7 +777,7 @@ Dean = Re·√(r/R)           # curvature effects at bends"
   </div>
 
   <!-- ══ PROJECT 4: Nitric Oxide Transport ═══════════════════════ -->
-  <div class="proj-card" data-tags="cfd bio"
+  <div class="proj-card" data-tags="cfd bio neuro sim"
     data-title="Cerebrovascular Nitric Oxide Transport"
     data-subtitle="BMES 2024–2025 · Ongoing"
     data-year="2024–Present"
@@ -809,7 +814,7 @@ G(r) = exp(−r/λ)/(4πDr)     # free-space Green&#39;s function
   </div>
 
   <!-- ══ PROJECT 5: IP3R Calcium Signaling ═══════════════════════ -->
-  <div class="proj-card" data-tags="bio code"
+  <div class="proj-card" data-tags="bio code neuro sim"
     data-title="IP₃R Stochastic Calcium Signaling"
     data-subtitle="In preparation · PI: Dr. Tsoukias"
     data-year="2024–Present"
@@ -880,7 +885,7 @@ CLAHE: local histogram equalization per tile"
   </div>
 
   <!-- ══ PROJECT 7: Brain Vasculature Pipeline ═══════════════════ -->
-  <div class="proj-card" data-tags="ml code"
+  <div class="proj-card" data-tags="ml code neuro"
     data-title="Brain Vasculature Graph Pipeline"
     data-subtitle="vascular_pipeline.m · Tsoukias Lab"
     data-year="2024–Present"
@@ -916,7 +921,7 @@ Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
   </div>
 
   <!-- ══ PROJECT 8: FEA/CFD Calculator ══════════════════════════ -->
-  <div class="proj-card" data-tags="code cfd fea"
+  <div class="proj-card" data-tags="code cfd fea sim edu"
     data-title="FEA / CFD Engineering Calculator"
     data-subtitle="Live on this site · fea-cfd-calc.html"
     data-year="2026"

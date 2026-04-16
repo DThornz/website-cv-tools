@@ -208,7 +208,7 @@
 </div>
 
 <!-- ── Gear ── -->
-<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings"></button>
+<button class="acc-btn" id="acc-btn" onclick="accToggle()" title="Display Settings" aria-label="Display Settings">⚙</button>
 <div class="acc-panel" id="acc-panel">
  <div class="acc-panel-title"> Display Settings</div>
  <div class="acc-row">
@@ -290,7 +290,54 @@
  <!-- ══════════════════════════════════════════════════════
  BACKGROUND
  ══════════════════════════════════════════════════════ -->
- <div class="section" id="background">
+ 
+  <!-- ══════════════════════════════════════════════════════
+       CHAPTER 1: INTRODUCTION
+  ══════════════════════════════════════════════════════ -->
+  <div class="section" id="ch1">
+    <div class="section-header">
+      <span class="section-num">CH. 1</span>
+      <h2 class="section-title">Introduction</h2>
+      <span class="section-tag">Problem & Aims</span>
+    </div>
+
+    <div class="methods-box">
+      <div class="methods-title">Problem Statement</div>
+    </div>
+    <p class="prose">
+      <strong>Calcific aortic valve disease (CAVD)</strong> is a highly debilitating and progressive cardiovascular disorder that results in gradual narrowing of the aortic outflow tract and reduces the heart's ability to supply the body with oxygenated blood. CAVD affects over 12.6 million people worldwide as of 2017 and its prevalence is expected to double within the next 50 years due to population growth and aging. There is currently no known treatment beyond valve replacement, and no animal model that can entirely replicate the complexities seen in human pathologies to allow reliable testing of proposed therapeutics.
+    </p>
+    <p class="prose">
+      CAVD begins as an asymptomatic aortic valve sclerosis and therefore does not produce significant changes in conventional hydrodynamic parameters — regurgitation fraction (RF), effective orifice area (EOA), mean flow rate (Q<sub>rms</sub>), or pressure gradient (ΔP) — to levels associated with even mild CAVD. This makes early detection by standard clinical measures impossible. In terms of hemodynamics, long-term exposure to abnormal <strong>wall shear stress (WSS)</strong> is known to cause adverse endothelial cell remodeling. Specifically, low TAWSS (&lt;4 dynes/cm²) correlates with atherosclerotic development in vasculature — morphologically analogous to CAVD. There is also evidence of extremely high WSS on the tips of calcified leaflets, with WSS differences between the fibrosa and ventricularis increasing under CAVD. The <strong>oscillatory shear index (OSI)</strong>, a measure of flow pulsatility, coincides with early plaque formation in arteries when high (&gt;0.3).
+    </p>
+    <p class="prose">
+      Prior CFD studies showed that OSI values of 0.18–0.23 within certain WSS magnitudes contribute to healthy valve tissue formation, while high OSI (~0.5) led to increased valve interstitial cell calcification. This indicates the critical importance of fluid dynamics in understanding valve disease states.
+    </p>
+
+    <div class="callout">
+      <strong>Central Hypothesis:</strong> Even a very mildly calcified aortic valve — one that shows no apparent hydrodynamic abnormality (normal ΔP, EOA, RF, Q<sub>rms</sub>) — should have identifiable CFD-derived biomarkers (TAWSS and OSI) that are markedly different from a healthy, uncalcified valve. These biomarkers could serve as a predictive tool for early-stage, pre-symptomatic CAVD detection.
+    </div>
+
+    <div class="methods-box" style="margin-top:20px">
+      <div class="methods-title">Specific Aims</div>
+    </div>
+    <div class="findings">
+      <div class="finding-card">
+        <div class="finding-label">Aim 1 — Viscosity Model Validity</div>
+        <div class="finding-text">Confirm whether a Newtonian viscosity model is valid for severely calcified aortic valve geometries. Test multiple non-Newtonian viscosity models against their Newtonian counterpart to determine differences in hemodynamic outcomes (WSS, OSI, shear rate) and identify which model is most applicable for CAVD geometries.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Aim 2 — Early-Stage Biomarkers</div>
+        <div class="finding-text">Investigate hydrodynamic (ΔP, RF, Q<sub>rms</sub>, EOA) and hemodynamic (OSI, TAWSS) parameters in very mildly calcified PSIS bioscaffold valves across three groups: raw/healthy, statically conditioned in calcific media, and bioreactor-conditioned in calcific media. Determine how these parameters vary and whether hemodynamic metrics can detect disease when hydrodynamics cannot.</div>
+      </div>
+      <div class="finding-card">
+        <div class="finding-label">Aim 3 — Parametric Pipeline</div>
+        <div class="finding-text">Investigate the applicability of the computational model on computationally generated calcified aortic valve geometries of varying severity (none, mild, medium, severe) across clinical valve sizes (22–30 mm). Run N=20 two-way FSI simulations to determine whether hemodynamic biomarkers (TAWSS, OSI) can delineate CAVD intensity and progression.</div>
+      </div>
+    </div>
+  </div>
+
+<div class="section" id="background">
  <div class="section-header">
  <span class="section-num">CH. 2–3</span>
  <h2 class="section-title">Biological & Engineering Background</h2>
