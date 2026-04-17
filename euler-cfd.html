@@ -91,7 +91,7 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .stats-r{display:flex;gap:14px;flex-wrap:wrap}
 .stt{font-size:.77em;color:#64748b;font-family:var(--mono)}
 .stt span{color:#e2e8f0;font-weight:600}
-#cfdCanvas{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+#cfdCanvas{display:block;width:100%;aspect-ratio:150/58;image-rendering:pixelated;image-rendering:crisp-edges;min-height:80px}
 .sim-bot{padding:9px 16px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#000d1f}
 .cb-wrap{display:flex;align-items:center;gap:7px;flex:1;min-width:200px}
 .cb-val{font-size:.75em;color:#64748b;font-family:var(--mono);min-width:44px}
@@ -100,7 +100,13 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .sim-note{font-size:.72em;color:#334155}
 .drawhint{font-size:.76em;color:#fbbf24;background:rgba(251,191,36,.12);padding:2px 9px;border-radius:20px;display:none}
 .drawhint.on{display:inline}
-.theory{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:28px 30px;margin-top:24px}
+.quickstart{background:var(--bg2);border:1px solid var(--border2);border-top:3px solid var(--teal);border-radius:0 0 16px 16px;padding:18px 22px;margin-bottom:10px}
+.qs-title{font-family:var(--mono);font-size:.72em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:600;margin-bottom:12px}
+.qs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin-bottom:12px}
+.qs-item{display:flex;align-items:flex-start;gap:9px;font-size:.85em;color:var(--muted);line-height:1.45}
+.qs-key{background:var(--teal);color:#fff;font-family:var(--mono);font-size:.72em;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.qs-keys{font-size:.78em;color:var(--dim);border-top:1px solid var(--border2);padding-top:10px;line-height:1.9}
+.qs-kbd{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-family:var(--mono);font-size:.85em;color:var(--text)}
 .theory h2{font-family:var(--serif);font-size:1.7em;font-weight:400;color:var(--text);margin:0 0 16px;padding-bottom:12px;border-bottom:2px solid var(--border2)}
 .theory h3{font-size:1.05em;font-weight:600;color:var(--text);margin:22px 0 9px}
 .theory h4{font-size:.93em;font-weight:600;color:var(--muted);margin:14px 0 7px}
@@ -172,7 +178,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   <div class="hero-pills">
     <span class="hero-pill">Rusanov / LLF Flux</span>
     <span class="hero-pill">Adaptive CFL = 0.40</span>
-    <span class="hero-pill">7 Preset Scenarios</span>
+    <span class="hero-pill">8 Preset Scenarios</span>
     <span class="hero-pill">Plasma Colormap</span>
     <span class="hero-pill">Stream Tracers</span>
     <span class="hero-pill">KaTeX Equations</span>
@@ -305,11 +311,32 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   <div class="sim-bot">
     <div class="cb-wrap">
       <span class="cb-val" id="cbLo">0</span>
-      <canvas id="cbCanvas" height="13"></canvas>
+      <canvas id="cbCanvas" width="240" height="13"></canvas>
       <span class="cb-val" id="cbHi">400</span>
       <span class="cb-unit" id="cbU">m/s</span>
     </div>
     <span class="sim-note">← Inlet &nbsp;|&nbsp; Outlet → &nbsp;|&nbsp; Slip walls ↕</span>
+  </div>
+</div>
+
+<!-- QUICK START -->
+<div class="quickstart">
+  <div class="qs-title">Quick Start Guide</div>
+  <div class="qs-grid">
+    <div class="qs-item"><span class="qs-key">1</span><span class="qs-text">Select a <strong>preset</strong> from the dropdown — try NACA 0012 at M=0.6 first</span></div>
+    <div class="qs-item"><span class="qs-key">2</span><span class="qs-text">Watch the <strong>Pressure</strong> or <strong>Mach</strong> field — let it run ~200 steps to converge</span></div>
+    <div class="qs-item"><span class="qs-key">3</span><span class="qs-text">Drag the <strong>Inlet Mach</strong> slider up past 0.8 to see transonic shock formation</span></div>
+    <div class="qs-item"><span class="qs-key">4</span><span class="qs-text">Use <strong>Wall pencil</strong> to draw custom obstacles; right-click to erase</span></div>
+    <div class="qs-item"><span class="qs-key">5</span><span class="qs-text">Increase <strong>Grid Resolution</strong> for sharper flow features (slower simulation)</span></div>
+    <div class="qs-item"><span class="qs-key">6</span><span class="qs-text">Lower <strong>Under-Relaxation α</strong> to stabilize high-Mach or complex geometries</span></div>
+  </div>
+  <div class="qs-keys">
+    <span class="qs-kbd">Space</span> Pause / Resume &nbsp;·&nbsp;
+    <span class="qs-kbd">R</span> Reset flow &nbsp;·&nbsp;
+    <span class="qs-kbd">C</span> Clear walls &nbsp;·&nbsp;
+    <span class="qs-kbd">W</span> Wall tool &nbsp;·&nbsp;
+    <span class="qs-kbd">E</span> Erase tool &nbsp;·&nbsp;
+    <span class="qs-kbd">1–4</span> Display field
   </div>
 </div>
 
@@ -371,7 +398,24 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 </dl>
 <p>In non-dimensional form the reference state is $\tilde{\rho}=1$, $\tilde{p}=1$, $\tilde{c}=\sqrt{\gamma}\approx1.183$. Inlet Mach $M$ sets $\tilde{u}=M$. Physical velocity = $\tilde{|v|}\cdot c_0$; physical pressure = $\tilde{p}\cdot p_0$.</p>
 
-<h3>5. Finite-Volume Discretization</h3>
+<h3>5. Flow Regimes by Mach Number</h3>
+<p>The behavior of compressible flow changes qualitatively as the Mach number crosses characteristic thresholds. Use the Inlet Mach slider to explore each regime:</p>
+<table style="width:100%;border-collapse:collapse;font-size:.87em;margin:10px 0 14px">
+  <thead><tr style="background:rgba(11,122,110,.08)">
+    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Regime</th>
+    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Mach Range</th>
+    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Key Physics</th>
+    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">What to observe</th>
+  </tr></thead>
+  <tbody>
+    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Subsonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">M &lt; 0.8</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Smooth pressure field; Bernoulli applies locally; no shocks</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Stagnation at leading edge ($p/p_0\approx1$); smooth velocity distribution</td></tr>
+    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Transonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">0.8 &lt; M &lt; 1.2</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Mixed subsonic/supersonic regions; shock waves appear on surfaces</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Sharp pressure discontinuity (shock) on airfoil upper surface; Mach &gt;1 bubble</td></tr>
+    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Supersonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">1.2 &lt; M &lt; 5</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Bow shock ahead of blunt bodies; oblique shocks at sharp corners; Mach cone</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Strong bow shock in front of cylinder; attached oblique shocks on airfoil</td></tr>
+    <tr><td style="padding:7px 12px"><strong>Hypersonic</strong></td><td style="padding:7px 12px">M &gt; 5</td><td style="padding:7px 12px">Thin shock layer; real-gas effects, dissociation; beyond this simulator's fidelity</td><td style="padding:7px 12px">Solver still runs but first-order accuracy limits reliability at extreme Mach</td></tr>
+  </tbody>
+</table>
+
+<h3>6. Finite-Volume Discretization</h3>
 <p>The domain is divided into $N_x \times N_y$ uniform rectangular cells of size $\Delta x \times \Delta y$ (square here, $\Delta x = \Delta y$). Integrating the conservation law over cell $(i,j)$ and applying the divergence theorem converts the PDE to an <strong>exact flux balance</strong> for each cell:</p>
 
 <div class="eqb">
@@ -381,7 +425,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <p>The interface numerical fluxes $\hat{\mathbf{F}}$, $\hat{\mathbf{G}}$ must be chosen to be consistent and stable — this is the job of the Riemann solver.</p>
 
-<h3>6. Rusanov (Local Lax–Friedrichs) Flux</h3>
+<h3>7. Rusanov (Local Lax–Friedrichs) Flux</h3>
 <p>The <strong>Rusanov flux</strong> (Rusanov, 1961) is a first-order, upwind-biased Riemann solver. At each cell interface separating left state $\mathbf{U}_L$ and right state $\mathbf{U}_R$, it computes a stabilized average flux:</p>
 
 <div class="eqb amber">
@@ -398,7 +442,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <p>The first term is the <em>central flux</em> (averaged physical fluxes); the second term is the <em>Rusanov diffusion</em> that damps unphysical oscillations. It is the simplest stable Riemann solver and excellent for educational use, though it adds more numerical diffusion than the exact Roe or HLLC solvers.</p>
 
-<h3>7. CFL Stability Condition</h3>
+<h3>8. CFL Stability Condition</h3>
 <p>For explicit time-marching to remain stable, the timestep $\Delta t$ must not allow information to propagate more than one cell per step. This is the <strong>Courant–Friedrichs–Lewy (CFL) condition</strong>:</p>
 
 <div class="eqb teal">
@@ -408,7 +452,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <p>The simulator computes this ratio $\Delta t/\Delta x$ globally each step from the current flow field, shown in the stats bar. A CFL of 0.40 provides a comfortable safety margin below the stability limit of 1.0. Note: the original published artifact used $\Delta t = \text{CFL}/\max S$ (missing the $1/\Delta x$ factor), causing effective CFL ≈ $N_x$ times too large and catastrophic instability. This simulator corrects that error.</p>
 
-<h3>8. Under-Relaxation</h3>
+<h3>9. Under-Relaxation</h3>
 <p>At high Mach numbers or with strong gradients, the Rusanov update can occasionally produce over-shoots. <strong>Under-relaxation</strong> blends the candidate update with the previous state:</p>
 
 <div class="eqb">
@@ -418,7 +462,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <p>Mathematically this scales all flux changes by $\alpha$ while keeping the same $\Delta t/\Delta x$ ratio. $\alpha=1$ is the pure Rusanov update; $\alpha=0.5$ halves the effective step size for extra stability.</p>
 
-<h3>9. Boundary Conditions</h3>
+<h3>10. Boundary Conditions</h3>
 <table style="width:100%;border-collapse:collapse;font-size:.87em;margin:10px 0 14px">
   <thead><tr style="background:rgba(11,122,110,.08)">
     <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Boundary</th>
@@ -433,17 +477,30 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   </tbody>
 </table>
 
-<h3>10. Preset Scenarios</h3>
+<h3>11. Preset Scenarios</h3>
 <ul>
-  <li><strong>NACA 0012 Airfoil (4°):</strong> Classic symmetric airfoil at 4° angle of attack. Expect stagnation point near leading edge, low pressure over upper surface, pressure recovery at trailing edge. At $M>0.7$ transonic effects (shock formation) may appear.</li>
-  <li><strong>Circular Cylinder:</strong> Bluff body canonical test. Observe stagnation at leading edge, Bernoulli-type acceleration at the sides, and a low-pressure wake. Exact potential-flow solution exists for inviscid flow: $C_p = 1 - 4\sin^2\theta$.</li>
-  <li><strong>Square Block:</strong> Sharp leading/trailing edges produce stronger separation and a wider wake than the cylinder.</li>
-  <li><strong>Backward-Facing Step:</strong> Classic benchmark geometry. Flow separates at the step corner, forming a recirculation zone, then reattaches downstream. The reattachment length depends on Reynolds number (viscous) but the Euler solver shows the primary expansion fan and oblique shock structure.</li>
-  <li><strong>Arterial Stenosis (50%):</strong> Gaussian constriction reducing lumen area by ≈50%. Models atherosclerotic plaque. Flow accelerates through the throat (Bernoulli effect) and decelerates post-stenosis — demonstrating the pressure drop relevant to hemodynamics.</li>
-  <li><strong>Convergent-Divergent Nozzle:</strong> Classic de Laval nozzle geometry. At sufficient pressure ratio, flow accelerates to Mach 1 at the throat and may become supersonic in the diverging section, with a normal shock inside for intermediate back-pressures.</li>
+  <li><strong>NACA 0012 Airfoil (4°):</strong> Classic symmetric airfoil at 4° angle of attack. Expect stagnation at the leading edge, accelerated low-pressure flow over the upper surface, and pressure recovery at the trailing edge. This is the canonical subsonic inviscid airfoil case — the lift force is proportional to circulation (Kutta–Joukowski). At $M>0.7$ transonic effects begin: a supersonic bubble forms near the upper surface peak and terminates in a weak normal shock.</li>
+  <li><strong>NACA 0012 Airfoil (8°):</strong> Same symmetric profile at double the angle of attack. The increased AoA produces stronger upper-surface acceleration, larger pressure coefficient asymmetry, and more pronounced shock formation in the transonic regime. Compare the pressure field side-by-side with 4° to see the AoA effect on $C_p$ distribution.</li>
+  <li><strong>Circular Cylinder:</strong> The canonical bluff-body benchmark. Inviscid potential-flow theory predicts the exact pressure distribution $C_p = 1 - 4\sin^2\theta$ and <em>zero drag</em> (d'Alembert's paradox). The Euler solver approximately reproduces this at low Mach but introduces numerical diffusion. Observe stagnation at the leading edge, $C_p\approx 1$, Bernoulli-type acceleration at the widest point, and the symmetric low-pressure wake.</li>
+  <li><strong>Sphere (axisymmetric cross-section):</strong> Same circular geometry as the cylinder but conceptually representing the 2D equatorial cross-section of a 3D sphere. The flow field is identical in the Euler 2D sense. In 3D, a sphere has lower drag than a cylinder due to three-dimensional pressure recovery. Use this case as a reference for comparing circular vs. streamlined (NACA) body performance.</li>
+  <li><strong>Square Block:</strong> Sharp leading and trailing edges produce strong separated flow, a wide low-pressure wake, and significantly higher pressure drag than the cylinder. The corners shed oblique compression waves at supersonic speeds. Compare pressure drag $\approx (p_\text{front} - p_\text{back})\times\text{area}$ across different obstacle shapes.</li>
+  <li><strong>Backward-Facing Step:</strong> Classic benchmark geometry for flow separation and reattachment. Flow separates at the step corner, forming a recirculation zone (region of reversed $u$), then reattaches on the lower wall downstream. For viscous flow the reattachment length $x_r \approx 6h$–$8h$ (Armaly et al. 1983). The inviscid Euler solver cannot capture the correct viscous reattachment but shows the expansion fan and oblique shock structure at the step corner.</li>
+  <li><strong>Arterial Stenosis (50%):</strong> A Gaussian constriction reducing lumen cross-sectional area by ≈50% — representative of an atherosclerotic plaque. Flow accelerates through the throat (Bernoulli: velocity ↑ → pressure ↓), then decelerates in the diffuser region post-stenosis. The post-stenotic pressure drop and the distal low-pressure zone are hemodynamically significant: they contribute to platelet activation and downstream thrombus formation. Clinically, a ≥70% stenosis (area) is generally considered hemodynamically significant. Compare with and without the constriction to see the pressure gradient change.</li>
+  <li><strong>Convergent-Divergent Nozzle (de Laval):</strong> The canonical compressible flow device. Flow accelerates in the converging section; at sufficient pressure ratio the throat reaches $M=1$ (choked). In the diverging section, depending on the outlet-to-inlet pressure ratio: (a) subsonic deceleration, (b) design condition (fully supersonic with isentropic expansion), or (c) intermediate — supersonic diverging section with a normal shock at some point inside. Use the <em>Outlet p/p₀</em> slider to explore these regimes. Observe the Mach number distribution: peak at throat, then rising in the supersonic case.</li>
 </ul>
 
 <div class="refs">
+  <h3>12. Numerical Limitations &amp; Known Behavior</h3>
+  <p style="font-size:.87em">Understanding what the solver <em>can</em> and <em>cannot</em> do is as important as understanding what it computes:</p>
+  <ul style="font-size:.87em;margin-bottom:16px">
+    <li><strong>First-order accuracy:</strong> The Rusanov scheme is first-order in both space and time. This means flow features are numerically smeared over 2–3 cells. Sharp shocks appear as smooth ramps of width $\sim 2\Delta x$ rather than true discontinuities. Real CFD codes use second-order (MUSCL) or higher-order schemes to reduce this numerical diffusion.</li>
+    <li><strong>No viscosity:</strong> The Euler equations have no viscous terms. Boundary layers, flow separation, turbulence, and viscous drag are absent. The d'Alembert paradox (zero drag on a cylinder) is an artifact of this inviscid assumption. Navier-Stokes solvers include the viscous stress tensor $\tau_{ij} = \mu(\partial u_i/\partial x_j + \partial u_j/\partial x_i)$.</li>
+    <li><strong>Steady-state convergence:</strong> The simulator advances in (pseudo-)time toward a steady solution. Some geometries (especially bluff bodies at high Mach) produce unsteady vortex shedding even in the inviscid Euler equations — the flow will never fully converge to steady state.</li>
+    <li><strong>Wall boundary artifacts:</strong> Interior wall cells are enforced by zeroing momentum — this is a simple "bounce-back" condition that does not enforce a proper no-penetration condition at sub-cell accuracy. Sharp drawn corners may produce unphysical pressure spikes.</li>
+    <li><strong>Supersonic inlet stability:</strong> At $M > 1.5$ the inlet condition may conflict with the outlet back-pressure, causing a standing shock to form near the inlet. Lower the under-relaxation α to 0.5–0.6 for stable supersonic simulations.</li>
+    <li><strong>Grid resolution effect:</strong> Increasing resolution (more cells) sharpens all features proportionally. A shock that spans 4 cells at Coarse will span $\sim 4$ cells at Ultra — the shock appears sharper in physical space because $\Delta x$ is smaller. Always check if your feature of interest is resolved by ≥3 cells.</li>
+  </ul>
+
   <h3>References</h3>
   <ol class="ref-list">
     <li>Price, J. F. (2023). <em>Lagrangian and Eulerian representations of fluid flow</em>. MIT OpenCourseWare — Topics in Fluid Dynamics (Res-12-001). <a href="https://ocw.mit.edu/courses/res-12-001-topics-in-fluid-dynamics-fall-2023" target="_blank">ocw.mit.edu</a></li>
@@ -901,6 +958,40 @@ window.SIM = {
   },
   loadPreset(name){ loadPreset(name); }
 };
+
+/* ─────────── KEYBOARD SHORTCUTS ─────────── */
+document.addEventListener('keydown', e => {
+  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  switch(e.key) {
+    case ' ':
+      e.preventDefault();
+      SIM.togglePause();
+      break;
+    case 'r': case 'R':
+      SIM.reset();
+      break;
+    case 'c': case 'C':
+      SIM.clearWalls();
+      break;
+    case 'w': case 'W':
+      SIM.setTool('wall');
+      break;
+    case 'e': case 'E':
+      SIM.setTool('erase');
+      break;
+    case 'Escape':
+      SIM.setTool('none');
+      break;
+    case '1':
+      selField.value='vel';   break;
+    case '2':
+      selField.value='pres';  break;
+    case '3':
+      selField.value='dens';  break;
+    case '4':
+      selField.value='mach';  break;
+  }
+});
 
 /* ─────────── SLIDER BINDINGS ─────────── */
 slMach.addEventListener('input',()=>$('vMach').textContent=parseFloat(slMach.value).toFixed(2));
