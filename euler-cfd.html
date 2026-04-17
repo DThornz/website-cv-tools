@@ -55,8 +55,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .acc-opt.active{color:#0b7a6e;border-color:#0b7a6e;background:rgba(11,122,110,.08);font-weight:600}
 .page-wrap{max-width:1360px;margin:0 auto;padding:32px 24px 80px}
 .hero{margin-bottom:24px}
-.hero h1{font-family:var(--serif);font-size:2.2em;font-weight:400;color:var(--text);margin-bottom:6px}
-.hero-sub{color:var(--dim);font-size:.92em;line-height:1.65;max-width:780px}
+.hero-kicker{font-family:var(--mono);font-size:.7em;text-transform:uppercase;letter-spacing:.16em;color:var(--teal);margin-bottom:8px}
+.hero h1{font-family:var(--serif);font-size:2.2em;font-weight:400;color:var(--text);margin-bottom:8px}
+.hero-sub{color:var(--dim);font-size:.92em;line-height:1.65;max-width:780px;margin-bottom:16px}
+.hero-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.hero-pill{padding:3px 11px;border-radius:99px;font-size:.72em;font-family:var(--mono);background:rgba(11,122,110,.08);color:var(--teal);border:1px solid rgba(11,122,110,.18)}
+.hero-meta{display:flex;gap:28px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
+.hero-stat-num{font-family:var(--serif);font-size:1.6em;color:var(--teal);line-height:1}
+.hero-stat-label{font-size:.68em;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
 .ctrl-card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:14px 18px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end}
 .ctrl-grp{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
 .ctrl-lbl{font-size:.7em;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:500}
@@ -160,8 +166,23 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <div class="page-wrap">
 <header class="hero">
-  <h1>2D Euler Flow Simulator</h1>
-  <p class="hero-sub">An interactive finite-volume solver for the 2D compressible Euler equations using the Rusanov (Local Lax-Friedrichs) numerical flux. Explore subsonic and transonic flows — select preset obstacles, draw custom walls, vary Mach number and back-pressure, and visualize velocity, pressure, density, and Mach fields in real time. Governing equations and numerical background are provided below.</p>
+  <div class="hero-kicker">Interactive Simulator · 2D Compressible Flow</div>
+  <h1>Euler CFD Flow Simulator</h1>
+  <p class="hero-sub">A browser-based finite-volume solver for the 2D compressible Euler equations. Explore subsonic and transonic flows around airfoils, cylinders, nozzles, and custom obstacles — all in real time. Vary inlet Mach number, outlet back-pressure, grid resolution, and draw your own walls. Full mathematical derivation and numerical theory below.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Rusanov / LLF Flux</span>
+    <span class="hero-pill">Adaptive CFL = 0.40</span>
+    <span class="hero-pill">7 Preset Scenarios</span>
+    <span class="hero-pill">Plasma Colormap</span>
+    <span class="hero-pill">Stream Tracers</span>
+    <span class="hero-pill">KaTeX Equations</span>
+  </div>
+  <div class="hero-meta">
+    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">Conserved Vars</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">M≤2</div><div class="hero-stat-label">Mach Range</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">300×117</div><div class="hero-stat-label">Max Grid</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">γ=1.4</div><div class="hero-stat-label">Air (ideal gas)</div></div>
+  </div>
 </header>
 
 <!-- CONTROLS ROW 1 -->
@@ -237,7 +258,9 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
     <select class="ctrl-sel" id="selPre" onchange="SIM.loadPreset(this.value)" style="min-width:200px">
       <option value="blank">⬜ Blank (draw freely)</option>
       <option value="naca" selected>🪽 NACA 0012 Airfoil (4°)</option>
+      <option value="naca8">🪽 NACA 0012 Airfoil (8°)</option>
       <option value="cylinder">⚪ Circular Cylinder</option>
+      <option value="sphere">🔵 Sphere (axisymmetric)</option>
       <option value="square">🔲 Square Block</option>
       <option value="step">📐 Backward-Facing Step</option>
       <option value="stenosis">🩸 Arterial Stenosis (50%)</option>
@@ -674,8 +697,8 @@ function rusanovStep(){
 /* ─────────── PRESETS ─────────── */
 function loadPreset(name){
   wall.fill(0);
-  if(name==='naca'){
-    const aoa=4*Math.PI/180, ch=Math.floor(NX*0.27);
+  if(name==='naca'||name==='naca8'){
+    const aoa=(name==='naca8'?8:4)*Math.PI/180, ch=Math.floor(NX*0.27);
     const x0=Math.floor(NX*0.36), y0=Math.floor(NY*0.5);
     for(let j=0;j<NY;j++) for(let i=2;i<NX-2;i++){
       const dx=(i-x0)/ch, dy=(j-y0)/ch;
@@ -687,7 +710,7 @@ function loadPreset(name){
         if(Math.abs(yr)<=yt*1.05) wall[idx(i,j)]=1;
       }
     }
-  } else if(name==='cylinder'){
+  } else if(name==='cylinder'||name==='sphere'){
     const cx=Math.floor(NX*0.40), cy=Math.floor(NY*0.5), rad=Math.floor(NY*0.13);
     for(let j=0;j<NY;j++) for(let i=2;i<NX-2;i++)
       if(Math.hypot(i-cx,j-cy)<=rad) wall[idx(i,j)]=1;

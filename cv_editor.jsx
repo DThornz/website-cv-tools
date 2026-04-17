@@ -245,6 +245,14 @@ const INITIAL_DATA = {
               images: [], videos: [], notes: ""
             },
             {
+              id: uid(), year: "2025-2026", title: "2D Euler CFD Flow Simulator",
+              subtitle: "Educational tool · FIU BME / Fluid Mechanics",
+              badges: [{ id: uid(), text: "Compressible Flow", type: "first" }, { id: uid(), text: "Rusanov Flux · CFL", type: "award" }],
+              abstract: "Browser-based 2D compressible Euler flow solver using the Rusanov (Local Lax-Friedrichs) finite-volume scheme. Students explore subsonic and transonic flows around 8 preset geometries (NACA 0012 airfoil at 4° and 8°, circular cylinder, sphere, square block, backward-facing step, arterial stenosis, convergent-divergent nozzle) and draw custom obstacles. Adaptive CFL-stable timestep (CFL=0.40), under-relaxation, plasma colormap, 200 stream tracers, real-time stats. Full mathematical derivation (Euler conservation laws, Rusanov flux, CFL condition, boundary conditions) with 6 cited references.",
+              metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "euler-cfd.html" }],
+              images: [], videos: [], notes: ""
+            },
+            {
               id: uid(), year: "2026", title: "Introduction to 3D Modeling & Printing — Lecture & Assignment",
               subtitle: "For Dr. Michael C. Christie · BME 4908: Senior Design Project · FIU · Spring 2026",
               badges: [],

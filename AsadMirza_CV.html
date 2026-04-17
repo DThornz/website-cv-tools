@@ -1007,6 +1007,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <div class="nav-dropdown-menu">
     <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
     <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
+      <a class="nav-dropdown-item" href="euler-cfd.html">🌊 Euler CFD Simulator</a>
     <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
   </div>
@@ -2135,6 +2136,27 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                   <div class="entry-abstract">Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection (500+ particles at 60 fps), real-time speed histogram with running average and theoretical MB curve, speed-colored particle rendering, and an adaptive x-axis. Educational content includes a full derivation from first principles, historical background on Maxwell and Boltzmann, and 6 cited references.</div>
                   <div class="entry-link-row">
                     <a class="entry-link" href="maxwell-boltzmann.html" target="_blank">⚛ Open Interactive Simulator</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Euler CFD Simulator -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">2025–2026</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">2D Euler CFD Flow Simulator</div>
+                  <div class="entry-subtitle">Educational tool · FIU BME / Fluid Mechanics</div>
+                  <div class="entry-badges"><span class="badge badge-first">Compressible Flow</span><span class="badge badge-award">Rusanov Flux · CFL</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-abstract">Browser-based 2D compressible Euler flow solver using the Rusanov (Local Lax-Friedrichs) finite-volume scheme. Students explore subsonic and transonic flows around 8 preset geometries (NACA 0012 airfoil at 4° and 8°, circular cylinder, sphere, square block, backward-facing step, arterial stenosis, convergent-divergent nozzle) and draw custom obstacles. Adaptive CFL-stable timestep (CFL=0.40), under-relaxation slider, plasma colormap, 200 stream tracers, and real-time stats (Δt/Δx, M_max, FPS). Full mathematical derivation — Euler conservation laws, Rusanov flux formula, CFL condition, boundary conditions — with 6 cited references including Price (2023) MIT OCW.</div>
+                  <div class="entry-link-row">
+                    <a class="entry-link" href="euler-cfd.html" target="_blank">🌊 Open Interactive Simulator</a>
                   </div>
                 </div>
               </div>

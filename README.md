@@ -18,6 +18,7 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 | **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
 | **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
 | **Maxwell–Boltzmann Simulator** | `maxwell-boltzmann.html` | Interactive 2D ideal-gas simulation with speed distribution |
+| **Euler CFD Simulator** | `euler-cfd.html` | Interactive 2D compressible Euler flow solver (Rusanov flux) |
 | **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
@@ -106,6 +107,45 @@ Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Fo
 
 ---
 
+## Euler CFD Simulator (`euler-cfd.html`)
+
+Browser-based 2D compressible flow solver using the finite-volume method. Built as an educational tool for fluid mechanics, compressible flow, and numerical methods courses.
+
+**Physics & Numerics:**
+- 2D compressible Euler equations in conservation form: ∂U/∂t + ∂F/∂x + ∂G/∂y = 0
+- Conserved state: (ρ, ρu, ρv, ρE) — density, x/y-momentum, total energy
+- Rusanov (Local Lax-Friedrichs) flux scheme, first-order accurate
+- Adaptive timestep: Δt/Δx = CFL/max(|u|+c), CFL = 0.40
+- Under-relaxation blend: U_new = α·U_Rusanov + (1-α)·U_old, α ∈ [0.3, 1.0]
+- Non-dimensionalization: ρ₀=1.225 kg/m³, c₀=340 m/s, p₀≈101,030 Pa
+
+**Simulator Features:**
+- Inlet Mach slider M ∈ [0.1, 2.0] with subsonic/transonic/supersonic regimes
+- Outlet pressure ratio p/p₀ ∈ [0.3, 1.6] (back-pressure control)
+- Display fields: velocity (m/s), pressure (Pa), density (kg/m³), Mach number
+- 4 grid resolutions: 90×35 → 300×117 cells
+- 1–12 substeps per frame for speed control
+- Plasma colormap (dark purple → orange → yellow) with auto-scaling colorbar
+- 200 stream tracers advected by velocity field
+- **8 preset scenarios**: Blank, NACA 0012 at 4°, NACA 0012 at 8°, Circular Cylinder, Sphere, Square Block, Backward-Facing Step, Arterial Stenosis (50%), Convergent-Divergent Nozzle
+- Draw tools: Wall pencil, Erase, Clear All, brush radius control
+- Real-time stats: Δt/Δx, M_max, step count, FPS
+
+**Educational Content:**
+- Lagrangian vs. Eulerian description (referencing Price 2023)
+- Derivation of the 2D Euler conservation law system
+- Ideal gas equation of state and speed of sound
+- Non-dimensionalization procedure
+- Finite-volume cell update formula
+- Rusanov flux formula with dissipation coefficient
+- CFL stability analysis with critical bug explanation
+- Under-relaxation theory
+- Boundary condition table (inlet, outlet, slip, wall)
+- Preset scenario physics explanations
+- 6 APA-format references (Price, Toro, LeVeque, Anderson, Rusanov, Hirsch)
+
+---
+
 ## Maxwell–Boltzmann Gas Simulator (`maxwell-boltzmann.html`)
 
 Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an educational tool for statistical mechanics and kinetic theory.
@@ -149,6 +189,7 @@ website-cv-tools/
 ├── projects.html           ← Research project showcase
 ├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
 ├── maxwell-boltzmann.html  ← Maxwell–Boltzmann 2D gas simulator
+├── euler-cfd.html          ← 2D compressible Euler CFD simulator
 ├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
 ├── dissertation.html       ← PhD dissertation page
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
