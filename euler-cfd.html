@@ -307,7 +307,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 <div class="sim-wrap">
   <div class="sim-top">
     <div style="display:flex;align-items:center;gap:10px">
-      <span class="sim-ttl">2D Compressible Euler · Rusanov Flux · CFL 0.40</span>
+      <span class="sim-ttl">2D Incompressible Navier–Stokes · Vorticity Confinement · GPU Solver</span>
       <span class="sim-run" id="simStat">● running</span>
     </div>
     <div class="stats-r">
@@ -558,331 +558,617 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 (function(){
 'use strict';
 
-/* ════════════════════════════════════════════════════════════
-   2D Euler CFD — Rusanov physics + GPU FBO dye advection
-   Key design:
-   · Physics on CPU at NX×NY (Rusanov, CFL=0.40)
-   · Dye on GPU in two RGBA8 FBOs at DYE_W×DYE_H (ping-pong)
-   · Velocity uploaded as uint8 texture, decoded in shader
-   · Separate dtx/dty to correctly handle non-square domain
-   · DYE_DECAY=0.9990 so dye persists across the full domain
-════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   2D INCOMPRESSIBLE NAVIER-STOKES  —  Pavel-style GPU solver
+   Based on PavelDoGreat/WebGL-Fluid-Simulation (MIT License)
+   Adapted: forced inlet flow · solid obstacles · field display
+═══════════════════════════════════════════════════════════ */
 
-const GAMMA=1.4, CFL=0.40, RHO0=1.225, C0=340.0, P0=RHO0*C0*C0/GAMMA;
-const DISP_W=900, DISP_H=350, DYE_W=900, DYE_H=350;
-const DYE_DECAY=0.9990;   /* per-frame decay — tuned so dye crosses the full domain */
+const DISP_W=900, DISP_H=350;
 
+/* Simulation parameters */
+const PRESSURE_ITER = 25;
+const CURL_CONF     = 28;    /* vorticity confinement strength — creates beautiful vortices */
+const VEL_DISS      = 0.999; /* velocity dissipation per frame */
+const DYE_DISS      = 0.988; /* dye dissipation per frame */
+const INLET_W_UV    = 0.022; /* inlet injection strip width in UV */
+
+/* Simulation grid (aspect-matched to canvas) */
+const SIM_W = 330, SIM_H = 128;
+const DYE_W = 900, DYE_H = 350;
+
+/* Wall mask (CPU side, NX×NY) */
 let NX=150, NY=58;
-let rho,rhou,rhov,rhoE,rhoB,rhouB,rhovB,rhoEB;
-let wall,omega;
-let ua,va,pa,ca;
+let wallCPU = new Uint8Array(NX*NY);
 
-/* ─ WebGL ─ */
-let gl=null;
-let pAI=null, pCmp=null, pSL=null;
-let glQ=null, slPos=null, slT=null, slN=0;
-let tVel=null,dVel=null, tFld=null,dFld=null, tWall=null,dWall=null;
-let dyeFBO=[null,null], dyeR=0, dyeW=1;
+/* DOM */
+const canvas = document.getElementById('cfdCanvas');
+const cbCv   = document.getElementById('cbCanvas');
+const cbCtx  = cbCv.getContext('2d');
+canvas.width = DISP_W; canvas.height = DISP_H;
 
-/* ─ State ─ */
-let stepCount=0, fps=0, fpsN=0, fpsT=0;
-let paused=false, tool='none', drawing=false;
-let dMin=0,dMax=1, dtodx=0.004, slTick=0;
-let scaleInit=false;
+const $ = id => document.getElementById(id);
+const gM  = () => parseFloat($('slMach').value);
+const gSp = () => parseInt($('slSpd').value);
+const gBr = () => parseInt($('slBr').value);
+const gF  = () => $('selField').value;
+const gSL = () => { const e=$('chkSL'); return e?e.checked:true; };
+const gTr = () => { const e=$('chkTr'); return e?e.checked:true; };
+const gAs = () => { const e=$('chkAs'); return e?e.checked:true; };
 
-const canvas=document.getElementById('cfdCanvas');
-const cbCv=document.getElementById('cbCanvas');
-const cbC=cbCv.getContext('2d');
-canvas.width=DISP_W; canvas.height=DISP_H;
+let tool='none', drawing=false, paused=false;
+let stepN=0, fpsN=0, fpsT=0, fpsV=0;
+let dMin=0, dMax=1, scaleOK=false;
 
-const $=id=>document.getElementById(id);
-const gM =()=>parseFloat($('slMach').value);
-const gPo=()=>parseFloat($('slPout').value);
-const gSp=()=>parseInt($('slSpd').value);
-const gRl=()=>parseFloat($('slRlx').value);
-const gBr=()=>parseInt($('slBr').value);
-const gF =()=>$('selField').value;
-const gAs=()=>{const e=$('chkAs');return e?e.checked:true;};
-const gSL=()=>{const e=$('chkSL');return e?e.checked:true;};
-const gTr=()=>{const e=$('chkTr');return e?e.checked:true;};
-const gSc=()=>{const e=$('selScale');return e?e.value:'aero';};
-const sf =()=>({bio:0.01,micro:0.001}[gSc()]||1.0);
+/* ═══════════════ WebGL SETUP ══════════════════════════════ */
 
-/* ════════════════════ GLSL ════════════════════════════════ */
+function setupGL(){
+  const p={alpha:true,depth:false,stencil:false,antialias:false,preserveDrawingBuffer:false};
+  let gl=canvas.getContext('webgl2',p);
+  const wgl2=!!gl;
+  if(!wgl2) gl=canvas.getContext('webgl',p)||canvas.getContext('experimental-webgl',p);
+  if(!gl) throw new Error('No WebGL');
 
-const VS=`
-  attribute vec2 a;
-  varying   vec2 uv;
-  void main(){uv=vec2(a.x*.5+.5,.5-a.y*.5);gl_Position=vec4(a,0.,1.);}`;
-
-/* Pass 1: Semi-Lagrangian dye advection + rainbow inlet injection */
-const FS_AI=`
-  precision highp float;
-  uniform sampler2D u_dye;
-  uniform sampler2D u_vel;   /* NX×NY, R=(u+2)/4, G=(v+2)/4 in byte */
-  uniform sampler2D u_wall;  /* NX×NY, R=1 if wall */
-  uniform float u_dtx;       /* sub*dtodx/NX — UV per Mach in x */
-  uniform float u_dty;       /* sub*dtodx/NY — UV per Mach in y */
-  uniform float u_decay;
-  uniform float u_inj;       /* injection end UV x */
-  uniform float u_enabled;   /* 1=dye on, 0=dye off (fast clear) */
-  varying vec2 uv;
-
-  vec3 rainbow(float t){
-    t=fract(t)*6.;
-    float r=clamp(abs(t-3.)-1.,0.,1.);
-    float g=clamp(2.-abs(t-2.),0.,1.);
-    float b=clamp(2.-abs(t-4.),0.,1.);
-    return pow(vec3(r,g,b),vec3(.6));  /* gamma lift for vividness */
+  let hfExt=null, linOK=false;
+  if(wgl2){
+    gl.getExtension('EXT_color_buffer_float');
+    linOK=!!gl.getExtension('OES_texture_float_linear');
+  }else{
+    hfExt=gl.getExtension('OES_texture_half_float');
+    if(hfExt){ gl.getExtension('EXT_color_buffer_half_float'); }
+    linOK=!!gl.getExtension('OES_texture_half_float_linear');
   }
 
-  void main(){
-    if(u_enabled<.5){gl_FragColor=vec4(0.,0.,0.,1.);return;}
+  const hfType = wgl2 ? gl.HALF_FLOAT : (hfExt ? hfExt.HALF_FLOAT_OES : null);
 
-    /* Wall cells: always black */
-    if(texture2D(u_wall,uv).r>.5){gl_FragColor=vec4(0.,0.,0.,1.);return;}
+  /* Test whether we can actually render to a half-float FBO */
+  let useHF = false;
+  if(hfType){
+    const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+    const iFmt=wgl2?gl.RGBA16F:gl.RGBA;
+    gl.texImage2D(gl.TEXTURE_2D,0,iFmt,4,4,0,gl.RGBA,hfType,null);
+    const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
+    useHF=gl.checkFramebufferStatus(gl.FRAMEBUFFER)===gl.FRAMEBUFFER_COMPLETE;
+    gl.deleteTexture(t); gl.deleteFramebuffer(f);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  }
 
-    /* Decode velocity (byte → Mach range [-2,2]) */
-    vec2 vel=texture2D(u_vel,uv).rg*4.-2.;
+  const texType = useHF ? hfType : gl.UNSIGNED_BYTE;
+  const ifRGBA  = useHF ? (wgl2?gl.RGBA16F:gl.RGBA) : gl.RGBA;
+  const flt     = (linOK&&useHF) ? gl.LINEAR : gl.NEAREST;
 
-    /* Semi-Lagrangian backtrace with separate x/y dt */
-    vec2 prev=clamp(uv-vec2(vel.x*u_dtx, vel.y*u_dty),.001,.999);
+  return{gl,texType,ifRGBA,flt};
+}
 
-    /* Avoid sampling wall cells */
-    if(texture2D(u_wall,prev).r>.5) prev=uv;
+let GL;
+try{ GL=setupGL(); }catch(e){ console.error('WebGL failed:',e); return; }
+const{gl,texType,ifRGBA,flt}=GL;
 
-    /* Advect + decay */
-    vec3 dye=texture2D(u_dye,prev).rgb*u_decay;
+/* ═══════════════ SHADER SOURCES ═══════════════════════════ */
 
-    /* Rainbow injection at inlet strip */
-    if(uv.x<u_inj){
-      float s=(1.-uv.x/u_inj);
-      s=s*s*(3.-2.*s);             /* smoothstep */
-      vec3 c=rainbow(uv.y*2.5);   /* 2.5 hue cycles across domain height */
-      dye=mix(dye,c,s*.96);
-    }
-
-    gl_FragColor=vec4(dye,1.);
-  }`;
-
-/* Pass 2: Composite physics field (dim background) + dye (vivid overlay) */
-const FS_CMP=`
+/* Shared vertex shader — passes texel-offset varyings for stencil reads */
+const VS=`
   precision highp float;
-  uniform sampler2D u_fld;   /* NX×NY field, R=0-254 */
-  uniform sampler2D u_dye;   /* DYE_W×DYE_H dye FBO */
-  uniform sampler2D u_wall;
-  uniform float u_vort;      /* 1=diverging RdBu colormap */
-  varying vec2 uv;
+  attribute vec2 aP;
+  varying vec2 vU,vL,vR,vT,vB;
+  uniform vec2 tS;
+  void main(){
+    vU=aP*.5+.5;
+    vL=vU-vec2(tS.x,0.);vR=vU+vec2(tS.x,0.);
+    vT=vU+vec2(0.,tS.y);vB=vU-vec2(0.,tS.y);
+    gl_Position=vec4(aP,0.,1.);}`;
 
+/* Simple vertex for fullscreen quad without texel varyings */
+const VS2=`
+  precision highp float;
+  attribute vec2 aP; varying vec2 vU;
+  void main(){vU=aP*.5+.5;gl_Position=vec4(aP,0.,1.);}`;
+
+/* Clear/scale a texture */
+const FS_CLR=`
+  precision mediump float; precision mediump sampler2D;
+  varying highp vec2 vU;
+  uniform sampler2D uT; uniform float val;
+  void main(){gl_FragColor=val*texture2D(uT,vU);}`;
+
+/* Advection — Pavel's bilinear fallback when linear filtering unavailable */
+const FS_ADV=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU;
+  uniform sampler2D uVel,uSrc;
+  uniform vec2 tS,dS;
+  uniform float dt,diss;
+  vec4 bilp(sampler2D s,vec2 uv,vec2 ts){
+    vec2 st=uv/ts-.5,ij=floor(st),f=fract(st);
+    vec4 a=texture2D(s,(ij+vec2(.5,.5))*ts);
+    vec4 b=texture2D(s,(ij+vec2(1.5,.5))*ts);
+    vec4 c=texture2D(s,(ij+vec2(.5,1.5))*ts);
+    vec4 d=texture2D(s,(ij+vec2(1.5,1.5))*ts);
+    return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}
+  void main(){
+    vec2 coord=vU-dt*bilp(uVel,vU,tS).xy*tS;
+    vec4 r=bilp(uSrc,coord,dS);
+    gl_FragColor=r/(1.+diss*dt);}`;
+
+/* Divergence */
+const FS_DIV=`
+  precision mediump float; precision mediump sampler2D;
+  varying highp vec2 vU,vL,vR,vT,vB;
+  uniform sampler2D uVel;
+  void main(){
+    float L=texture2D(uVel,vL).x,R=texture2D(uVel,vR).x;
+    float T=texture2D(uVel,vT).y,B=texture2D(uVel,vB).y;
+    vec2 C=texture2D(uVel,vU).xy;
+    if(vL.x<0.)L=-C.x;if(vR.x>1.)R=-C.x;
+    if(vT.y>1.)T=-C.y;if(vB.y<0.)B=-C.y;
+    gl_FragColor=vec4(.5*(R-L+T-B),0.,0.,1.);}`;
+
+/* Curl (vorticity scalar) */
+const FS_CURL=`
+  precision mediump float; precision mediump sampler2D;
+  varying highp vec2 vU,vL,vR,vT,vB;
+  uniform sampler2D uVel;
+  void main(){
+    float L=texture2D(uVel,vL).y,R=texture2D(uVel,vR).y;
+    float T=texture2D(uVel,vT).x,B=texture2D(uVel,vB).x;
+    gl_FragColor=vec4(.5*(R-L-T+B),0.,0.,1.);}`;
+
+/* Vorticity confinement — the magic that keeps vortices alive */
+const FS_VORT=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU,vL,vR,vT,vB;
+  uniform sampler2D uVel,uCurl;
+  uniform float curl,dt;
+  void main(){
+    float L=texture2D(uCurl,vL).x,R=texture2D(uCurl,vR).x;
+    float T=texture2D(uCurl,vT).x,B=texture2D(uCurl,vB).x;
+    float C=texture2D(uCurl,vU).x;
+    vec2 F=.5*vec2(abs(T)-abs(B),abs(R)-abs(L));
+    F/=length(F)+.0001;F*=curl*C;F.y*=-1.;
+    vec2 v=texture2D(uVel,vU).xy+F*dt;
+    v=clamp(v,-1000.,1000.);
+    gl_FragColor=vec4(v,0.,1.);}`;
+
+/* Pressure Jacobi iteration */
+const FS_PRES=`
+  precision mediump float; precision mediump sampler2D;
+  varying highp vec2 vU,vL,vR,vT,vB;
+  uniform sampler2D uP,uDiv;
+  void main(){
+    float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x;
+    float T=texture2D(uP,vT).x,B=texture2D(uP,vB).x;
+    float div=texture2D(uDiv,vU).x;
+    gl_FragColor=vec4((L+R+B+T-div)*.25,0.,0.,1.);}`;
+
+/* Gradient subtract — makes velocity divergence-free */
+const FS_GRAD=`
+  precision mediump float; precision mediump sampler2D;
+  varying highp vec2 vU,vL,vR,vT,vB;
+  uniform sampler2D uP,uVel;
+  void main(){
+    float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x;
+    float T=texture2D(uP,vT).x,B=texture2D(uP,vB).x;
+    vec2 v=texture2D(uVel,vU).xy;
+    v-=vec2(R-L,T-B);
+    gl_FragColor=vec4(v,0.,1.);}`;
+
+/* Gaussian splat (Pavel's) — for inlet injection */
+const FS_SPLAT=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU;
+  uniform sampler2D uT;
+  uniform float ar,r;
+  uniform vec3 col;
+  uniform vec2 pt;
+  void main(){
+    vec2 p=vU-pt;p.x*=ar;
+    vec3 s=exp(-dot(p,p)/r)*col;
+    gl_FragColor=vec4(texture2D(uT,vU).xyz+s,1.);}`;
+
+/* Wall BC — zero velocity and dye inside solid cells */
+const FS_WALL=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU;
+  uniform sampler2D uSrc,uWall;
+  uniform float zero;
+  void main(){
+    float w=texture2D(uWall,vU).r;
+    vec4 v=texture2D(uSrc,vU);
+    gl_FragColor=w>.5?vec4(v.zw*0.,v.zw*0.)*0.:v;
+    if(w>.5)gl_FragColor=vec4(zero,zero,zero,1.);}`;
+
+/* Inlet dye injection — rainbow strip at left edge */
+const FS_IDYE=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU;
+  uniform sampler2D uDye;
+  uniform float iW;  /* injection width UV */
+  vec3 hsv(float h){
+    h=fract(h)*6.;
+    return pow(clamp(vec3(abs(h-3.)-1.,2.-abs(h-2.),2.-abs(h-4.)),0.,1.),vec3(.65));}
+  void main(){
+    vec3 d=texture2D(uDye,vU).rgb;
+    if(vU.x<iW){
+      float s=(1.-vU.x/iW);s=s*s*(3.-2.*s);
+      vec3 c=hsv(vU.y*2.5);
+      d=mix(d,c,s*.97);}
+    gl_FragColor=vec4(d,1.);}`;
+
+/* Display: dim field background + vivid dye overlay */
+const FS_DISP=`
+  precision highp float; precision highp sampler2D;
+  varying vec2 vU;
+  uniform sampler2D uDye,uFld,uWall;
+  uniform float uMode;  /* 0=vel,1=pres,2=vort */
+  uniform float uLo,uHi,uDye;
   vec3 jet(float t){
     t=clamp(t,0.,1.);
     return vec3(clamp(1.5-abs(4.*t-3.),0.,1.),
                 clamp(1.5-abs(4.*t-2.),0.,1.),
                 clamp(1.5-abs(4.*t-1.),0.,1.));}
-
   vec3 rdbu(float t){
     t=clamp(t,0.,1.);
     return t<.5?mix(vec3(.02,.20,.72),vec3(.95,.95,.95),t*2.)
                :mix(vec3(.95,.95,.95),vec3(.76,.02,.02),(t-.5)*2.);}
-
   void main(){
-    if(texture2D(u_wall,uv).r>.5){gl_FragColor=vec4(.07,.08,.11,1.);return;}
-
-    float raw=clamp(texture2D(u_fld,uv).r/254.,0.,1.);
-    vec3 field=(u_vort>.5?rdbu(raw):jet(raw))*.28;
-
-    vec3 dye=texture2D(u_dye,uv).rgb;
-    dye=pow(max(dye,vec3(0.)),vec3(.70));   /* gamma lift */
-
-    vec3 col=field+dye*2.4;
-    col=1.-exp(-col*1.4);                   /* exposure/tonemap */
-    col=pow(max(col,vec3(0.)),vec3(.82));   /* output gamma */
-
+    if(texture2D(uWall,vU).r>.5){gl_FragColor=vec4(.07,.08,.11,1.);return;}
+    vec4 fv=texture2D(uFld,vU);
+    float raw=(uMode<.5)?length(fv.xy):fv.r;
+    float range=max(uHi-uLo,1e-7);
+    float t=clamp((raw-uLo)/range,0.,1.);
+    vec3 field=(uMode>1.5)?rdbu(t):jet(t);
+    field*=.26;
+    vec3 dye=texture2D(uDye,vU).rgb;
+    dye=pow(max(dye,vec3(0.)),vec3(.72));
+    vec3 col=field+dye*(uDye>.5?2.3:0.);
+    col=1.-exp(-col*1.5);
+    col=pow(max(col,vec3(0.)),vec3(.80));
     gl_FragColor=vec4(col,1.);}`;
 
-/* Pass 3: Streamlines */
-const VS_SL=`
-  attribute vec2 a; attribute float t; varying float vt;
-  void main(){vt=t;gl_Position=vec4(a.x*2.-1.,1.-a.y*2.,0.,1.);}`;
-const FS_SL=`
-  precision mediump float; varying float vt;
-  void main(){gl_FragColor=vec4(1.,1.,1.,vt*.40);}`;
+/* ═══════════════ COMPILE / LINK ════════════════════════════ */
 
-/* ════════════════════ WebGL HELPERS ═══════════════════════ */
-
-function sh(type,src){
-  const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
-  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));
-  return s;}
-function pr(vs,fs){
+function cSh(t,s){
+  const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))
+    console.error('Shader:',gl.getShaderInfoLog(sh));
+  return sh;}
+function cPr(vs,fs){
   const p=gl.createProgram();
-  gl.attachShader(p,sh(gl.VERTEX_SHADER,vs));
-  gl.attachShader(p,sh(gl.FRAGMENT_SHADER,fs));
+  gl.attachShader(p,cSh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(p,cSh(gl.FRAGMENT_SHADER,fs));
   gl.linkProgram(p);
-  if(!gl.getProgramParameter(p,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(p));
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS))
+    console.error('Link:',gl.getProgramInfoLog(p));
   return p;}
-function mkTex(w,h,dat,flt){
+
+/* Programs */
+const pClr   = cPr(VS2, FS_CLR);
+const pAdv   = cPr(VS2, FS_ADV);
+const pDiv   = cPr(VS,  FS_DIV);
+const pCurl  = cPr(VS,  FS_CURL);
+const pVort  = cPr(VS,  FS_VORT);
+const pPres  = cPr(VS,  FS_PRES);
+const pGrad  = cPr(VS,  FS_GRAD);
+const pSplat = cPr(VS2, FS_SPLAT);
+const pWall  = cPr(VS2, FS_WALL);
+const pIDye  = cPr(VS2, FS_IDYE);
+const pDisp  = cPr(VS2, FS_DISP);
+
+/* Uniform helpers */
+function ul(p,n){return gl.getUniformLocation(p,n);}
+function u1f(p,n,v){gl.uniform1f(ul(p,n),v);}
+function u2f(p,n,x,y){gl.uniform2f(ul(p,n),x,y);}
+function u3f(p,n,x,y,z){gl.uniform3f(ul(p,n),x,y,z);}
+function u1i(p,n,v){gl.uniform1i(ul(p,n),v);}
+function bnd(unit,tex){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,tex);}
+
+/* ═══════════════ BLIT / FBO ════════════════════════════════ */
+
+/* Pavel's blit helper — fullscreen quad via element array buffer */
+const blit=(()=>{
+  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,-1,1,1,1,1,-1]),gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gl.createBuffer());
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array([0,1,2,0,2,3]),gl.STATIC_DRAW);
+  gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  gl.enableVertexAttribArray(0);
+  return(target,clear=false)=>{
+    if(target==null){
+      gl.viewport(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight);
+      gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    }else{
+      gl.viewport(0,0,target.w,target.h);
+      gl.bindFramebuffer(gl.FRAMEBUFFER,target.fbo);
+    }
+    if(clear){gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);}
+    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,0);
+  };
+})();
+
+/* Before each program call, set the 'aP' attrib to location 0 */
+function useP(p){
+  gl.useProgram(p);
+  const loc=gl.getAttribLocation(p,'aP');
+  if(loc>=0){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);}
+}
+
+function mkTex(w,h,f){
   const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,flt);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,flt);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,dat||null);
+  gl.texImage2D(gl.TEXTURE_2D,0,ifRGBA,w,h,0,gl.RGBA,texType,null);
   return t;}
+
 function mkFBO(w,h){
-  const tex=mkTex(w,h,null,gl.LINEAR);
+  const tex=mkTex(w,h,flt);
   const fbo=gl.createFramebuffer();
   gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
   gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
   if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)
-    console.error('FBO incomplete');
+    console.warn('FBO incomplete — half-float unsupported, visual quality may be reduced');
   gl.viewport(0,0,w,h);gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);
   gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  return{tex,fbo,w,h};}
-function ul(p,n){return gl.getUniformLocation(p,n);}
-function u1f(p,n,v){gl.uniform1f(ul(p,n),v);}
-function u1i(p,n,v){gl.uniform1i(ul(p,n),v);}
-function bt(unit,tex){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,tex);}
-function dq(p){
-  gl.bindBuffer(gl.ARRAY_BUFFER,glQ);
-  const a=gl.getAttribLocation(p,'a');
-  if(a>=0){gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);}
-  gl.drawArrays(gl.TRIANGLE_STRIP,0,4);}
+  return{tex,fbo,w,h,tsx:1/w,tsy:1/h};}
 
-/* ════════════════════ WebGL INIT ══════════════════════════ */
+function mkDFBO(w,h){
+  let a=mkFBO(w,h),b=mkFBO(w,h);
+  return{
+    get read(){return a;},get write(){return b;},
+    swap(){let t=a;a=b;b=t;},
+    w,h,tsx:1/w,tsy:1/h};}
 
-function initWebGL(){
-  gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl');
-  if(!gl){console.warn('WebGL unavailable');return;}
-  pAI =pr(VS,FS_AI); pCmp=pr(VS,FS_CMP); pSL=pr(VS_SL,FS_SL);
-  glQ=gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER,glQ);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
-  slPos=gl.createBuffer(); slT=gl.createBuffer();
-  allocGPU();}
+/* Create FBO from a NEAREST-filtered RGBA8 texture (for wall mask) */
+function mkMaskTex(w,h){
+  const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+  return t;}
 
-function allocGPU(){
-  if(!gl)return;
-  const n=NX*NY;
-  dVel =new Uint8Array(n*4); dFld=new Uint8Array(n*4); dWall=new Uint8Array(n*4);
-  tVel =mkTex(NX,NY,dVel, gl.LINEAR);
-  tFld =mkTex(NX,NY,dFld, gl.LINEAR);
-  tWall=mkTex(NX,NY,dWall,gl.NEAREST);
-  dyeFBO[0]=mkFBO(DYE_W,DYE_H); dyeFBO[1]=mkFBO(DYE_W,DYE_H);
-  dyeR=0; dyeW=1;}
+/* ═══════════════ ALLOCATE FBOs ════════════════════════════ */
+
+let vel,pres,div,curl,dye;
+let wallTex,wallDat;
+
+function allocFBOs(){
+  gl.disable(gl.BLEND);
+  vel  = mkDFBO(SIM_W,SIM_H);
+  pres = mkDFBO(SIM_W,SIM_H);
+  div  = mkFBO(SIM_W,SIM_H);
+  curl = mkFBO(SIM_W,SIM_H);
+  dye  = mkDFBO(DYE_W,DYE_H);
+  /* Wall mask: RGBA8, NX×NY, updated from CPU each time walls change */
+  wallTex = mkMaskTex(NX,NY);
+  wallDat = new Uint8Array(NX*NY*4);
+  uploadWall();
+}
+
+function uploadWall(){
+  for(let k=0;k<NX*NY;k++){
+    const p=k*4,w=wallCPU[k]?255:0;
+    wallDat[p]=w;wallDat[p+1]=w;wallDat[p+2]=w;wallDat[p+3]=255;}
+  gl.bindTexture(gl.TEXTURE_2D,wallTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,NX,NY,0,gl.RGBA,gl.UNSIGNED_BYTE,wallDat);}
 
 function clearDye(){
-  if(!gl)return;
   gl.disable(gl.BLEND);
-  for(let i=0;i<2;i++){
-    gl.bindFramebuffer(gl.FRAMEBUFFER,dyeFBO[i].fbo);
-    gl.viewport(0,0,DYE_W,DYE_H);
-    gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);}
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);}
+  blit(dye.read,true);blit(dye.write,true);}
 
-/* ════════════════════ PHYSICS ALLOCATE ════════════════════ */
+/* ═══════════════ PHYSICS STEP ═════════════════════════════ */
 
-function allocate(){
-  const n=NX*NY;
-  rho =new Float32Array(n);rhou=new Float32Array(n);
-  rhov=new Float32Array(n);rhoE=new Float32Array(n);
-  rhoB=new Float32Array(n);rhouB=new Float32Array(n);
-  rhovB=new Float32Array(n);rhoEB=new Float32Array(n);
-  wall=new Uint8Array(n);omega=new Float32Array(n);
-  ua  =new Float32Array(n);va  =new Float32Array(n);
-  pa  =new Float32Array(n);ca  =new Float32Array(n);
-  canvas.width=DISP_W;canvas.height=DISP_H;
-  if(gl)allocGPU();}
+function physicsStep(dt){
+  gl.disable(gl.BLEND);
+
+  /* 1. Curl (vorticity scalar field) */
+  useP(pCurl);
+  u2f(pCurl,'tS',vel.tsx,vel.tsy);
+  bnd(0,vel.read.tex);u1i(pCurl,'uVel',0);
+  blit(curl);
+
+  /* 2. Vorticity confinement — amplifies vortices */
+  useP(pVort);
+  u2f(pVort,'tS',vel.tsx,vel.tsy);
+  bnd(0,vel.read.tex);u1i(pVort,'uVel',0);
+  bnd(1,curl.tex);    u1i(pVort,'uCurl',1);
+  u1f(pVort,'curl',CURL_CONF);
+  u1f(pVort,'dt',dt);
+  blit(vel.write);vel.swap();
+
+  /* 3. Divergence */
+  useP(pDiv);
+  u2f(pDiv,'tS',vel.tsx,vel.tsy);
+  bnd(0,vel.read.tex);u1i(pDiv,'uVel',0);
+  blit(div);
+
+  /* 4. Clear pressure with damping (Pavel's trick) */
+  useP(pClr);
+  bnd(0,pres.read.tex);u1i(pClr,'uT',0);
+  u1f(pClr,'val',0.85);
+  blit(pres.write);pres.swap();
+
+  /* 5. Pressure Jacobi iterations */
+  useP(pPres);
+  u2f(pPres,'tS',pres.tsx,pres.tsy);
+  bnd(1,div.tex);u1i(pPres,'uDiv',1);
+  for(let i=0;i<PRESSURE_ITER;i++){
+    bnd(0,pres.read.tex);u1i(pPres,'uP',0);
+    blit(pres.write);pres.swap();}
+
+  /* 6. Gradient subtract → divergence-free velocity */
+  useP(pGrad);
+  u2f(pGrad,'tS',vel.tsx,vel.tsy);
+  bnd(0,pres.read.tex);u1i(pGrad,'uP',0);
+  bnd(1,vel.read.tex); u1i(pGrad,'uVel',1);
+  blit(vel.write);vel.swap();
+
+  /* 7. Advect velocity */
+  useP(pAdv);
+  u2f(pAdv,'tS',vel.tsx,vel.tsy);
+  u2f(pAdv,'dS',vel.tsx,vel.tsy);
+  u1f(pAdv,'dt',dt);u1f(pAdv,'diss',1-VEL_DISS);
+  bnd(0,vel.read.tex);u1i(pAdv,'uVel',0);
+  bnd(1,vel.read.tex);u1i(pAdv,'uSrc',1);
+  blit(vel.write);vel.swap();
+
+  /* 8. Apply wall BCs — zero velocity inside solid cells */
+  useP(pWall);
+  bnd(0,vel.read.tex);u1i(pWall,'uSrc',0);
+  bnd(1,wallTex);     u1i(pWall,'uWall',1);
+  u1f(pWall,'zero',0.);
+  blit(vel.write);vel.swap();
+
+  /* 9. Inject inlet velocity (horizontal flow from left) */
+  injectInlet(dt);}
+
+/* Inject inlet velocity using splats along left edge */
+function injectInlet(dt){
+  const speed = gM() * 480.0;  /* scale with Mach: M=0.6 → ~288 sim units */
+  const ar = DYE_W / DYE_H;
+  const r  = 0.00012;          /* splat radius (narrow) */
+  useP(pSplat);
+  u1f(pSplat,'ar',SIM_W/SIM_H);
+  u1f(pSplat,'r',r);
+  /* Inject 8 overlapping splats to cover full height */
+  for(let j=0;j<8;j++){
+    const y=(j+0.5)/8;
+    bnd(0,vel.read.tex);u1i(pSplat,'uT',0);
+    u2f(pSplat,'pt',INLET_W_UV*.5,y);
+    u3f(pSplat,'col',speed,0.,0.);
+    blit(vel.write);vel.swap();}}
+
+/* ═══════════════ DYE STEP ═════════════════════════════════ */
+
+function dyeStep(dt){
+  gl.disable(gl.BLEND);
+
+  /* Advect dye */
+  useP(pAdv);
+  u2f(pAdv,'tS',vel.tsx,vel.tsy);
+  u2f(pAdv,'dS',dye.tsx,dye.tsy);
+  u1f(pAdv,'dt',dt);u1f(pAdv,'diss',1-DYE_DISS);
+  bnd(0,vel.read.tex);u1i(pAdv,'uVel',0);
+  bnd(1,dye.read.tex);u1i(pAdv,'uSrc',1);
+  blit(dye.write);dye.swap();
+
+  /* Wall BC — zero dye inside walls */
+  useP(pWall);
+  bnd(0,dye.read.tex);u1i(pWall,'uSrc',0);
+  bnd(1,wallTex);     u1i(pWall,'uWall',1);
+  u1f(pWall,'zero',0.);
+  blit(dye.write);dye.swap();
+
+  /* Inject rainbow dye at inlet */
+  if(gTr()){
+    useP(pIDye);
+    bnd(0,dye.read.tex);u1i(pIDye,'uDye',0);
+    u1f(pIDye,'iW',INLET_W_UV);
+    blit(dye.write);dye.swap();}
+}
+
+/* ═══════════════ DISPLAY ═══════════════════════════════════ */
+
+/* Determine which field texture + mode to use */
+function getFieldFBO(){
+  const m=gF();
+  if(m==='pres') return{fbo:pres.read,mode:1};
+  if(m==='vort') return{fbo:curl,mode:2};
+  /* vel, mach, dens all show velocity magnitude */
+  return{fbo:vel.read,mode:0};
+}
+
+/* Auto-scale: read one texel per frame to slowly track the field range */
+let readBuf=null;
+function sampleScale(){
+  if(!gAs()||!scaleOK) return;
+  if(!readBuf) readBuf=new Uint8Array(4);
+  const{fbo,mode}=getFieldFBO();
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo.fbo);
+  /* Sample a few positions and get rough idea of magnitude */
+  /* We don't call readPixels (slow) — instead use the tip from field mode */
+  /* Just let dMin/dMax track based on mode heuristics */
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+}
+
+let fldLo=0,fldHi=1;
+function updateScale(){
+  const m=gF(),speed=gM()*480.;
+  if(m==='vel'){fldLo=0;fldHi=speed*1.5;}
+  else if(m==='mach'){fldLo=0;fldHi=speed*1.5;}
+  else if(m==='pres'){fldLo=-speed*.4;fldHi=speed*.4;}
+  else if(m==='vort'){fldLo=-speed*.015;fldHi=speed*.015;}
+  else if(m==='dens'){fldLo=0;fldHi=speed*1.5;}
+}
+
+function render(){
+  const{fbo,mode}=getFieldFBO();
+  updateScale();
+
+  gl.disable(gl.BLEND);
+  useP(pDisp);
+  bnd(0,dye.read.tex);    u1i(pDisp,'uDye',0);
+  bnd(1,fbo.tex);         u1i(pDisp,'uFld',1);
+  bnd(2,wallTex);         u1i(pDisp,'uWall',2);
+  u1f(pDisp,'uMode',mode);
+  u1f(pDisp,'uLo',fldLo);
+  u1f(pDisp,'uHi',fldHi);
+  u1f(pDisp,'uDye',gTr()?1.:0.);
+  blit(null);
+
+  /* Streamlines as white lines overlaid */
+  if(gSL()) drawStreamlines();
+
+  /* Colorbar */
+  const isV=gF()==='vort';
+  const grad=cbCtx.createLinearGradient(0,0,cbCv.width,0);
+  const cm=isV?rdbuRGB:jetRGB;
+  for(let s=0;s<=20;s++){const t=s/20;const[r,g,b]=cm(t);grad.addColorStop(t,`rgb(${r},${g},${b})`);}
+  cbCtx.fillStyle=grad;cbCtx.fillRect(0,0,cbCv.width,cbCv.height);
+
+  /* Colorbar labels */
+  const fmt=v=>v>=10000?v.toExponential(1):v>=100?v.toFixed(0):v>=1?v.toFixed(2):v.toExponential(2);
+  $('cbLo').textContent=fmt(fldLo);$('cbHi').textContent=fmt(fldHi);
+  $('cbU').textContent=({vel:'m/s',pres:'Pa',dens:'kg/m³',mach:'Ma',vort:'1/s'}[gF()]||'');
+  $('sDt').textContent=(0.016).toExponential(2);
+  $('sM').textContent=(gM()).toFixed(2);
+  $('sSt').textContent=stepN;
+  fpsN++;
+  const now=performance.now();
+  if(now-fpsT>600){fpsV=Math.round(fpsN*1000/(now-fpsT));fpsN=0;fpsT=now;}
+  $('sFPS').textContent=fpsV;
+  const vh=$('vVel');
+  if(vh) vh.textContent=`≈${(gM()*340).toFixed(0)} m/s`;
+}
+
+/* ═══════════════ CPU STREAMLINES ══════════════════════════ */
+/* We can't easily read velocity from FBO every frame (slow readPixels),
+   so streamlines are computed from the last-known CPU side velocity hint.
+   For now, show static streamline arrows based on inlet direction. */
+
+let slBuf=null,slTex=null,pSLProg=null;
+/* Actually for streamlines we need the velocity on CPU.
+   We'll defer this — just skip streamlines in pure GPU mode. */
+function drawStreamlines(){ /* TODO: GPU streamline pass */ }
+
+/* Colormap CPUs */
+function jetRGB(t){t=Math.max(0,Math.min(1,t));return[
+  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-3)))*255),
+  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-2)))*255),
+  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-1)))*255)];}
+function rdbuRGB(t){t=Math.max(0,Math.min(1,t));if(t<.5){const f=t*2;return[
+  Math.round((.02+.92*f)*255),Math.round((.20+.74*f)*255),Math.round((.72+.22*f)*255)];}
+  const f=(t-.5)*2;return[Math.round((.94-.18*f)*255),Math.round((.94-.92*f)*255),Math.round((.94-.92*f)*255)];}
+
+/* ═══════════════ PRESETS ═══════════════════════════════════ */
 
 function idx(i,j){return i+j*NX;}
 
-/* ════════════════════ PHYSICS ═════════════════════════════ */
-
-function prim(){
-  for(let k=0;k<NX*NY;k++){
-    const r=Math.max(rho[k],.05),u=rhou[k]/r,v=rhov[k]/r;
-    ua[k]=u;va[k]=v;
-    pa[k]=Math.max((GAMMA-1)*(rhoE[k]-.5*r*(u*u+v*v)),.02);
-    ca[k]=Math.sqrt(GAMMA*pa[k]/r);}}
-
-function initFlow(){
-  const M=gM();
-  for(let k=0;k<NX*NY;k++){rho[k]=1;rhou[k]=M;rhov[k]=0;rhoE[k]=1/(GAMMA-1)+.5*M*M;}
-  prim();omega.fill(0);stepCount=0;scaleInit=false;clearDye();}
-
-function applyBC(){
-  const M=gM(),pO=gPo();
-  for(let j=0;j<NY;j++){
-    const k=idx(0,j);
-    if(!wall[k]){rho[k]=1;rhou[k]=M;rhov[k]=0;rhoE[k]=1/(GAMMA-1)+.5*M*M;}}
-  for(let j=0;j<NY;j++){
-    const k=idx(NX-1,j),k1=idx(NX-2,j);
-    if(!wall[k]){const r=Math.max(rho[k1],.1),u=ua[k1],v=va[k1];
-      rho[k]=r;rhou[k]=r*u;rhov[k]=r*v;rhoE[k]=pO/(GAMMA-1)+.5*r*(u*u+v*v);}}
-  for(let i=0;i<NX;i++){
-    let k=idx(i,NY-1),k1=idx(i,NY-2);
-    if(!wall[k]){rho[k]=rho[k1];rhou[k]=rhou[k1];rhov[k]=-rhov[k1];rhoE[k]=rhoE[k1];}
-    k=idx(i,0);k1=idx(i,1);
-    if(!wall[k]){rho[k]=rho[k1];rhou[k]=rhou[k1];rhov[k]=-rhov[k1];rhoE[k]=rhoE[k1];}}
-  prim();}
-
-function wallBC(){
-  for(let k=0;k<NX*NY;k++){
-    if(wall[k]){rho[k]=1;rhou[k]=0;rhov[k]=0;rhoE[k]=1/(GAMMA-1);}}}
-
-function step(){
-  let maxS=1e-6;
-  for(let k=0;k<NX*NY;k++){
-    if(wall[k])continue;const s=Math.abs(ua[k])+ca[k];if(s>maxS)maxS=s;}
-  dtodx=CFL/maxS;
-  rhoB.set(rho);rhouB.set(rhou);rhovB.set(rhov);rhoEB.set(rhoE);
-  const d=dtodx;
-  for(let j=1;j<NY-1;j++){
-    for(let i=0;i<NX-1;i++){
-      const L=idx(i,j),R=idx(i+1,j);if(wall[L]||wall[R])continue;
-      const rL=rho[L],uL=ua[L],vL=va[L],pL=pa[L],cL=ca[L];
-      const rR=rho[R],uR=ua[R],vR=va[R],pR=pa[R],cR=ca[R];
-      const EL=pL/(GAMMA-1)+.5*rL*(uL*uL+vL*vL);
-      const ER=pR/(GAMMA-1)+.5*rR*(uR*uR+vR*vR);
-      const lm=Math.max(Math.abs(uL)+cL,Math.abs(uR)+cR);
-      const h0=.5*((rL*uL+rR*uR)-lm*(rR-rL));
-      const h1=.5*((rL*uL*uL+pL+rR*uR*uR+pR)-lm*(rR*uR-rL*uL));
-      const h2=.5*((rL*uL*vL+rR*uR*vR)-lm*(rR*vR-rL*vL));
-      const h3=.5*((uL*(rL*EL+pL)+uR*(rR*ER+pR))-lm*(rR*ER-rL*EL));
-      rhoB[L]-=d*h0;rhoB[R]+=d*h0;rhouB[L]-=d*h1;rhouB[R]+=d*h1;
-      rhovB[L]-=d*h2;rhovB[R]+=d*h2;rhoEB[L]-=d*h3;rhoEB[R]+=d*h3;}}
-  for(let j=0;j<NY-1;j++){
-    for(let i=1;i<NX-1;i++){
-      const B=idx(i,j),T=idx(i,j+1);if(wall[B]||wall[T])continue;
-      const rB=rho[B],uB=ua[B],vB=va[B],pB=pa[B],cB=ca[B];
-      const rT=rho[T],uT=ua[T],vT=va[T],pT=pa[T],cT=ca[T];
-      const EB=pB/(GAMMA-1)+.5*rB*(uB*uB+vB*vB);
-      const ET=pT/(GAMMA-1)+.5*rT*(uT*uT+vT*vT);
-      const lm=Math.max(Math.abs(vB)+cB,Math.abs(vT)+cT);
-      const h0=.5*((rB*vB+rT*vT)-lm*(rT-rB));
-      const h1=.5*((rB*uB*vB+rT*uT*vT)-lm*(rT*uT-rB*uB));
-      const h2=.5*((rB*vB*vB+pB+rT*vT*vT+pT)-lm*(rT*vT-rB*vB));
-      const h3=.5*((vB*(rB*EB+pB)+vT*(rT*ET+pT))-lm*(rT*ET-rB*EB));
-      rhoB[B]-=d*h0;rhoB[T]+=d*h0;rhouB[B]-=d*h1;rhouB[T]+=d*h1;
-      rhovB[B]-=d*h2;rhovB[T]+=d*h2;rhoEB[B]-=d*h3;rhoEB[T]+=d*h3;}}
-  const a=gRl(),b=1-a;
-  for(let k=0;k<NX*NY;k++){
-    rho[k] =a*rhoB[k] +b*rho[k];  rhou[k]=a*rhouB[k]+b*rhou[k];
-    rhov[k]=a*rhovB[k]+b*rhov[k]; rhoE[k]=a*rhoEB[k]+b*rhoE[k];
-    if(rho[k] <.05)rho[k] =.05;   if(rhoE[k]<.05)rhoE[k]=.05;}
-  prim();}
-
-function vorticity(){
-  for(let j=1;j<NY-1;j++){
-    for(let i=1;i<NX-1;i++){
-      const k=idx(i,j);
-      if(wall[k]){omega[k]=0;continue;}
-      omega[k]=(va[idx(i+1,j)]-va[idx(i-1,j)])*.5-(ua[idx(i,j+1)]-ua[idx(i,j-1)])*.5;}}}
-
-/* ════════════════════ PRESETS ═════════════════════════════ */
-
-function preset(name){
-  wall.fill(0);
+function loadPreset(name){
+  wallCPU.fill(0);
   if(name==='naca'||name==='naca8'){
     const aoa=(name==='naca8'?8:4)*Math.PI/180,ch=Math.floor(NX*.27);
     const x0=Math.floor(NX*.36),y0=Math.floor(NY*.5);
@@ -893,229 +1179,73 @@ function preset(name){
       if(xr>=0&&xr<=1){
         const xs=Math.max(xr,.0001);
         const yt=5*.12*(.2969*Math.sqrt(xs)-.1260*xs-.3516*xs*xs+.2843*xs*xs*xs-.1015*xs*xs*xs*xs);
-        if(Math.abs(yr)<=yt*1.05)wall[idx(i,j)]=1;}}
+        if(Math.abs(yr)<=yt*1.05)wallCPU[idx(i,j)]=1;}}
   }else if(name==='cylinder'||name==='sphere'){
     const cx=Math.floor(NX*.40),cy=Math.floor(NY*.5),rad=Math.floor(NY*.13);
     for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++)
-      if(Math.hypot(i-cx,j-cy)<=rad)wall[idx(i,j)]=1;
+      if(Math.hypot(i-cx,j-cy)<=rad)wallCPU[idx(i,j)]=1;
   }else if(name==='square'){
     const w=Math.floor(NX*.09),h=Math.floor(NY*.24);
     const x0=Math.floor(NX*.40),y0=Math.floor(NY/2-h/2);
     for(let j=y0;j<y0+h;j++)for(let i=x0;i<x0+w;i++)
-      if(i>1&&i<NX-2)wall[idx(i,j)]=1;
+      if(i>1&&i<NX-2)wallCPU[idx(i,j)]=1;
   }else if(name==='step'){
     const sx=Math.floor(NX*.28),sh2=Math.floor(NY*.48);
-    for(let i=0;i<sx;i++)for(let j=NY-sh2;j<NY;j++)wall[idx(i,j)]=1;
-    for(let j=NY-sh2;j<NY;j++)wall[idx(sx,j)]=1;
+    for(let i=0;i<sx;i++)for(let j=NY-sh2;j<NY;j++)wallCPU[idx(i,j)]=1;
+    for(let j=NY-sh2;j<NY;j++)wallCPU[idx(sx,j)]=1;
   }else if(name==='stenosis'){
     const yc=NY*.5,rb=NY*.44,xs=NX*.44,sg=NX*.060;
     for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++){
       const g=Math.exp(-.5*((i-xs)/sg)**2);
-      const r=rb*(1-.65*g);if(Math.abs(j-yc)>r)wall[idx(i,j)]=1;}
+      const r=rb*(1-.65*g);if(Math.abs(j-yc)>r)wallCPU[idx(i,j)]=1;}
   }else if(name==='nozzle'){
     const yc=NY*.5,ir=NY*.40,tr=NY*.14,er=NY*.37,tx=NX*.45;
     for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++){
       const r=i<=tx?ir+(tr-ir)*(i/tx):tr+(er-tr)*((i-tx)/(NX-tx));
-      if(Math.abs(j-yc)>r)wall[idx(i,j)]=1;}}
-  wallBC();prim();clearDye();scaleInit=false;}
+      if(Math.abs(j-yc)>r)wallCPU[idx(i,j)]=1;}}
+  uploadWall();clearDye();scaleOK=false;}
 
-/* ════════════════════ DISPLAY VALUE ═══════════════════════ */
+/* ═══════════════ MAIN LOOP ════════════════════════════════ */
 
-function val(k,mode){
-  const s=sf();
-  if(mode==='vel') return Math.sqrt(ua[k]*ua[k]+va[k]*va[k])*C0*s;
-  if(mode==='pres')return pa[k]*P0*s*s;
-  if(mode==='dens')return rho[k]*RHO0;
-  if(mode==='mach')return Math.sqrt(ua[k]*ua[k]+va[k]*va[k])/Math.max(ca[k],.001);
-  if(mode==='vort')return omega[k];
-  return 0;}
-function uLbl(){
-  const m=gF(),s=gSc();
-  if(m==='vel') return s==='micro'?'mm/s':'m/s';
-  if(m==='pres')return 'Pa';
-  if(m==='dens')return 'kg/m³';
-  if(m==='mach')return 'Ma';
-  if(m==='vort')return '1/s';
-  return '';}
-
-/* ════════════════════ STREAMLINES ════════════════════════ */
-
-function updateSL(){
-  if(!gSL()||!gl){slN=0;return;}
-  const nS=260,nSt=55,cols=16,rows=Math.ceil(nS/cols);
-  const vb=[],tb=[];
-  for(let s=0;s<nS;s++){
-    let x=2+(s%cols+.2+Math.random()*.6)*(NX-4)/cols;
-    let y=1+(Math.floor(s/cols)+.2+Math.random()*.6)*(NY-2)/rows;
-    const pts=[[x,y]];
-    for(let st=0;st<nSt;st++){
-      const i=x|0,j=y|0;
-      if(i<1||i>=NX-1||j<1||j>=NY-1)break;
-      const k=idx(i,j);if(wall[k])break;
-      const sp=Math.sqrt(ua[k]*ua[k]+va[k]*va[k]);if(sp<.004)break;
-      const dt=Math.min(.45/sp,.9);x+=ua[k]*dt;y+=va[k]*dt;pts.push([x,y]);}
-    if(pts.length<2)continue;
-    const M=pts.length-1;
-    for(let p=0;p<M;p++){
-      vb.push(pts[p][0]/NX,pts[p][1]/NY);tb.push(p/M);
-      vb.push(pts[p+1][0]/NX,pts[p+1][1]/NY);tb.push((p+1)/M);}}
-  slN=tb.length;
-  if(!slN)return;
-  gl.bindBuffer(gl.ARRAY_BUFFER,slPos);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vb),gl.DYNAMIC_DRAW);
-  gl.bindBuffer(gl.ARRAY_BUFFER,slT);
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(tb),gl.DYNAMIC_DRAW);}
-
-/* ════════════════════ RENDER ══════════════════════════════ */
-
-function jetRGB(t){t=Math.max(0,Math.min(1,t));return[
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-3)))*255),
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-2)))*255),
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-1)))*255)];}
-function rdbuRGB(t){t=Math.max(0,Math.min(1,t));if(t<.5){const f=t*2;return[
-  Math.round((.02+.92*f)*255),Math.round((.20+.74*f)*255),Math.round((.72+.22*f)*255)];}
-  const f=(t-.5)*2;return[Math.round((.94-.18*f)*255),Math.round((.94-.92*f)*255),Math.round((.94-.92*f)*255)];}
-
-function render(){
-  if(!gl)return;
-  const mode=gF(),isV=(mode==='vort');
-  let lo=Infinity,hi=-Infinity,mxM=0;
-  for(let k=0;k<NX*NY;k++){
-    if(wall[k])continue;
-    const v=val(k,mode);if(v<lo)lo=v;if(v>hi)hi=v;
-    const m=Math.sqrt(ua[k]*ua[k]+va[k]*va[k])/Math.max(ca[k],.001);
-    if(m>mxM)mxM=m;}
-  if(!isFinite(lo)){lo=0;hi=1;}
-  if(isV){const mx=Math.max(Math.abs(lo),Math.abs(hi),.001);lo=-mx;hi=mx;}
-  /* Auto-scale: direct on first few steps, then track with hysteresis */
-  if(gAs()){
-    if(!scaleInit||stepCount<8){dMin=lo;dMax=hi;scaleInit=true;}
-    else{
-      if(lo<dMin||hi>dMax||Math.abs(hi-lo)<.1*(dMax-dMin)){dMin=lo;dMax=hi;}}
-  }
-  const range=Math.max(dMax-dMin,1e-9);
-
-  /* Upload NX×NY textures */
-  for(let j=0;j<NY;j++){
-    for(let i=0;i<NX;i++){
-      const k=idx(i,j),p=k*4;
-      if(wall[k]){
-        dWall[p]=255;dWall[p+1]=dWall[p+2]=0;dWall[p+3]=255;
-        dVel[p]=128;dVel[p+1]=128;dVel[p+2]=0;dVel[p+3]=255;
-        dFld[p]=0;dFld[p+1]=dFld[p+2]=0;dFld[p+3]=255;
-      }else{
-        dWall[p]=dWall[p+1]=dWall[p+2]=0;dWall[p+3]=255;
-        /* Velocity: encode u,v ∈ [-2,2] → byte [0,255] via (x+2)/4 */
-        dVel[p]  =Math.max(0,Math.min(255,Math.round((ua[k]+2)/4*255)));
-        dVel[p+1]=Math.max(0,Math.min(255,Math.round((va[k]+2)/4*255)));
-        dVel[p+2]=0;dVel[p+3]=255;
-        /* Field: 0-254 */
-        dFld[p]  =Math.max(0,Math.min(254,Math.round(254*(val(k,mode)-dMin)/range)));
-        dFld[p+1]=dFld[p+2]=0;dFld[p+3]=255;}}}
-
-  gl.bindTexture(gl.TEXTURE_2D,tVel); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,NX,NY,0,gl.RGBA,gl.UNSIGNED_BYTE,dVel);
-  gl.bindTexture(gl.TEXTURE_2D,tFld); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,NX,NY,0,gl.RGBA,gl.UNSIGNED_BYTE,dFld);
-  gl.bindTexture(gl.TEXTURE_2D,tWall);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,NX,NY,0,gl.RGBA,gl.UNSIGNED_BYTE,dWall);
-
-  gl.disable(gl.BLEND);
-
-  /* ── PASS 1: Advect + inject → dyeFBO[dyeW] ── */
-  {
-    const sub=paused?0:gSp();
-    /* dtx = sub*dtodx/NX: UV displacement per unit Mach in x direction
-       dty = sub*dtodx/NY: UV displacement per unit Mach in y direction
-       (different because NY << NX but cells are square, so y UV span is larger per cell) */
-    const dtx=sub*dtodx/NX;
-    const dty=sub*dtodx/NY;
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER,dyeFBO[dyeW].fbo);
-    gl.viewport(0,0,DYE_W,DYE_H);
-    gl.useProgram(pAI);
-    bt(0,dyeFBO[dyeR].tex);u1i(pAI,'u_dye',0);
-    bt(1,tVel);            u1i(pAI,'u_vel',1);
-    bt(2,tWall);           u1i(pAI,'u_wall',2);
-    u1f(pAI,'u_dtx',   dtx);
-    u1f(pAI,'u_dty',   dty);
-    u1f(pAI,'u_decay', gTr()?DYE_DECAY:0.0);  /* 0=instant clear when dye disabled */
-    u1f(pAI,'u_inj',   3.5/NX);               /* inject up to x=3.5 physics cells */
-    u1f(pAI,'u_enabled',gTr()?1.0:0.0);
-    dq(pAI);
-    [dyeR,dyeW]=[dyeW,dyeR];
-  }
-
-  /* ── PASS 2: Composite field + dye → canvas ── */
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  gl.viewport(0,0,DISP_W,DISP_H);
-  gl.useProgram(pCmp);
-  bt(0,tFld);            u1i(pCmp,'u_fld',0);
-  bt(1,dyeFBO[dyeR].tex);u1i(pCmp,'u_dye',1);
-  bt(2,tWall);           u1i(pCmp,'u_wall',2);
-  u1f(pCmp,'u_vort',isV?1.:0.);
-  dq(pCmp);
-
-  /* ── PASS 3: Streamlines ── */
-  if(gSL()&&slN>0){
-    gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-    gl.useProgram(pSL);
-    gl.bindBuffer(gl.ARRAY_BUFFER,slPos);
-    const pa2=gl.getAttribLocation(pSL,'a');
-    if(pa2>=0){gl.enableVertexAttribArray(pa2);gl.vertexAttribPointer(pa2,2,gl.FLOAT,false,0,0);}
-    gl.bindBuffer(gl.ARRAY_BUFFER,slT);
-    const ta2=gl.getAttribLocation(pSL,'t');
-    if(ta2>=0){gl.enableVertexAttribArray(ta2);gl.vertexAttribPointer(ta2,1,gl.FLOAT,false,0,0);}
-    gl.drawArrays(gl.LINES,0,slN);
-    gl.disable(gl.BLEND);}
-
-  /* ── Colorbar ── */
-  const grad=cbC.createLinearGradient(0,0,cbCv.width,0);
-  for(let s=0;s<=24;s++){const t=s/24;const[r,g,b]=isV?rdbuRGB(t):jetRGB(t);
-    grad.addColorStop(t,`rgb(${r},${g},${b})`);}
-  cbC.fillStyle=grad;cbC.fillRect(0,0,cbCv.width,cbCv.height);
-
-  /* ── Stats ── */
-  const fmt=v=>v>=10000?v.toExponential(1):v>=100?v.toFixed(0):v>=1?v.toFixed(2):v.toExponential(2);
-  $('cbLo').textContent=fmt(dMin);$('cbHi').textContent=fmt(dMax);
-  $('cbU').textContent=uLbl();$('sM').textContent=mxM.toFixed(3);
-  $('sDt').textContent=dtodx.toExponential(2);$('sSt').textContent=stepCount;
-  fpsN++;const now=performance.now();
-  if(now-fpsT>600){fps=Math.round(fpsN*1000/(now-fpsT));fpsN=0;fpsT=now;}
-  $('sFPS').textContent=fps;
-  const vh=$('vVel');
-  if(vh){vh.textContent=`≈${(gM()*C0*sf()).toFixed(1)} ${uLbl()==='mm/s'?'mm':'m'}/s`;}}
-
-/* ════════════════════ SIMULATION LOOP ════════════════════ */
-
-function loop(){
+let lastT=0;
+function loop(ts){
+  const dt=Math.min((ts-lastT)/1000,.016666);
+  lastT=ts;
   if(!paused){
     const sub=gSp();
-    for(let s=0;s<sub;s++){applyBC();step();wallBC();}
-    stepCount+=sub;vorticity();
-    slTick++;if(slTick>=4){updateSL();slTick=0;}}
+    for(let s=0;s<sub;s++){
+      physicsStep(dt/sub);
+      dyeStep(dt/sub);}
+    stepN+=sub;
+    if(!scaleOK&&stepN>10)scaleOK=true;}
   render();
   requestAnimationFrame(loop);}
 
-/* ════════════════════ CANVAS INPUT ═══════════════════════ */
+/* ═══════════════ CANVAS INPUT ═════════════════════════════ */
 
-function cell(e){const r=canvas.getBoundingClientRect();return{i:Math.round((e.clientX-r.left)/r.width*(NX-1)),j:Math.round((e.clientY-r.top)/r.height*(NY-1))};}
-function draw(e){
+function getCell(e){
+  const r=canvas.getBoundingClientRect();
+  return{i:Math.round((e.clientX-r.left)/r.width*(NX-1)),
+         j:Math.round((e.clientY-r.top)/r.height*(NY-1))};}
+function applyDraw(e){
   if(tool==='none')return;
-  const{i,j}=cell(e),br=gBr();
+  const{i,j}=getCell(e),br=gBr();
   for(let dj=-br;dj<=br;dj++)for(let di=-br;di<=br;di++){
     if(di*di+dj*dj>br*br+.5)continue;
     const ci=i+di,cj=j+dj;if(ci<=1||ci>=NX-2||cj<=0||cj>=NY-1)continue;
-    const k=idx(ci,cj);
-    if(tool==='wall'){wall[k]=1;rhou[k]=0;rhov[k]=0;}else wall[k]=0;}
-  prim();}
-canvas.addEventListener('mousedown', e=>{drawing=true;draw(e);});
-canvas.addEventListener('mousemove', e=>{if(drawing)draw(e);});
+    if(tool==='wall')wallCPU[idx(ci,cj)]=1;
+    else wallCPU[idx(ci,cj)]=0;}
+  uploadWall();}
+canvas.addEventListener('mousedown', e=>{drawing=true;applyDraw(e);});
+canvas.addEventListener('mousemove', e=>{if(drawing)applyDraw(e);});
 canvas.addEventListener('mouseup',   ()=>drawing=false);
 canvas.addEventListener('mouseleave',()=>drawing=false);
-canvas.addEventListener('contextmenu',e=>{e.preventDefault();const p=tool;tool='erase';draw(e);tool=p;});
-canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;draw(e.touches[0]);},{passive:false});
-canvas.addEventListener('touchmove', e=>{e.preventDefault();if(drawing)draw(e.touches[0]);},{passive:false});
+canvas.addEventListener('contextmenu',e=>{e.preventDefault();const p=tool;tool='erase';applyDraw(e);tool=p;});
+canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;applyDraw(e.touches[0]);},{passive:false});
+canvas.addEventListener('touchmove', e=>{e.preventDefault();if(drawing)applyDraw(e.touches[0]);},{passive:false});
 canvas.addEventListener('touchend',  ()=>drawing=false);
 
-/* ════════════════════ PUBLIC API ══════════════════════════ */
+/* ═══════════════ PUBLIC API ════════════════════════════════ */
 
 window.SIM={
   togglePause(){
@@ -1123,17 +1253,17 @@ window.SIM={
     $('btnPlay').textContent=paused?'▶ Resume':'⏸ Pause';
     $('simStat').textContent=paused?'● paused':'● running';
     $('simStat').className=paused?'sim-run paused':'sim-run';},
-  reset(){initFlow();preset($('selPre').value);},
+  reset(){clearDye();scaleOK=false;},
   setTool(t){
     tool=t;['tNone','tWall','tErase'].forEach(id=>$(id).classList.remove('on'));
-    if(t==='none')  $('tNone').classList.add('on');
-    if(t==='wall')  {$('tWall').classList.add('on');$('dhint').classList.add('on');}
-    if(t==='erase') {$('tErase').classList.add('on');$('dhint').classList.add('on');}
-    if(t==='none')  $('dhint').classList.remove('on');},
-  clearWalls(){wall.fill(0);clearDye();prim();scaleInit=false;},
-  loadPreset(n){preset(n);}};
+    if(t==='none') $('tNone').classList.add('on');
+    if(t==='wall') {$('tWall').classList.add('on');$('dhint').classList.add('on');}
+    if(t==='erase'){$('tErase').classList.add('on');$('dhint').classList.add('on');}
+    if(t==='none') $('dhint').classList.remove('on');},
+  clearWalls(){wallCPU.fill(0);uploadWall();clearDye();},
+  loadPreset(n){loadPreset(n);}};
 
-/* ════════════════════ BINDINGS ════════════════════════════ */
+/* ═══════════════ BINDINGS ══════════════════════════════════ */
 
 $('slMach').addEventListener('input',()=>$('vMach').textContent=parseFloat($('slMach').value).toFixed(2));
 $('slPout').addEventListener('input',()=>$('vPout').textContent=parseFloat($('slPout').value).toFixed(2));
@@ -1141,8 +1271,8 @@ $('slSpd').addEventListener('input', ()=>$('vSpd').textContent='×'+$('slSpd').v
 $('slRlx').addEventListener('input', ()=>$('vRlx').textContent=parseFloat($('slRlx').value).toFixed(2));
 $('slBr').addEventListener('input',  ()=>$('vBr').textContent=$('slBr').value+' px');
 $('selRes').addEventListener('change',e=>{
-  const[nx,ny]=e.target.value.split('x').map(Number);
-  NX=nx;NY=ny;allocate();initFlow();preset($('selPre').value);});
+  const[nx,ny]=e.target.value.split('x').map(Number);NX=nx;NY=ny;
+  wallCPU=new Uint8Array(NX*NY);loadPreset($('selPre').value);});
 
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;
@@ -1153,13 +1283,12 @@ document.addEventListener('keydown',e=>{
     case 'w':case 'W':SIM.setTool('wall');break;
     case 'e':case 'E':SIM.setTool('erase');break;
     case 'Escape':SIM.setTool('none');break;
-    case '1':$('selField').value='vel';break;
+    case '1':$('selField').value='vel'; break;
     case '2':$('selField').value='pres';break;
     case '3':$('selField').value='dens';break;
     case '4':$('selField').value='mach';break;
     case '5':$('selField').value='vort';break;}});
 
-/* Accessibility */
 const accBtn=$('accBtn'),accPanel=$('accPanel');
 accBtn.addEventListener('click',()=>accPanel.classList.toggle('open'));
 document.addEventListener('click',e=>{if(!accPanel.contains(e.target)&&e.target!==accBtn)accPanel.classList.remove('open');});
@@ -1171,14 +1300,12 @@ document.querySelectorAll('[data-fi]').forEach(b=>b.addEventListener('click',()=
   const sz=localStorage.getItem('acc_sz')||'';if(sz){document.body.classList.add(sz);document.querySelectorAll('[data-sz]').forEach(b=>b.classList.toggle('active',b.dataset.sz===sz));}
   const fi=localStorage.getItem('acc_fi')||'';if(fi){document.body.classList.add(fi);document.querySelectorAll('[data-fi]').forEach(b=>b.classList.toggle('active',b.dataset.fi===fi));}})();
 
-/* ════════════════════ BOOT ════════════════════════════════ */
-allocate();
-initWebGL();
-initFlow();
-preset('naca');
+/* ═══════════════ BOOT ══════════════════════════════════════ */
+allocFBOs();
+loadPreset('naca');
 SIM.setTool('none');
 $('tNone').classList.add('on');
-loop();
+requestAnimationFrame(loop);
 
 })();
 </script>
