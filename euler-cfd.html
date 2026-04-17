@@ -91,7 +91,7 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .stats-r{display:flex;gap:14px;flex-wrap:wrap}
 .stt{font-size:.77em;color:#64748b;font-family:var(--mono)}
 .stt span{color:#e2e8f0;font-weight:600}
-#cfdCanvas{display:block;width:100%;aspect-ratio:150/58;image-rendering:pixelated;image-rendering:crisp-edges;min-height:80px}
+#cfdCanvas{display:block;width:100%;image-rendering:auto}
 .sim-bot{padding:9px 16px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#000d1f}
 .cb-wrap{display:flex;align-items:center;gap:7px;flex:1;min-width:200px}
 .cb-val{font-size:.75em;color:#64748b;font-family:var(--mono);min-width:44px}
@@ -179,8 +179,8 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
     <span class="hero-pill">Rusanov / LLF Flux</span>
     <span class="hero-pill">Adaptive CFL = 0.40</span>
     <span class="hero-pill">8 Preset Scenarios</span>
-    <span class="hero-pill">Plasma Colormap</span>
-    <span class="hero-pill">Stream Tracers</span>
+    <span class="hero-pill">WebGL Rendering</span>
+    <span class="hero-pill">Dye Advection</span>
     <span class="hero-pill">KaTeX Equations</span>
   </div>
   <div class="hero-meta">
@@ -229,7 +229,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Options</div>
     <div class="ctrl-row" style="flex-direction:column;align-items:flex-start;gap:3px">
-      <label class="chk"><input type="checkbox" id="chkTr" checked> Stream tracers</label>
+      <label class="chk"><input type="checkbox" id="chkTr" checked> Dye streaks (rainbow)</label>
       <label class="chk"><input type="checkbox" id="chkAs" checked> Auto-scale colors</label>
     </div>
   </div>
@@ -555,45 +555,33 @@ const RHO0  = 1.225;
 const C0    = 340.0;
 const P0    = RHO0 * C0 * C0 / GAMMA;
 
-/* ─────────── PLASMA COLORMAP (256 entries) ─────────── */
-const CMAP = new Uint8Array(256 * 3);
-(function buildCmap(){
-  const stops = [[13,8,135],[84,2,163],[139,10,165],[185,50,137],
-                 [219,92,104],[244,136,73],[254,188,43],[240,249,33]];
-  const n = stops.length - 1;
-  for(let i=0;i<256;i++){
-    const t = i/255, si = Math.min(Math.floor(t*n), n-1), sf = t*n - si;
-    const a = stops[si], b = stops[si+1];
-    CMAP[i*3  ] = Math.round(a[0]+sf*(b[0]-a[0]));
-    CMAP[i*3+1] = Math.round(a[1]+sf*(b[1]-a[1]));
-    CMAP[i*3+2] = Math.round(a[2]+sf*(b[2]-a[2]));
-  }
-})();
-
 /* ─────────── STATE ─────────── */
 let NX=150, NY=58;
-let rho, rhou, rhov, rhoE;        /* conserved vars */
-let rhoB, rhouB, rhovB, rhoEB;    /* flux buffers   */
-let wall;                          /* 0=fluid, 1=wall */
-let ua, va, pa, ca;               /* primitives      */
+let rho, rhou, rhov, rhoE;
+let rhoB, rhouB, rhovB, rhoEB;
+let wall;
+let ua, va, pa, ca;
+/* dye fields (CPU semi-Lagrangian) */
+let dyeR, dyeG, dyeB;
 
-const canvas  = document.getElementById('cfdCanvas');
-const ctx     = canvas.getContext('2d');
+/* ─────────── WebGL STATE ─────────── */
+let gl=null, glProg=null, glTex=null, glTexData=null, glQuadBuf=null;
+const DISP_W = 900, DISP_H = 350;  /* fixed high-res display resolution */
+
+const canvas   = document.getElementById('cfdCanvas');
 const cbCanvas = document.getElementById('cbCanvas');
-const cbCtx   = cbCanvas.getContext('2d');
+const cbCtx    = cbCanvas.getContext('2d');
 
-let particles = [], stepCount = 0;
-let fpsCount  = 0, fpsLast = 0, fpsVal = 0;
-let paused    = false, drawTool = 'none', isDrawing = false;
-let dispMin   = 0, dispMax = 1;
-let lastDtodx = 0;
+let stepCount=0, fpsCount=0, fpsLast=0, fpsVal=0;
+let paused=false, drawTool='none', isDrawing=false;
+let dispMin=0, dispMax=1, lastDtodx=0;
 
 /* ─────────── DOM HELPERS ─────────── */
 const $ = id => document.getElementById(id);
-const slMach = $('slMach'), slPout = $('slPout'), slSpd = $('slSpd');
-const slRlx  = $('slRlx'),  slBr   = $('slBr');
-const selField = $('selField');
-const chkTr = $('chkTr'), chkAs = $('chkAs');
+const slMach=$('slMach'), slPout=$('slPout'), slSpd=$('slSpd');
+const slRlx=$('slRlx'), slBr=$('slBr');
+const selField=$('selField');
+const chkTr=$('chkTr'), chkAs=$('chkAs');
 
 function gMach()  { return parseFloat(slMach.value); }
 function gPout()  { return parseFloat(slPout.value); }
@@ -604,17 +592,127 @@ function gField() { return selField.value; }
 function gAuto()  { return chkAs.checked; }
 function gTr()    { return chkTr.checked; }
 
+/* ─────────── WebGL INIT ─────────── */
+function initWebGL() {
+  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) { console.warn('WebGL not available'); return; }
+
+  const vsSource = `
+    attribute vec2 a_pos;
+    varying vec2 v_uv;
+    void main(){
+      v_uv = vec2(a_pos.x*0.5+0.5, 0.5-a_pos.y*0.5);
+      gl_Position = vec4(a_pos,0.0,1.0);
+    }`;
+
+  const fsSource = `
+    precision highp float;
+    uniform sampler2D u_tex;
+    varying vec2 v_uv;
+
+    /* Plasma colormap (Viridis-like warm) */
+    vec3 plasma(float t){
+      t = clamp(t,0.0,1.0);
+      /* 8 control points from matplotlib plasma */
+      vec3 c[8];
+      c[0]=vec3(0.050,0.030,0.528);
+      c[1]=vec3(0.330,0.010,0.638);
+      c[2]=vec3(0.544,0.040,0.648);
+      c[3]=vec3(0.723,0.199,0.537);
+      c[4]=vec3(0.863,0.363,0.407);
+      c[5]=vec3(0.957,0.534,0.291);
+      c[6]=vec3(0.996,0.737,0.167);
+      c[7]=vec3(0.940,0.975,0.131);
+      float s = t*7.0;
+      int  i = int(clamp(s,0.0,6.0));
+      float f = s - float(i);
+      if(i==0) return mix(c[0],c[1],f);
+      if(i==1) return mix(c[1],c[2],f);
+      if(i==2) return mix(c[2],c[3],f);
+      if(i==3) return mix(c[3],c[4],f);
+      if(i==4) return mix(c[4],c[5],f);
+      if(i==5) return mix(c[5],c[6],f);
+                return mix(c[6],c[7],f);
+    }
+
+    void main(){
+      vec4 d = texture2D(u_tex, v_uv);
+      /* R channel: 0.0-0.996 = field value, 1.0 = wall */
+      float raw = d.r;
+
+      if(raw > 0.997){
+        /* wall — dark slate */
+        gl_FragColor = vec4(0.13,0.15,0.20,1.0);
+        return;
+      }
+
+      vec3 field = plasma(raw);
+
+      /* Dye overlay from G,B,A channels */
+      vec3 dye = d.gba;
+      float dyeLen = length(dye);
+      float blend = clamp(dyeLen * 1.8, 0.0, 0.80);
+      vec3 color = mix(field, pow(dye+0.02, vec3(0.85)), blend);
+
+      gl_FragColor = vec4(color, 1.0);
+    }`;
+
+  function compile(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+      console.error('Shader:', gl.getShaderInfoLog(s));
+    return s;
+  }
+
+  glProg = gl.createProgram();
+  gl.attachShader(glProg, compile(gl.VERTEX_SHADER,   vsSource));
+  gl.attachShader(glProg, compile(gl.FRAGMENT_SHADER, fsSource));
+  gl.linkProgram(glProg);
+  if(!gl.getProgramParameter(glProg, gl.LINK_STATUS))
+    console.error('Link:', gl.getProgramInfoLog(glProg));
+
+  /* Fullscreen quad */
+  glQuadBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, glQuadBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+  /* Texture — NX×NY RGBA8, GL_LINEAR for bilinear interpolation */
+  glTex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, glTex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  allocGLTex();
+}
+
+function allocGLTex(){
+  if(!gl) return;
+  glTexData = new Uint8Array(NX * NY * 4);
+  gl.bindTexture(gl.TEXTURE_2D, glTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, NX, NY, 0, gl.RGBA, gl.UNSIGNED_BYTE, glTexData);
+}
+
 /* ─────────── ALLOCATE ─────────── */
 function allocate(){
   const n = NX*NY;
-  rho=new Float32Array(n); rhou=new Float32Array(n);
+  rho=new Float32Array(n);  rhou=new Float32Array(n);
   rhov=new Float32Array(n); rhoE=new Float32Array(n);
   rhoB=new Float32Array(n); rhouB=new Float32Array(n);
   rhovB=new Float32Array(n); rhoEB=new Float32Array(n);
   wall=new Uint8Array(n);
   ua=new Float32Array(n); va=new Float32Array(n);
   pa=new Float32Array(n); ca=new Float32Array(n);
-  canvas.width=NX; canvas.height=NY;
+  dyeR=new Float32Array(n); dyeG=new Float32Array(n); dyeB=new Float32Array(n);
+
+  /* Fixed high-res display canvas — WebGL handles upsampling */
+  canvas.width  = DISP_W;
+  canvas.height = DISP_H;
+
+  if(gl){ allocGLTex(); }
 }
 
 function idx(i,j){ return i + j*NX; }
@@ -640,50 +738,42 @@ function initFlow(){
     rhoE[k]=pi/(GAMMA-1)+0.5*ri*M*M;
   }
   updatePrim();
-  particles=[]; stepCount=0;
+  dyeR.fill(0); dyeG.fill(0); dyeB.fill(0);
+  stepCount=0;
 }
 
 /* ─────────── BOUNDARY CONDITIONS ─────────── */
 function applyBC(){
   const M=gMach(), pO=gPout(), ri=1.0, pi=1.0;
-  /* Inlet: left column (i=0) — fixed state */
   for(let j=0;j<NY;j++){
     const k=idx(0,j);
     if(!wall[k]){ rho[k]=ri; rhou[k]=ri*M; rhov[k]=0; rhoE[k]=pi/(GAMMA-1)+0.5*ri*M*M; }
   }
-  /* Outlet: right column (i=NX-1) — pressure BC */
   for(let j=0;j<NY;j++){
     const k=idx(NX-1,j), k1=idx(NX-2,j);
     if(!wall[k]){
-      const r=Math.max(rho[k1],0.1);
-      const u=ua[k1], v=va[k1];
+      const r=Math.max(rho[k1],0.1), u=ua[k1], v=va[k1];
       rho[k]=r; rhou[k]=r*u; rhov[k]=r*v;
       rhoE[k]=pO/(GAMMA-1)+0.5*r*(u*u+v*v);
     }
   }
-  /* Top — slip: mirror v */
   for(let i=0;i<NX;i++){
     const k=idx(i,NY-1), k1=idx(i,NY-2);
     if(!wall[k]){ rho[k]=rho[k1]; rhou[k]=rhou[k1]; rhov[k]=-rhov[k1]; rhoE[k]=rhoE[k1]; }
-  }
-  /* Bottom — slip: mirror v */
-  for(let i=0;i<NX;i++){
-    const k=idx(i,0), k1=idx(i,1);
-    if(!wall[k]){ rho[k]=rho[k1]; rhou[k]=rhou[k1]; rhov[k]=-rhov[k1]; rhoE[k]=rhoE[k1]; }
+    const k2=idx(i,0), k3=idx(i,1);
+    if(!wall[k2]){ rho[k2]=rho[k3]; rhou[k2]=rhou[k3]; rhov[k2]=-rhov[k3]; rhoE[k2]=rhoE[k3]; }
   }
   updatePrim();
 }
 
-/* Zero momentum in all wall cells */
 function applyWallBC(){
   for(let k=0;k<NX*NY;k++){
     if(wall[k]){ rho[k]=1; rhou[k]=0; rhov[k]=0; rhoE[k]=1/(GAMMA-1); }
   }
 }
 
-/* ─────────── RUSANOV STEP (core physics) ─────────── */
+/* ─────────── RUSANOV STEP ─────────── */
 function rusanovStep(){
-  /* 1. Global max wave speed → adaptive dtodx */
   let maxS=1e-6;
   for(let k=0;k<NX*NY;k++){
     if(wall[k]) continue;
@@ -693,10 +783,8 @@ function rusanovStep(){
   const dtodx = CFL/maxS;
   lastDtodx = dtodx;
 
-  /* 2. Copy current state into candidate buffers */
   rhoB.set(rho); rhouB.set(rhou); rhovB.set(rhov); rhoEB.set(rhoE);
 
-  /* 3. X-direction Rusanov fluxes (loop j=1..NY-2 avoids BC rows) */
   for(let j=1;j<NY-1;j++){
     for(let i=0;i<NX-1;i++){
       const L=idx(i,j), R=idx(i+1,j);
@@ -717,7 +805,6 @@ function rusanovStep(){
     }
   }
 
-  /* 4. Y-direction Rusanov fluxes (loop i=1..NX-2 avoids BC columns) */
   for(let j=0;j<NY-1;j++){
     for(let i=1;i<NX-1;i++){
       const B=idx(i,j), T=idx(i,j+1);
@@ -738,14 +825,13 @@ function rusanovStep(){
     }
   }
 
-  /* 5. Under-relaxation blend + clamp */
   const a=gRlx(), b=1-a;
   for(let k=0;k<NX*NY;k++){
     rho[k]  = a*rhoB[k]  + b*rho[k];
     rhou[k] = a*rhouB[k] + b*rhou[k];
     rhov[k] = a*rhovB[k] + b*rhov[k];
     rhoE[k] = a*rhoEB[k] + b*rhoE[k];
-    if(rho[k]<0.05)  rho[k]=0.05;
+    if(rho[k] <0.05) rho[k] =0.05;
     if(rhoE[k]<0.05) rhoE[k]=0.05;
   }
   updatePrim();
@@ -798,94 +884,178 @@ function loadPreset(name){
       if(Math.abs(j-yc)>r) wall[idx(i,j)]=1;
     }
   }
-  /* blank = do nothing */
   applyWallBC(); updatePrim();
+  dyeR.fill(0); dyeG.fill(0); dyeB.fill(0);
 }
 
-/* ─────────── PARTICLES ─────────── */
-function advectParticles(){
-  if(!gTr()){ particles=[]; return; }
-  while(particles.length<180) particles.push({x:1.5+Math.random()*2,y:1+Math.random()*(NY-2)});
-  const alive=[], dt=0.18;
-  for(const p of particles){
-    const i=Math.floor(p.x)|0, j=Math.floor(p.y)|0;
-    if(i<0||i>=NX||j<0||j>=NY) continue;
-    const k=idx(i,j);
-    if(wall[k]) continue;
-    p.x+=ua[k]*dt; p.y+=va[k]*dt;
-    if(p.x>0.5&&p.x<NX-1.5&&p.y>0.5&&p.y<NY-1.5) alive.push(p);
+/* ─────────── DYE ADVECTION ─────────── */
+/* Semi-Lagrangian advection of RGB dye field along velocity */
+const _tmpDyeR = new Float32Array(1);
+const _tmpDyeG = new Float32Array(1);
+const _tmpDyeB = new Float32Array(1);
+
+function advectDye(){
+  if(!gTr()){ dyeR.fill(0); dyeG.fill(0); dyeB.fill(0); return; }
+
+  /* Use a single pre-allocated buffer to avoid GC */
+  if(_tmpDyeR.length !== NX*NY){
+    Object.assign(_tmpDyeR, new Float32Array(NX*NY));
+    Object.assign(_tmpDyeG, new Float32Array(NX*NY));
+    Object.assign(_tmpDyeB, new Float32Array(NX*NY));
   }
-  particles=alive;
+  const nR=new Float32Array(NX*NY);
+  const nG=new Float32Array(NX*NY);
+  const nB=new Float32Array(NX*NY);
+
+  const dt=0.8; /* dye advection speed multiplier */
+
+  for(let j=1;j<NY-1;j++){
+    for(let i=1;i<NX-1;i++){
+      const k=idx(i,j);
+      if(wall[k]) continue;
+      /* trace backwards */
+      let x0=i-ua[k]*dt;
+      let y0=j-va[k]*dt;
+      x0=Math.max(0.5, Math.min(NX-1.5, x0));
+      y0=Math.max(0.5, Math.min(NY-1.5, y0));
+      const i0=Math.floor(x0)|0, i1=i0+1;
+      const j0=Math.floor(y0)|0, j1=j0+1;
+      const fx=x0-i0, fy=y0-j0;
+      const k00=idx(i0,j0), k10=idx(i1,j0);
+      const k01=idx(i0,j1), k11=idx(i1,j1);
+      const w00=(1-fx)*(1-fy), w10=fx*(1-fy), w01=(1-fx)*fy, w11=fx*fy;
+      nR[k]=w00*dyeR[k00]+w10*dyeR[k10]+w01*dyeR[k01]+w11*dyeR[k11];
+      nG[k]=w00*dyeG[k00]+w10*dyeG[k10]+w01*dyeG[k01]+w11*dyeG[k11];
+      nB[k]=w00*dyeB[k00]+w10*dyeB[k10]+w01*dyeB[k01]+w11*dyeB[k11];
+    }
+  }
+
+  /* Decay */
+  for(let k=0;k<NX*NY;k++){
+    dyeR[k]=nR[k]*0.994;
+    dyeG[k]=nG[k]*0.994;
+    dyeB[k]=nB[k]*0.994;
+  }
+
+  /* Rainbow injection at inlet (x=1), cycling hue by vertical position */
+  for(let j=1;j<NY-1;j++){
+    const k=idx(1,j);
+    if(wall[k]) continue;
+    const t=(j/(NY-1))*6.0;
+    const ih=Math.floor(t)|0, f=t-ih;
+    let r,g,b;
+    switch(ih%6){
+      case 0: r=1;   g=f;   b=0;   break;
+      case 1: r=1-f; g=1;   b=0;   break;
+      case 2: r=0;   g=1;   b=f;   break;
+      case 3: r=0;   g=1-f; b=1;   break;
+      case 4: r=f;   g=0;   b=1;   break;
+      default:r=1;   g=0;   b=1-f; break;
+    }
+    dyeR[k]=r; dyeG[k]=g; dyeB[k]=b;
+  }
 }
 
 /* ─────────── DISPLAY VALUE ─────────── */
-function getVal(k, mode){
+function getVal(k,mode){
   if(mode==='vel')  return Math.sqrt(ua[k]*ua[k]+va[k]*va[k])*C0;
   if(mode==='pres') return pa[k]*P0;
   if(mode==='dens') return rho[k]*RHO0;
   if(mode==='mach') return Math.sqrt(ua[k]*ua[k]+va[k]*va[k])/Math.max(ca[k],0.001);
   return 0;
 }
-const unitOf = {vel:'m/s', pres:'Pa', dens:'kg/m³', mach:'Ma'};
+const unitOf={vel:'m/s',pres:'Pa',dens:'kg/m³',mach:'Ma'};
 
-/* ─────────── DRAW ─────────── */
-function drawField(){
+/* ─────────── PLASMA COLORMAP (CPU, for colorbar only) ─────────── */
+const CMAP = new Uint8Array(256*3);
+(function buildCmap(){
+  const stops=[[13,8,135],[84,2,163],[139,10,165],[185,50,137],
+               [219,92,104],[244,136,73],[254,188,43],[240,249,33]];
+  const n=stops.length-1;
+  for(let i=0;i<256;i++){
+    const t=i/255, si=Math.min(Math.floor(t*n),n-1), sf=t*n-si;
+    const a=stops[si], b=stops[si+1];
+    CMAP[i*3  ]=Math.round(a[0]+sf*(b[0]-a[0]));
+    CMAP[i*3+1]=Math.round(a[1]+sf*(b[1]-a[1]));
+    CMAP[i*3+2]=Math.round(a[2]+sf*(b[2]-a[2]));
+  }
+})();
+
+/* ─────────── WebGL RENDER ─────────── */
+function renderWebGL(){
   const mode=gField(), n=NX*NY;
-  let lo=Infinity, hi=-Infinity;
+  let lo=Infinity, hi=-Infinity, maxMach=0;
+
   for(let k=0;k<n;k++){
     if(wall[k]) continue;
     const v=getVal(k,mode);
     if(v<lo) lo=v; if(v>hi) hi=v;
+    const mch=Math.sqrt(ua[k]*ua[k]+va[k]*va[k])/Math.max(ca[k],0.001);
+    if(mch>maxMach) maxMach=mch;
   }
-  if(!isFinite(lo)) { lo=0; hi=1; }
-  if(gAuto()) { dispMin=lo; dispMax=hi; }
-  const range=Math.max(dispMax-dispMin,1e-6);
+  if(!isFinite(lo)){ lo=0; hi=1; }
+  if(gAuto()){ dispMin=lo; dispMax=hi; }
+  const range=Math.max(dispMax-dispMin, 1e-9);
 
-  const img=ctx.createImageData(NX,NY);
-  const d=img.data;
-  let maxMach=0;
+  /* ── Fill texture data ── */
   for(let j=0;j<NY;j++){
     for(let i=0;i<NX;i++){
-      const k=idx(i,j), pi4=(j*NX+i)*4;
-      if(wall[k]){ d[pi4]=55;d[pi4+1]=60;d[pi4+2]=80;d[pi4+3]=255; }
-      else {
-        const t=Math.max(0,Math.min(1,(getVal(k,mode)-dispMin)/range));
-        const ci=Math.round(t*255)*3;
-        d[pi4]=CMAP[ci]; d[pi4+1]=CMAP[ci+1]; d[pi4+2]=CMAP[ci+2]; d[pi4+3]=255;
-        const mch=Math.sqrt(ua[k]*ua[k]+va[k]*va[k])/Math.max(ca[k],0.001);
-        if(mch>maxMach) maxMach=mch;
+      const k=idx(i,j), p4=(j*NX+i)*4;
+      if(wall[k]){
+        /* sentinel R=255 → wall */
+        glTexData[p4]=255; glTexData[p4+1]=0; glTexData[p4+2]=0; glTexData[p4+3]=0;
+      } else {
+        /* R: field value 0–254 */
+        const t=Math.max(0, Math.min(254, Math.round(254*(getVal(k,mode)-dispMin)/range)));
+        glTexData[p4  ]=t;
+        glTexData[p4+1]=Math.round(Math.max(0,Math.min(255,dyeR[k]*255)));
+        glTexData[p4+2]=Math.round(Math.max(0,Math.min(255,dyeG[k]*255)));
+        glTexData[p4+3]=Math.round(Math.max(0,Math.min(255,dyeB[k]*255)));
       }
     }
   }
-  ctx.putImageData(img,0,0);
 
-  /* stream tracers */
-  if(gTr()&&particles.length){
-    ctx.fillStyle='rgba(255,255,255,0.82)';
-    for(const p of particles) ctx.fillRect(Math.floor(p.x),Math.floor(p.y),1,1);
-  }
+  /* Upload texture */
+  gl.bindTexture(gl.TEXTURE_2D, glTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, NX, NY, 0, gl.RGBA, gl.UNSIGNED_BYTE, glTexData);
 
-  /* colorbar */
+  /* Draw fullscreen quad */
+  gl.viewport(0, 0, DISP_W, DISP_H);
+  gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.useProgram(glProg);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, glQuadBuf);
+  const posLoc=gl.getAttribLocation(glProg,'a_pos');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, glTex);
+  gl.uniform1i(gl.getUniformLocation(glProg,'u_tex'), 0);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  /* ── Colorbar (CPU-side, separate 2D canvas) ── */
   const grad=cbCtx.createLinearGradient(0,0,cbCanvas.width,0);
-  for(let s=0;s<=10;s++){
-    const t=s/10, ci=Math.round(t*255)*3;
+  for(let s=0;s<=16;s++){
+    const t=s/16, ci=Math.round(t*255)*3;
     grad.addColorStop(t,`rgb(${CMAP[ci]},${CMAP[ci+1]},${CMAP[ci+2]})`);
   }
   cbCtx.fillStyle=grad; cbCtx.fillRect(0,0,cbCanvas.width,cbCanvas.height);
 
-  const fmtNum = v => v>=10000?v.toExponential(1) : v>=100?v.toFixed(0) : v>=1?v.toFixed(2) : v.toExponential(2);
-  $('cbLo').textContent = fmtNum(dispMin);
-  $('cbHi').textContent = fmtNum(dispMax);
-  $('cbU').textContent  = unitOf[mode];
-  $('sM').textContent   = maxMach.toFixed(3);
-  $('sDt').textContent  = lastDtodx.toExponential(2);
-  $('sSt').textContent  = stepCount;
+  /* ── Stats ── */
+  const fmt=v=>v>=10000?v.toExponential(1):v>=100?v.toFixed(0):v>=1?v.toFixed(2):v.toExponential(2);
+  $('cbLo').textContent=fmt(dispMin);
+  $('cbHi').textContent=fmt(dispMax);
+  $('cbU').textContent=unitOf[mode];
+  $('sM').textContent=maxMach.toFixed(3);
+  $('sDt').textContent=lastDtodx.toExponential(2);
+  $('sSt').textContent=stepCount;
 
-  /* FPS */
   fpsCount++;
   const now=performance.now();
   if(now-fpsLast>600){ fpsVal=Math.round(fpsCount*1000/(now-fpsLast)); fpsCount=0; fpsLast=now; }
-  $('sFPS').textContent = fpsVal;
+  $('sFPS').textContent=fpsVal;
 }
 
 /* ─────────── SIMULATION LOOP ─────────── */
@@ -898,9 +1068,9 @@ function simLoop(){
       applyWallBC();
     }
     stepCount+=sub;
-    advectParticles();
+    advectDye();
   }
-  drawField();
+  renderWebGL();
   requestAnimationFrame(simLoop);
 }
 
@@ -927,71 +1097,32 @@ canvas.addEventListener('mousedown', e=>{ isDrawing=true; applyDraw(e); });
 canvas.addEventListener('mousemove', e=>{ if(isDrawing) applyDraw(e); });
 canvas.addEventListener('mouseup',   ()=>{ isDrawing=false; });
 canvas.addEventListener('mouseleave',()=>{ isDrawing=false; });
-canvas.addEventListener('contextmenu', e=>{ e.preventDefault();
+canvas.addEventListener('contextmenu',e=>{ e.preventDefault();
   const prev=drawTool; drawTool='erase'; applyDraw(e); drawTool=prev; });
-canvas.addEventListener('touchstart', e=>{ e.preventDefault(); isDrawing=true; applyDraw(e.touches[0]); },{passive:false});
-canvas.addEventListener('touchmove',  e=>{ e.preventDefault(); if(isDrawing) applyDraw(e.touches[0]); },{passive:false});
-canvas.addEventListener('touchend',   ()=>{ isDrawing=false; });
+canvas.addEventListener('touchstart',e=>{ e.preventDefault(); isDrawing=true; applyDraw(e.touches[0]); },{passive:false});
+canvas.addEventListener('touchmove', e=>{ e.preventDefault(); if(isDrawing) applyDraw(e.touches[0]); },{passive:false});
+canvas.addEventListener('touchend',  ()=>{ isDrawing=false; });
 
-/* ─────────── PUBLIC API (window.SIM) ─────────── */
-window.SIM = {
+/* ─────────── PUBLIC API ─────────── */
+window.SIM={
   togglePause(){
     paused=!paused;
-    $('btnPlay').textContent = paused ? '▶ Resume' : '⏸ Pause';
-    $('simStat').textContent = paused ? '● paused'  : '● running';
-    $('simStat').className   = paused ? 'sim-run paused' : 'sim-run';
+    $('btnPlay').textContent=paused?'▶ Resume':'⏸ Pause';
+    $('simStat').textContent=paused?'● paused':'● running';
+    $('simStat').className=paused?'sim-run paused':'sim-run';
   },
-  reset(){
-    initFlow();
-    loadPreset($('selPre').value);
-  },
+  reset(){ initFlow(); loadPreset($('selPre').value); },
   setTool(t){
     drawTool=t;
     ['tNone','tWall','tErase'].forEach(id=>$(id).classList.remove('on'));
-    if(t==='none') $('tNone').classList.add('on');
-    if(t==='wall') { $('tWall').classList.add('on'); $('dhint').classList.add('on'); }
-    if(t==='erase'){ $('tErase').classList.add('on'); $('dhint').classList.add('on'); }
-    if(t==='none') $('dhint').classList.remove('on');
+    if(t==='none')  $('tNone').classList.add('on');
+    if(t==='wall')  { $('tWall').classList.add('on'); $('dhint').classList.add('on'); }
+    if(t==='erase') { $('tErase').classList.add('on'); $('dhint').classList.add('on'); }
+    if(t==='none')  $('dhint').classList.remove('on');
   },
-  clearWalls(){
-    wall.fill(0); updatePrim();
-  },
+  clearWalls(){ wall.fill(0); dyeR.fill(0); dyeG.fill(0); dyeB.fill(0); updatePrim(); },
   loadPreset(name){ loadPreset(name); }
 };
-
-/* ─────────── KEYBOARD SHORTCUTS ─────────── */
-document.addEventListener('keydown', e => {
-  if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
-  switch(e.key) {
-    case ' ':
-      e.preventDefault();
-      SIM.togglePause();
-      break;
-    case 'r': case 'R':
-      SIM.reset();
-      break;
-    case 'c': case 'C':
-      SIM.clearWalls();
-      break;
-    case 'w': case 'W':
-      SIM.setTool('wall');
-      break;
-    case 'e': case 'E':
-      SIM.setTool('erase');
-      break;
-    case 'Escape':
-      SIM.setTool('none');
-      break;
-    case '1':
-      selField.value='vel';   break;
-    case '2':
-      selField.value='pres';  break;
-    case '3':
-      selField.value='dens';  break;
-    case '4':
-      selField.value='mach';  break;
-  }
-});
 
 /* ─────────── SLIDER BINDINGS ─────────── */
 slMach.addEventListener('input',()=>$('vMach').textContent=parseFloat(slMach.value).toFixed(2));
@@ -1000,17 +1131,34 @@ slSpd.addEventListener('input', ()=>$('vSpd').textContent='×'+slSpd.value);
 slRlx.addEventListener('input', ()=>$('vRlx').textContent=parseFloat(slRlx.value).toFixed(2));
 slBr.addEventListener('input',  ()=>$('vBr').textContent=slBr.value+' px');
 
-$('selRes').addEventListener('change', e=>{
+$('selRes').addEventListener('change',e=>{
   const[nx,ny]=e.target.value.split('x').map(Number);
-  NX=nx; NY=ny; allocate(); initFlow();
-  loadPreset($('selPre').value);
+  NX=nx; NY=ny; allocate(); initFlow(); loadPreset($('selPre').value);
+});
+
+/* ─────────── KEYBOARD SHORTCUTS ─────────── */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA') return;
+  switch(e.key){
+    case ' ': e.preventDefault(); SIM.togglePause(); break;
+    case 'r': case 'R': SIM.reset(); break;
+    case 'c': case 'C': SIM.clearWalls(); break;
+    case 'w': case 'W': SIM.setTool('wall'); break;
+    case 'e': case 'E': SIM.setTool('erase'); break;
+    case 'Escape': SIM.setTool('none'); break;
+    case '1': selField.value='vel';  break;
+    case '2': selField.value='pres'; break;
+    case '3': selField.value='dens'; break;
+    case '4': selField.value='mach'; break;
+  }
 });
 
 /* ─────────── ACCESSIBILITY ─────────── */
 const accBtn=$('accBtn'), accPanel=$('accPanel');
 accBtn.addEventListener('click',()=>accPanel.classList.toggle('open'));
-document.addEventListener('click',e=>{ if(!accPanel.contains(e.target)&&e.target!==accBtn) accPanel.classList.remove('open'); });
-
+document.addEventListener('click',e=>{
+  if(!accPanel.contains(e.target)&&e.target!==accBtn) accPanel.classList.remove('open');
+});
 $('accDark').addEventListener('change',e=>{
   document.body.classList.toggle('dark-mode',e.target.checked);
   localStorage.setItem('acc_dark',e.target.checked?'1':'');
@@ -1041,6 +1189,7 @@ document.querySelectorAll('[data-fi]').forEach(btn=>{
 
 /* ─────────── BOOT ─────────── */
 allocate();
+initWebGL();
 initFlow();
 loadPreset('naca');
 SIM.setTool('none');
