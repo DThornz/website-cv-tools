@@ -40,8 +40,16 @@ Interactive single-page academic CV built with vanilla HTML/CSS/JS.
 
 **Sections:**
 Education · Work Experience · Publications (Patent, Book Chapter, 9 Articles) ·  
-Conference Proceedings · Teaching · Supervision & Mentorship · Funding & Awards ·  
-Technical Skills · Service & Outreach
+Conference Proceedings (8 Oral · 25+ Posters) · Teaching · Supervision & Mentorship ·  
+Funding & Awards · Technical Skills · Service & Outreach
+
+**Supervision & Mentorship (as of Spring 2026):**
+- 4 PhD Co-Mentees (Tsoukias Lab: Khakpour, Saadat, Saha; Alevriadou co-I: Muñoz)
+- 3 Undergraduate Research Interns
+- 19+ Senior Design Teams (2017–2026), including:
+  - **Spring 2026 Faculty Mentor** — Team F3 (IDD 2.0: Wearable Capsular Contracture Device)
+  - **Spring 2026 Consulting Advisor** — Teams F5 (FMT System), F7 (ECMO Phantom), F8 (RESTORE)
+  - **Fall 2025 Faculty Mentor** — Team F3 (Fully Mechanical Prosthetic Ankle)
 
 ---
 
@@ -62,14 +70,15 @@ Fully interactive browser simulation of the Nobel Prize-winning 1952 model.
 
 **Mathematical content:**
 - Complete derivation of all 4 ODEs with equivalent circuit diagram (SVG)
-- Full rate functions α/β for m, h, n gates with empirical constants
+- Full rate functions α/β for m, h, n gates with empirical constants on absolute voltage scale (Vrest = −65 mV)
 - Parameter table with physiological interpretations
 - 7 cited references (Hodgkin & Huxley 1952, Goldman UC Davis, Cambridge DAMTP, FSU Bertram, etc.)
+- Scientific accuracy: species (*Loligo forbesi*), axon diameter (0.5–0.8 mm), experimental dates (1947–1952)
 
 **Simulator features:**
-- 4th-order Runge–Kutta integration (dt = 0.01 ms)
-- **Speed control** — 8 levels from ⅛× (watch the AP rise frame by frame) to 14× (rapid survey)
-- **Auto-pause** — halts when membrane returns to rest post-stimulus, locks view on the AP
+- 4th-order Runge–Kutta integration (dt = 0.01 ms) on absolute voltage scale (Vrest = −65 mV, peak AP ~+40 mV)
+- **Speed control** — 8 levels from ⅛× to 14×
+- **Auto-pause** — halts when membrane returns to rest post-stimulus
 - 6 real-time Canvas plots: V(t), gating variables m/h/n, ionic currents INa/IK/IL, steady-state curves x∞(V), time constants τx(V), V–n phase portrait
 - Stimulus modes: step / pulse train / ramp / sinusoidal
 - All parameters adjustable: ḡNa, ḡK, ḡL, ENa, EK, EL, Cm, temperature (Q10 scaling)
@@ -97,16 +106,6 @@ Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Fo
 
 ---
 
-## Local Development / Editor
-
-`cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
-
-**Features:** sidebar tree navigation · rich text editing · undo/redo (60-step, Ctrl+Z/Y) · media slots (images, YouTube, video) · Export HTML / Export JSON / Import JSON · new entries added at top (reverse chronological)
-
-The editor does **not** need to be deployed — run locally, export `AsadMirza_CV.html`, commit to this repo.
-
----
-
 ## Maxwell–Boltzmann Gas Simulator (`maxwell-boltzmann.html`)
 
 Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an educational tool for statistical mechanics and kinetic theory.
@@ -125,13 +124,19 @@ Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergen
 - Correct characteristic speeds: *v*\_p = √(k\_BT/m), ⟨v⟩ = √(πk\_BT/2m), *v*\_rms = √(2k\_BT/m)
 - Equipartition theorem: ⟨KE⟩ = k\_BT in 2D (2 translational DOF)
 - 6 APA-format references with clickable citation highlighting
+- KaTeX-rendered equations
 
-**Physics fixed from original:**
-- y-axis probability density now correctly in s/m (histogram normalized by bin width in m/s)
-- x-axis initialized from `speedScale` not hardcoded 2500 m/s
-- Theory curve: f(v) = (m/k\_BT)·v·exp(−mv²/2k\_BT) in s/m (no spurious SPEED\_CONV factor)
-- Grid-based O(N) collision detection replacing O(N²) brute force
-- Particles initialized on grid to avoid startup overlaps
+---
+
+## Local Development / Editor
+
+`cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
+
+**Features:** sidebar tree navigation · rich text editing · undo/redo (60-step, Ctrl+Z/Y) · media slots (images, YouTube, video) · Export HTML / Export JSON / Import JSON · new entries added at top (reverse chronological)
+
+The editor does **not** need to be deployed — run locally, export `AsadMirza_CV.html`, commit to this repo.
+
+**Editor data is kept in sync with `AsadMirza_CV.html`** and covers all sections: publications, conference proceedings (oral + poster), teaching (primary instructor + TA + course material dev), supervision (PhD co-mentees + undergrad interns + 19+ senior design teams), funding, skills, and service.
 
 ---
 
@@ -139,12 +144,13 @@ Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergen
 
 ```
 website-cv-tools/
-├── index.html              ← Landing page (4 cards)
+├── index.html              ← Landing page
 ├── AsadMirza_CV.html       ← Interactive academic CV
 ├── projects.html           ← Research project showcase
 ├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
 ├── maxwell-boltzmann.html  ← Maxwell–Boltzmann 2D gas simulator
 ├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
+├── dissertation.html       ← PhD dissertation page
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
 ├── cv_editor.jsx           ← React GUI editor (run locally)
 ├── README.md               ← This file
@@ -171,6 +177,7 @@ To update content:
 | Markup | HTML5, SVG |
 | Styling | CSS3 (custom properties, grid, flexbox, `@media print`) |
 | Interactivity | Vanilla JavaScript — Canvas API, RK4 ODE solver |
+| Math rendering | KaTeX (simulator pages) |
 | Fonts | Google Fonts — DM Serif Display, DM Mono, DM Sans |
 | Editor | React (JSX hooks) |
 | Hosting | GitHub Pages |
