@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2D Euler CFD Simulator | A.Mirza</title>
+<title>2D Hemodynamic Flow Solver | A.Mirza</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
@@ -30,7 +30,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .site-nav-link:hover{color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.15)}
 .site-nav-link.curr{color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.2);font-weight:600}
 .nav-dropdown{position:relative}
-.nav-dropdown-menu{position:absolute;top:100%;left:50%;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:180px;padding:6px;padding-top:12px;margin-top:-6px;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-4px);transition:opacity .15s,transform .15s;z-index:9999}
+.nav-dropdown-menu{position:absolute;top:100%;left:50%;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);min-width:200px;padding:6px;padding-top:12px;margin-top:-6px;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-4px);transition:opacity .15s,transform .15s;z-index:9999}
 .nav-dropdown:hover .nav-dropdown-menu,.nav-dropdown-menu:hover{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
 .nav-dropdown-item{display:block;padding:7px 14px;border-radius:6px;font-size:.77em;color:var(--muted);text-decoration:none;white-space:nowrap;transition:all .15s}
 .nav-dropdown-item:hover{color:var(--teal);background:var(--teal-glow)}
@@ -57,7 +57,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .hero{margin-bottom:24px}
 .hero-kicker{font-family:var(--mono);font-size:.7em;text-transform:uppercase;letter-spacing:.16em;color:var(--teal);margin-bottom:8px}
 .hero h1{font-family:var(--serif);font-size:2.2em;font-weight:400;color:var(--text);margin-bottom:8px}
-.hero-sub{color:var(--dim);font-size:.92em;line-height:1.65;max-width:780px;margin-bottom:16px}
+.hero-sub{color:var(--dim);font-size:.92em;line-height:1.65;max-width:820px;margin-bottom:16px}
 .hero-pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
 .hero-pill{padding:3px 11px;border-radius:99px;font-size:.72em;font-family:var(--mono);background:rgba(11,122,110,.08);color:var(--teal);border:1px solid rgba(11,122,110,.18)}
 .hero-meta{display:flex;gap:28px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
@@ -91,7 +91,7 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .stats-r{display:flex;gap:14px;flex-wrap:wrap}
 .stt{font-size:.77em;color:#64748b;font-family:var(--mono)}
 .stt span{color:#e2e8f0;font-weight:600}
-#cfdCanvas{display:block;width:100%;image-rendering:auto}
+#cfdCanvas{display:block;width:100%;image-rendering:auto;cursor:crosshair}
 .sim-bot{padding:9px 16px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#000d1f}
 .cb-wrap{display:flex;align-items:center;gap:7px;flex:1;min-width:200px}
 .cb-val{font-size:.75em;color:#64748b;font-family:var(--mono);min-width:44px}
@@ -100,6 +100,7 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .sim-note{font-size:.72em;color:#334155}
 .drawhint{font-size:.76em;color:#fbbf24;background:rgba(251,191,36,.12);padding:2px 9px;border-radius:20px;display:none}
 .drawhint.on{display:inline}
+.brush-ind{position:fixed;pointer-events:none;border:1.5px solid #4ade80;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.6);z-index:5;display:none;transform:translate(-50%,-50%)}
 .quickstart{background:var(--bg2);border:1px solid var(--border2);border-top:3px solid var(--teal);border-radius:0 0 16px 16px;padding:18px 22px;margin-bottom:10px}
 .qs-title{font-family:var(--mono);font-size:.72em;text-transform:uppercase;letter-spacing:.1em;color:var(--teal);font-weight:600;margin-bottom:12px}
 .qs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin-bottom:12px}
@@ -124,6 +125,11 @@ input[type=range]{accent-color:var(--teal);height:4px;cursor:pointer;width:100px
 .pgrid{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.87em;margin:8px 0}
 .pgrid dt{color:var(--text);font-family:var(--mono);font-weight:500}
 .pgrid dd{color:var(--muted)}
+.vtbl{width:100%;border-collapse:collapse;font-size:.87em;margin:10px 0 14px}
+.vtbl thead tr{background:rgba(11,122,110,.08)}
+.vtbl th{padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)}
+.vtbl td{padding:7px 12px;border-bottom:1px solid var(--border2)}
+.vtbl tbody tr:last-child td{border-bottom:none}
 .refs{margin-top:24px;padding-top:18px;border-top:1px solid var(--border2)}
 .refs h3{font-size:.98em;font-weight:600;color:var(--text);margin-bottom:10px}
 .ref-list{list-style:none;counter-reset:ref;display:flex;flex-direction:column;gap:7px}
@@ -149,11 +155,14 @@ body.size-md{font-size:16px}
 body.size-lg{font-size:18px}
 body.font-serif,body.font-serif *:not(code):not(pre){font-family:'DM Serif Display',Georgia,serif!important}
 body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courier New',monospace!important}
+.err-ov{position:absolute;inset:0;background:rgba(0,9,22,.97);display:none;align-items:center;justify-content:center;z-index:100;padding:40px}
+.err-ov.show{display:flex}
+.err-box{max-width:540px;padding:24px 28px;background:#1e293b;border:1px solid #ef4444;border-radius:8px;color:#e2e8f0}
+.err-box .t{color:#ef4444;font-family:var(--mono);font-size:.88em;margin-bottom:10px;letter-spacing:.06em}
 @media(max-width:700px){.page-wrap{padding:18px 12px 60px}.hero h1{font-size:1.6em}.csep{display:none}.theory{padding:16px 14px}}
 </style>
 </head>
-<body class="light-mode">
-
+<body class="light-mode size-sm">
 <nav class="site-nav">
   <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
   <a class="site-nav-link" href="index.html">Home</a>
@@ -163,7 +172,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
     <div class="nav-dropdown-menu">
       <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
       <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
-      <a class="nav-dropdown-item" style="color:var(--teal);font-weight:600" href="#">🌊 Euler CFD Simulator</a>
+      <a class="nav-dropdown-item" style="color:var(--teal);font-weight:600" href="#">🩸 Hemodynamic Flow Solver</a>
       <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
       <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
     </div>
@@ -172,173 +181,278 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <div class="page-wrap">
 <header class="hero">
-  <div class="hero-kicker">Interactive Simulator · 2D Compressible Flow</div>
-  <h1>Euler CFD Flow Simulator</h1>
-  <p class="hero-sub">A browser-based finite-volume solver for the 2D compressible Euler equations. Explore subsonic and transonic flows around airfoils, cylinders, nozzles, and custom obstacles — all in real time. Vary inlet Mach number, outlet back-pressure, grid resolution, and draw your own walls. Full mathematical derivation and numerical theory below.</p>
+  <div class="hero-kicker">Interactive Simulator · 2D Incompressible Hemodynamics</div>
+  <h1>Hemodynamic Flow Solver</h1>
+  <p class="hero-sub">A browser-based GPU lattice Boltzmann solver for 2D incompressible blood flow at the vessel scale. Explore pulsatile flow through stenoses, aneurysms, bifurcations, and user-drawn vasculature in real time. Toggle between Newtonian and shear-thinning (Carreau–Yasuda) rheology, add gravity, switch between velocity and pressure inlets, and watch recirculation zones develop downstream of plaques. Full mathematical derivation and numerical theory below.</p>
   <div class="hero-pills">
-    <span class="hero-pill">Rusanov / LLF Flux</span>
-    <span class="hero-pill">Adaptive CFL = 0.40</span>
-    <span class="hero-pill">8 Preset Scenarios</span>
-    <span class="hero-pill">WebGL Rendering</span>
-    <span class="hero-pill">Dye Advection</span>
+    <span class="hero-pill">D2Q9 Lattice Boltzmann</span>
+    <span class="hero-pill">BGK Collision</span>
+    <span class="hero-pill">Bounce-back No-slip</span>
+    <span class="hero-pill">Carreau–Yasuda Rheology</span>
+    <span class="hero-pill">ρ = 1060 kg/m³</span>
+    <span class="hero-pill">WebGL2 MRT</span>
     <span class="hero-pill">KaTeX Equations</span>
   </div>
   <div class="hero-meta">
-    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">Conserved Vars</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">M≤2</div><div class="hero-stat-label">Mach Range</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">300×117</div><div class="hero-stat-label">Max Grid</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">γ=1.4</div><div class="hero-stat-label">Air (ideal gas)</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">9</div><div class="hero-stat-label">Velocity States (D2Q9)</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">Re ≤ 2000</div><div class="hero-stat-label">Reynolds Range</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">640×240</div><div class="hero-stat-label">Max Grid</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">8</div><div class="hero-stat-label">Vessel Presets</div></div>
   </div>
 </header>
 
 <!-- CONTROLS ROW 1 -->
 <div class="ctrl-card">
   <div class="ctrl-grp">
-    <div class="ctrl-lbl">Inlet Mach <span id="vVel" style="font-size:.7em;color:var(--teal);margin-left:4px"></span></div>
+    <div class="ctrl-lbl">Inlet Velocity <span id="vReHint" style="font-size:.7em;color:var(--teal);margin-left:4px"></span></div>
     <div class="ctrl-row">
-      <input type="range" id="slMach" min="0.1" max="2.0" step="0.05" value="0.6">
-      <span class="sv" id="vMach">0.60</span>
+      <input type="range" id="slUin" min="0.02" max="4.00" step="0.02" value="0.30">
+      <span class="sv" id="vUin">0.30 m/s</span>
     </div>
   </div>
   <div class="ctrl-grp">
-    <div class="ctrl-lbl">Outlet p / p₀</div>
+    <div class="ctrl-lbl">Viscosity Model</div>
+    <select class="ctrl-sel" id="selVisc" style="min-width:165px">
+      <option value="newtonian" selected>Newtonian</option>
+      <option value="carreau">Non-Newtonian (Carreau–Yasuda)</option>
+    </select>
+  </div>
+  <div class="ctrl-grp" id="grpMu">
+    <div class="ctrl-lbl">Dynamic Viscosity μ</div>
     <div class="ctrl-row">
-      <input type="range" id="slPout" min="0.3" max="1.6" step="0.05" value="1.0">
-      <span class="sv" id="vPout">1.00</span>
+      <input type="range" id="slMu" min="0.5" max="20" step="0.1" value="3.5">
+      <span class="sv" id="vMu">3.5 mPa·s</span>
     </div>
   </div>
   <div class="csep"></div>
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Display Field</div>
     <select class="ctrl-sel" id="selField">
-      <option value="vel">Velocity (m/s)</option>
+      <option value="vel" selected>Velocity |U| (m/s)</option>
       <option value="pres">Pressure (Pa)</option>
-      <option value="dens">Density (kg/m³)</option>
-      <option value="mach">Mach Number</option>
       <option value="vort">Vorticity (ω, 1/s)</option>
-    </select>
-  </div>
-  <div class="ctrl-grp">
-    <div class="ctrl-lbl">Display Scale</div>
-    <select class="ctrl-sel" id="selScale">
-      <option value="aero">Aerodynamics (air)</option>
-      <option value="bio">Hemodynamics (blood, ×0.01)</option>
-      <option value="micro">Microfluidics (×0.001)</option>
     </select>
   </div>
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Grid Resolution</div>
     <select class="ctrl-sel" id="selRes">
-      <option value="90x35">Coarse — 90×35</option>
-      <option value="150x58" selected>Medium — 150×58</option>
-      <option value="210x82">Fine — 210×82</option>
-      <option value="300x117">Ultra — 300×117</option>
+      <option value="240x96">Coarse — 240×96</option>
+      <option value="360x144" selected>Medium — 360×144</option>
+      <option value="480x180">Fine — 480×180</option>
+      <option value="640x240">Ultra — 640×240</option>
+      <option value="960x360">Mega — 960×360</option>
+      <option value="1280x480">Giga — 1280×480</option>
     </select>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">Color Scale</div>
+    <select class="ctrl-sel" id="selAs" style="min-width:155px">
+      <option value="p5-95">Auto: P5–P95</option>
+      <option value="p1-99">Auto: P1–P99</option>
+      <option value="true" selected>Auto: true min–max</option>
+      <option value="manual">Manual range</option>
+    </select>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">Transform</div>
+    <select class="ctrl-sel" id="selXf" style="min-width:115px">
+      <option value="linear" selected>Linear</option>
+      <option value="log">Log / symlog</option>
+    </select>
+  </div>
+  <div class="ctrl-grp" id="grpManRange" style="display:none">
+    <div class="ctrl-lbl">Min &nbsp;/&nbsp; Max</div>
+    <div class="ctrl-row">
+      <input type="number" id="txtMin" step="any" style="width:75px;font-size:.82em;font-family:var(--mono);padding:5px 7px;border:1px solid var(--border);border-radius:7px;background:var(--bg)">
+      <input type="number" id="txtMax" step="any" style="width:75px;font-size:.82em;font-family:var(--mono);padding:5px 7px;border:1px solid var(--border);border-radius:7px;background:var(--bg)">
+    </div>
   </div>
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Options</div>
     <div class="ctrl-row" style="flex-direction:column;align-items:flex-start;gap:3px">
-      <label class="chk"><input type="checkbox" id="chkTr" checked> Dye streaks (rainbow)</label>
-      <label class="chk"><input type="checkbox" id="chkSL" checked> Streamlines</label>
-      <label class="chk"><input type="checkbox" id="chkAs" checked> Auto-scale colors</label>
+      <label class="chk"><input type="checkbox" id="chkSL"> Streamlines (LIC)</label>
+      <label class="chk"><input type="checkbox" id="chkPa" checked> Tracer particles</label>
+      <label class="chk"><input type="checkbox" id="chkGr"> Gravity (−y)</label>
+      <label class="chk"><input type="checkbox" id="chkSS" checked> Auto-stop at steady state</label>
+      <label class="chk"><input type="checkbox" id="chkAR" checked> Auto-reset on divergence</label>
     </div>
   </div>
   <div class="csep"></div>
   <div class="ctrl-grp">
-    <div class="ctrl-lbl">Sim Speed (substeps)</div>
+    <div class="ctrl-lbl">Sim Speed</div>
     <div class="ctrl-row">
-      <input type="range" id="slSpd" min="1" max="12" step="1" value="4">
-      <span class="sv" id="vSpd">×4</span>
-    </div>
-  </div>
-  <div class="ctrl-grp">
-    <div class="ctrl-lbl">Under-Relaxation α</div>
-    <div class="ctrl-row">
-      <input type="range" id="slRlx" min="0.3" max="1.0" step="0.05" value="0.85">
-      <span class="sv" id="vRlx">0.85</span>
+      <input type="range" id="slSpd" min="1" max="30" step="1" value="3">
+      <span class="sv" id="vSpd">×3</span>
     </div>
   </div>
   <div class="ctrl-grp" style="margin-left:auto">
     <div class="ctrl-lbl">&nbsp;</div>
     <div class="ctrl-row" style="gap:7px">
-      <button class="btn btn-primary" id="btnPlay" onclick="SIM.togglePause()">⏸ Pause</button>
-      <button class="btn" onclick="SIM.reset()">↺ Reset</button>
+      <button class="btn btn-primary" id="btnPlay">⏸ Pause</button>
+      <button class="btn" id="btnReset">↺ Reset Flow</button>
     </div>
   </div>
 </div>
 
-<!-- CONTROLS ROW 2 — Obstacles -->
+<!-- CONTROLS ROW 2 -->
 <div class="ctrl-card">
   <div class="ctrl-grp">
-    <div class="ctrl-lbl">Obstacle Preset</div>
-    <select class="ctrl-sel" id="selPre" onchange="SIM.loadPreset(this.value)" style="min-width:200px">
-      <option value="blank">⬜ Blank (draw freely)</option>
-      <option value="naca" selected>🪽 NACA 0012 Airfoil (4°)</option>
-      <option value="naca8">🪽 NACA 0012 Airfoil (8°)</option>
-      <option value="cylinder">⚪ Circular Cylinder</option>
-      <option value="sphere">🔵 Sphere (axisymmetric)</option>
-      <option value="square">🔲 Square Block</option>
-      <option value="step">📐 Backward-Facing Step</option>
-      <option value="stenosis">🩸 Arterial Stenosis (50%)</option>
-      <option value="nozzle">📡 Convergent-Divergent Nozzle</option>
+    <div class="ctrl-lbl">Vessel Preset</div>
+    <select class="ctrl-sel" id="selPre" style="min-width:220px">
+      <option value="channel">⬜ Empty rectangular channel</option>
+      <option value="sphere" selected>⚪ Sphere (disk) in channel</option>
+      <option value="cube">⬛ Cube (square) in channel</option>
+      <option value="stenosis">🩸 Stenosis (50% symmetric)</option>
+      <option value="plaque">🩹 Atherosclerotic plaque (asymmetric)</option>
+      <option value="aneurysm">🎈 Saccular aneurysm</option>
+      <option value="bifurcation">🫁 Bifurcation (Y-split)</option>
+      <option value="trifurcation">🌿 Trifurcation</option>
     </select>
+  </div>
+  <div class="csep"></div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">Inlet BC</div>
+    <select class="ctrl-sel" id="selInlet" style="min-width:155px">
+      <option value="velocity" selected>Velocity</option>
+      <option value="pressure">Pressure</option>
+    </select>
+  </div>
+  <div class="ctrl-grp" id="grpInletProfile">
+    <div class="ctrl-lbl">Inlet profile</div>
+    <select class="ctrl-sel" id="selInletProfile" style="min-width:175px">
+      <option value="plug" selected>Plug (uniform)</option>
+      <option value="parabolic">Fully developed (parabolic)</option>
+    </select>
+  </div>
+  <div class="ctrl-grp" id="grpPin" style="display:none">
+    <div class="ctrl-lbl">Inlet p (mmHg) <span id="pInClampHint" style="font-size:.7em;color:var(--amber);display:none;margin-left:3px">⚠ clamped</span></div>
+    <div class="ctrl-row">
+      <input type="range" id="slPin" min="0" max="200" step="1" value="100">
+      <span class="sv" id="vPin">100.00</span>
+    </div>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">Outlet BC</div>
+    <select class="ctrl-sel" id="selOutlet" style="min-width:155px">
+      <option value="zerograd" selected>Zero-gradient</option>
+      <option value="pressure">Pressure</option>
+    </select>
+  </div>
+  <div class="ctrl-grp" id="grpPout" style="display:none">
+    <div class="ctrl-lbl">Outlet p (mmHg) <span id="pClampHint" style="font-size:.7em;color:var(--amber);display:none;margin-left:3px">⚠ ΔP clamped</span></div>
+    <div class="ctrl-row">
+      <input type="range" id="slPout" min="0" max="200" step="1" value="80">
+      <span class="sv" id="vPout">80.00</span>
+    </div>
   </div>
   <div class="csep"></div>
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Draw Tool</div>
     <div class="ctrl-row">
-      <button class="tool-btn" id="tNone" onclick="SIM.setTool('none')">✋ Pan</button>
-      <button class="tool-btn" id="tWall" onclick="SIM.setTool('wall')">🖊 Wall</button>
-      <button class="tool-btn" id="tErase" onclick="SIM.setTool('erase')">◻ Erase</button>
-      <button class="btn btn-red" onclick="SIM.clearWalls()">✕ Clear All</button>
+      <button class="tool-btn on" id="tNone">✋ Pan</button>
+      <button class="tool-btn" id="tWall">🖊 Wall</button>
+      <button class="tool-btn" id="tErase">◻ Erase</button>
+      <button class="btn btn-red" id="btnClear">✕ Clear Walls</button>
     </div>
   </div>
   <div class="ctrl-grp">
     <div class="ctrl-lbl">Brush Radius</div>
     <div class="ctrl-row">
-      <input type="range" id="slBr" min="0" max="5" step="1" value="2">
-      <span class="sv" id="vBr">2 px</span>
+      <input type="range" id="slBr" min="1" max="12" step="1" value="3">
+      <span class="sv" id="vBr">3 px</span>
     </div>
   </div>
-  <div class="drawhint" id="dhint">✏ Left-drag → walls &nbsp;|&nbsp; Right-drag → erase</div>
+  <div class="drawhint" id="dhint">✏ Left-drag → draw &nbsp;|&nbsp; right-drag → erase</div>
+</div>
+
+<!-- CONTROLS ROW 3 -->
+<div class="ctrl-card" id="cyCard" style="display:none">
+  <div class="ctrl-grp" style="align-self:center;padding-right:8px">
+    <div style="font-family:var(--mono);font-size:.7em;letter-spacing:.08em;color:var(--teal);margin-bottom:4px">CARREAU–YASUDA</div>
+    <div id="cyEq" style="font-size:.92em;color:var(--text);line-height:1"></div>
+  </div>
+  <div class="csep"></div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">μ<sub>0</sub> (mPa·s)</div>
+    <div class="ctrl-row">
+      <input type="range" id="slCy0" min="5" max="200" step="1" value="56">
+      <span class="sv" id="vCy0">56.00</span>
+    </div>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">μ<sub>∞</sub> (mPa·s)</div>
+    <div class="ctrl-row">
+      <input type="range" id="slCyI" min="0.5" max="10" step="0.05" value="3.45">
+      <span class="sv" id="vCyI">3.45</span>
+    </div>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">λ (s)</div>
+    <div class="ctrl-row">
+      <input type="range" id="slCyL" min="0.1" max="10" step="0.05" value="3.31">
+      <span class="sv" id="vCyL">3.31</span>
+    </div>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">n</div>
+    <div class="ctrl-row">
+      <input type="range" id="slCyN" min="0.1" max="1.0" step="0.01" value="0.36">
+      <span class="sv" id="vCyN">0.36</span>
+    </div>
+  </div>
+  <div class="ctrl-grp">
+    <div class="ctrl-lbl">a</div>
+    <div class="ctrl-row">
+      <input type="range" id="slCyA" min="0.5" max="4.0" step="0.05" value="2.00">
+      <span class="sv" id="vCyA">2.00</span>
+    </div>
+  </div>
+  <div class="ctrl-grp" style="margin-left:auto">
+    <div class="ctrl-lbl">&nbsp;</div>
+    <button class="btn" id="btnCyDefault">↺ Defaults (blood)</button>
+  </div>
 </div>
 
 <!-- CANVAS -->
-<div class="sim-wrap">
+<div class="sim-wrap" style="position:relative">
   <div class="sim-top">
     <div style="display:flex;align-items:center;gap:10px">
-      <span class="sim-ttl">2D Incompressible Navier–Stokes · Vorticity Confinement · GPU Solver</span>
+      <span class="sim-ttl">2D Incompressible Hemodynamics · D2Q9 LBM · WebGL2 GPU Solver</span>
       <span class="sim-run" id="simStat">● running</span>
     </div>
     <div class="stats-r">
-      <span class="stt">Δt/Δx: <span id="sDt">—</span></span>
-      <span class="stt">M<sub>max</sub>: <span id="sM">—</span></span>
+      <span class="stt">Re: <span id="sRe">—</span></span>
+      <span class="stt">τ: <span id="sTau">—</span></span>
       <span class="stt">Step: <span id="sSt">0</span></span>
       <span class="stt">FPS: <span id="sFPS">—</span></span>
+      <span class="stt">Mcells/s: <span id="sMcs">—</span></span>
+      <span class="stt">ΔKE: <span id="sRes">—</span></span>
     </div>
   </div>
-  <canvas id="cfdCanvas"></canvas>
+  <canvas id="cfdCanvas" width="900" height="360"></canvas>
   <div class="sim-bot">
     <div class="cb-wrap">
       <span class="cb-val" id="cbLo">0</span>
       <canvas id="cbCanvas" width="240" height="13"></canvas>
-      <span class="cb-val" id="cbHi">400</span>
+      <span class="cb-val" id="cbHi">1.0</span>
       <span class="cb-unit" id="cbU">m/s</span>
     </div>
-    <span class="sim-note">← Inlet &nbsp;|&nbsp; Outlet → &nbsp;|&nbsp; Slip walls ↕</span>
+    <span class="sim-note">← Inlet &nbsp;|&nbsp; Outlet → &nbsp;|&nbsp; No-slip walls (bounce-back)</span>
   </div>
+  <div class="err-ov" id="errOv"><div class="err-box"><div class="t">⚠ WEBGL2 + FLOAT RENDER TARGETS REQUIRED</div><div id="errMsg">This solver needs WebGL 2.0 with the EXT_color_buffer_float extension. Recent Chrome, Firefox, Edge, or Safari on desktop or modern mobile should all work.</div></div></div>
 </div>
 
-<!-- QUICK START -->
+<div class="brush-ind" id="bInd"></div>
+
 <div class="quickstart">
   <div class="qs-title">Quick Start Guide</div>
   <div class="qs-grid">
-    <div class="qs-item"><span class="qs-key">1</span><span class="qs-text">Select a <strong>preset</strong> from the dropdown — try NACA 0012 at M=0.6 first</span></div>
-    <div class="qs-item"><span class="qs-key">2</span><span class="qs-text">Watch the <strong>Pressure</strong> or <strong>Mach</strong> field — let it run ~200 steps to converge</span></div>
-    <div class="qs-item"><span class="qs-key">3</span><span class="qs-text">Drag the <strong>Inlet Mach</strong> slider up past 0.8 to see transonic shock formation</span></div>
-    <div class="qs-item"><span class="qs-key">4</span><span class="qs-text">Use <strong>Wall pencil</strong> to draw custom obstacles; right-click to erase</span></div>
-    <div class="qs-item"><span class="qs-key">5</span><span class="qs-text">Increase <strong>Grid Resolution</strong> for sharper flow features (slower simulation)</span></div>
-    <div class="qs-item"><span class="qs-key">6</span><span class="qs-text">Lower <strong>Under-Relaxation α</strong> to stabilize high-Mach or complex geometries</span></div>
+    <div class="qs-item"><span class="qs-key">1</span><span class="qs-text">Select a <strong>vessel preset</strong> — try <em>Stenosis</em> at the default 0.30 m/s first</span></div>
+    <div class="qs-item"><span class="qs-key">2</span><span class="qs-text">Watch the <strong>velocity jet</strong> accelerate through the throat and decelerate downstream</span></div>
+    <div class="qs-item"><span class="qs-key">3</span><span class="qs-text">Switch Display Field to <strong>Pressure</strong> to see the pre-stenotic peak and post-stenotic drop</span></div>
+    <div class="qs-item"><span class="qs-key">4</span><span class="qs-text">Toggle <strong>Non-Newtonian</strong> to watch apparent viscosity drop in high-shear regions</span></div>
+    <div class="qs-item"><span class="qs-key">5</span><span class="qs-text">Use the <strong>Wall pencil</strong> to draw your own geometry; right-drag to erase</span></div>
+    <div class="qs-item"><span class="qs-key">6</span><span class="qs-text">Crank <strong>Inlet Velocity</strong> to ≈1.0 m/s to push Re past 2000 and see shedding</span></div>
   </div>
   <div class="qs-keys">
     <span class="qs-kbd">Space</span> Pause / Resume &nbsp;·&nbsp;
@@ -346,185 +460,217 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
     <span class="qs-kbd">C</span> Clear walls &nbsp;·&nbsp;
     <span class="qs-kbd">W</span> Wall tool &nbsp;·&nbsp;
     <span class="qs-kbd">E</span> Erase tool &nbsp;·&nbsp;
-    <span class="qs-kbd">1–5</span> Display field (5=vorticity)
+    <span class="qs-kbd">S</span> Toggle streamlines &nbsp;·&nbsp;
+    <span class="qs-kbd">1–3</span> Display field
   </div>
 </div>
 
-<!-- THEORY SECTION -->
 <div class="theory">
 <h2>Background &amp; Mathematical Foundation</h2>
 
-<h3>1. Lagrangian vs. Eulerian Description</h3>
-<p>Any continuous fluid flow can be described in two complementary ways. In the <strong>Lagrangian (material) description</strong>, we tag and follow individual fluid parcels as they move — recording <em>what happens to specific material</em>. In the <strong>Eulerian (field) description</strong>, we ask <em>what is the velocity, pressure, or density at a fixed point in space</em> at each instant. The bridge between them is the Fundamental Principle of Kinematics: the Eulerian velocity at position <strong>x</strong> equals the velocity of whatever parcel happens to occupy that point at that instant (Price, 2023). This simulator is entirely Eulerian — the state vector $\mathbf{U}$ is defined on a fixed rectangular grid, and conservation laws are applied to fixed <em>control volumes</em> rather than moving material volumes.</p>
-
-<h3>2. The 2D Compressible Euler Equations</h3>
-<p>Neglecting viscosity (perfect fluid) and body forces, conservation of mass, x-momentum, y-momentum, and energy on a fixed control volume gives the 2D Euler equations in <strong>conservation form</strong>:</p>
-
-<div class="eqb teal">
-  <div class="eqb-t teal">State + Flux PDE</div>
-  $$\frac{\partial \mathbf{U}}{\partial t} + \frac{\partial \mathbf{F}}{\partial x} + \frac{\partial \mathbf{G}}{\partial y} = 0$$
-</div>
-
-<p>The conserved state vector $\mathbf{U}$, x-flux $\mathbf{F}$, and y-flux $\mathbf{G}$ are:</p>
-
-<div class="eq-row">
-  <div class="eqb">
-    <div class="eqb-t">State Vector</div>
-    $$\mathbf{U} = \begin{pmatrix} \rho \\ \rho u \\ \rho v \\ \rho E \end{pmatrix}$$
-  </div>
-  <div class="eqb">
-    <div class="eqb-t">x-Flux F</div>
-    $$\mathbf{F} = \begin{pmatrix} \rho u \\ \rho u^2 + p \\ \rho u v \\ u(\rho E + p) \end{pmatrix}$$
-  </div>
-  <div class="eqb">
-    <div class="eqb-t">y-Flux G</div>
-    $$\mathbf{G} = \begin{pmatrix} \rho v \\ \rho u v \\ \rho v^2 + p \\ v(\rho E + p) \end{pmatrix}$$
-  </div>
-</div>
-
-<p>Here $\rho$ is density, $u$ and $v$ are x- and y-velocity components, $p$ is static pressure, and $E$ is specific total energy (kinetic + internal). The variables $\rho u$, $\rho v$ are momentum densities and $\rho E$ is total energy per unit volume.</p>
-
-<h3>3. Equation of State (Ideal Gas)</h3>
-<p>The system is closed with the calorically perfect (ideal) gas relation linking pressure, density, and specific total energy. The pressure and local speed of sound are recovered from the conserved state via:</p>
-
-<div class="eq-row">
-  <div class="eqb teal">
-    <div class="eqb-t teal">Pressure</div>
-    $$p = (\gamma - 1)\!\left(\rho E - \tfrac{1}{2}\rho(u^2+v^2)\right)$$
-  </div>
-  <div class="eqb teal">
-    <div class="eqb-t teal">Speed of Sound</div>
-    $$c = \sqrt{\frac{\gamma\, p}{\rho}}, \quad \gamma = 1.4 \text{ (air)}$$
-  </div>
-</div>
-
-<h3>4. Non-dimensionalization</h3>
-<p>All simulation quantities are <strong>non-dimensional</strong>. Physical units are recovered on the fly for display. Reference scales chosen at sea-level conditions:</p>
-<dl class="pgrid">
-  <dt>$\rho_0$</dt><dd>1.225 kg/m³ (sea-level air density)</dd>
-  <dt>$c_0$</dt><dd>340 m/s (sea-level speed of sound)</dd>
-  <dt>$p_0 = \rho_0 c_0^2 / \gamma$</dt><dd>≈ 101,030 Pa (≈ 1 atm)</dd>
-  <dt>$L_0$</dt><dd>domain width (geometry scale)</dd>
-</dl>
-<p>In non-dimensional form the reference state is $\tilde{\rho}=1$, $\tilde{p}=1$, $\tilde{c}=\sqrt{\gamma}\approx1.183$. Inlet Mach $M$ sets $\tilde{u}=M$. Physical velocity = $\tilde{|v|}\cdot c_0$; physical pressure = $\tilde{p}\cdot p_0$.</p>
-
-<h3>5. Flow Regimes by Mach Number</h3>
-<p>The behavior of compressible flow changes qualitatively as the Mach number crosses characteristic thresholds. Use the Inlet Mach slider to explore each regime:</p>
-<table style="width:100%;border-collapse:collapse;font-size:.87em;margin:10px 0 14px">
-  <thead><tr style="background:rgba(11,122,110,.08)">
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Regime</th>
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Mach Range</th>
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Key Physics</th>
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">What to observe</th>
-  </tr></thead>
-  <tbody>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Subsonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">M &lt; 0.8</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Smooth pressure field; Bernoulli applies locally; no shocks</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Stagnation at leading edge ($p/p_0\approx1$); smooth velocity distribution</td></tr>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Transonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">0.8 &lt; M &lt; 1.2</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Mixed subsonic/supersonic regions; shock waves appear on surfaces</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Sharp pressure discontinuity (shock) on airfoil upper surface; Mach &gt;1 bubble</td></tr>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)"><strong>Supersonic</strong></td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">1.2 &lt; M &lt; 5</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Bow shock ahead of blunt bodies; oblique shocks at sharp corners; Mach cone</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Strong bow shock in front of cylinder; attached oblique shocks on airfoil</td></tr>
-    <tr><td style="padding:7px 12px"><strong>Hypersonic</strong></td><td style="padding:7px 12px">M &gt; 5</td><td style="padding:7px 12px">Thin shock layer; real-gas effects, dissociation; beyond this simulator's fidelity</td><td style="padding:7px 12px">Solver still runs but first-order accuracy limits reliability at extreme Mach</td></tr>
-  </tbody>
-</table>
-
-<h3>6. Finite-Volume Discretization</h3>
-<p>The domain is divided into $N_x \times N_y$ uniform rectangular cells of size $\Delta x \times \Delta y$ (square here, $\Delta x = \Delta y$). Integrating the conservation law over cell $(i,j)$ and applying the divergence theorem converts the PDE to an <strong>exact flux balance</strong> for each cell:</p>
-
-<div class="eqb">
-  <div class="eqb-t">Cell Update (finite volume)</div>
-  $$\mathbf{U}_{i,j}^{n+1} = \mathbf{U}_{i,j}^{n} - \frac{\Delta t}{\Delta x}\!\left(\hat{\mathbf{F}}_{i+\frac{1}{2},j} - \hat{\mathbf{F}}_{i-\frac{1}{2},j}\right) - \frac{\Delta t}{\Delta y}\!\left(\hat{\mathbf{G}}_{i,j+\frac{1}{2}} - \hat{\mathbf{G}}_{i,j-\frac{1}{2}}\right)$$
-</div>
-
-<p>The interface numerical fluxes $\hat{\mathbf{F}}$, $\hat{\mathbf{G}}$ must be chosen to be consistent and stable — this is the job of the Riemann solver.</p>
-
-<h3>7. Rusanov (Local Lax–Friedrichs) Flux</h3>
-<p>The <strong>Rusanov flux</strong> (Rusanov, 1961) is a first-order, upwind-biased Riemann solver. At each cell interface separating left state $\mathbf{U}_L$ and right state $\mathbf{U}_R$, it computes a stabilized average flux:</p>
-
-<div class="eqb amber">
-  <div class="eqb-t amber">Rusanov Numerical Flux</div>
-  $$\hat{\mathbf{F}}_{i+\frac{1}{2}} = \frac{1}{2}\!\left[\mathbf{F}(\mathbf{U}_L) + \mathbf{F}(\mathbf{U}_R)\right] - \frac{\lambda_{i+\frac{1}{2}}}{2}\!\left(\mathbf{U}_R - \mathbf{U}_L\right)$$
-</div>
-
-<p>The <strong>dissipation coefficient</strong> $\lambda_{i+\frac{1}{2}}$ is the maximum local wave speed at that interface:</p>
-
-<div class="eqb amber">
-  <div class="eqb-t amber">Local Wave Speed Estimate</div>
-  $$\lambda_{i+\frac{1}{2}} = \max\!\left(|u_L| + c_L,\; |u_R| + c_R\right)$$
-</div>
-
-<p>The first term is the <em>central flux</em> (averaged physical fluxes); the second term is the <em>Rusanov diffusion</em> that damps unphysical oscillations. It is the simplest stable Riemann solver and excellent for educational use, though it adds more numerical diffusion than the exact Roe or HLLC solvers.</p>
-
-<h3>8. CFL Stability Condition</h3>
-<p>For explicit time-marching to remain stable, the timestep $\Delta t$ must not allow information to propagate more than one cell per step. This is the <strong>Courant–Friedrichs–Lewy (CFL) condition</strong>:</p>
-
-<div class="eqb teal">
-  <div class="eqb-t teal">Adaptive Timestep (CFL = 0.40)</div>
-  $$\frac{\Delta t}{\Delta x} = \frac{\text{CFL}}{\displaystyle\max_{i,j}\!\left(|u_{i,j}| + c_{i,j}\right)}$$
-</div>
-
-<p>The simulator computes this ratio $\Delta t/\Delta x$ globally each step from the current flow field, shown in the stats bar. A CFL of 0.40 provides a comfortable safety margin below the stability limit of 1.0. Note: the original published artifact used $\Delta t = \text{CFL}/\max S$ (missing the $1/\Delta x$ factor), causing effective CFL ≈ $N_x$ times too large and catastrophic instability. This simulator corrects that error.</p>
-
-<h3>9. Under-Relaxation</h3>
-<p>At high Mach numbers or with strong gradients, the Rusanov update can occasionally produce over-shoots. <strong>Under-relaxation</strong> blends the candidate update with the previous state:</p>
-
-<div class="eqb">
-  <div class="eqb-t">Under-Relaxation (α slider)</div>
-  $$\mathbf{U}^{n+1} = \alpha\,\mathbf{U}^{*}_{\text{Rusanov}} + (1-\alpha)\,\mathbf{U}^{n}, \quad \alpha \in [0.3,\;1.0]$$
-</div>
-
-<p>Mathematically this scales all flux changes by $\alpha$ while keeping the same $\Delta t/\Delta x$ ratio. $\alpha=1$ is the pure Rusanov update; $\alpha=0.5$ halves the effective step size for extra stability.</p>
-
-<h3>10. Boundary Conditions</h3>
-<table style="width:100%;border-collapse:collapse;font-size:.87em;margin:10px 0 14px">
-  <thead><tr style="background:rgba(11,122,110,.08)">
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Boundary</th>
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Type</th>
-    <th style="padding:7px 12px;text-align:left;border-bottom:1px solid var(--border2);color:var(--teal)">Implementation</th>
-  </tr></thead>
-  <tbody>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Left (inlet)</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Supersonic / subsonic inflow</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Fixed: $\tilde\rho=1$, $\tilde u=M$, $\tilde v=0$, $\tilde p=1$</td></tr>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Right (outlet)</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Pressure outlet</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Extrapolate $\tilde\rho,\tilde u,\tilde v$ from interior; fix $\tilde p = p_\text{out}$</td></tr>
-    <tr><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Top &amp; bottom</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Free-slip wall</td><td style="padding:7px 12px;border-bottom:1px solid var(--border2)">Mirror: $\rho,u$ copied; $v$ negated</td></tr>
-    <tr><td style="padding:7px 12px">Interior walls</td><td style="padding:7px 12px">No-penetration</td><td style="padding:7px 12px">Zero $\rho u$, $\rho v$ in wall cells; maintained each step</td></tr>
-  </tbody>
-</table>
-
-<h3>11. Preset Scenarios</h3>
+<h3>1. Why the Lattice Boltzmann Method for Hemodynamics?</h3>
+<p>Traditional CFD discretizes the Navier–Stokes equations directly on body-fitted meshes. That approach is excellent for well-defined engineering geometries but carries two burdens that matter enormously for blood flow: <strong>mesh generation</strong> becomes a bottleneck when the vessel geometry is drawn, segmented from a scan, or changes interactively, and <strong>parallelization</strong> requires domain decomposition that does not map cleanly onto GPU fragment shaders. The <strong>Lattice Boltzmann Method (LBM)</strong> was developed in the late 1980s and early 1990s (Higuera &amp; Jiménez 1989; Qian, d'Humières, Lallemand 1992) and has since become a workhorse for vascular CFD because:</p>
 <ul>
-  <li><strong>NACA 0012 Airfoil (4°):</strong> Classic symmetric airfoil at 4° angle of attack. Expect stagnation at the leading edge, accelerated low-pressure flow over the upper surface, and pressure recovery at the trailing edge. This is the canonical subsonic inviscid airfoil case — the lift force is proportional to circulation (Kutta–Joukowski). At $M>0.7$ transonic effects begin: a supersonic bubble forms near the upper surface peak and terminates in a weak normal shock.</li>
-  <li><strong>NACA 0012 Airfoil (8°):</strong> Same symmetric profile at double the angle of attack. The increased AoA produces stronger upper-surface acceleration, larger pressure coefficient asymmetry, and more pronounced shock formation in the transonic regime. Compare the pressure field side-by-side with 4° to see the AoA effect on $C_p$ distribution.</li>
-  <li><strong>Circular Cylinder:</strong> The canonical bluff-body benchmark. Inviscid potential-flow theory predicts the exact pressure distribution $C_p = 1 - 4\sin^2\theta$ and <em>zero drag</em> (d'Alembert's paradox). The Euler solver approximately reproduces this at low Mach but introduces numerical diffusion. Observe stagnation at the leading edge, $C_p\approx 1$, Bernoulli-type acceleration at the widest point, and the symmetric low-pressure wake.</li>
-  <li><strong>Sphere (axisymmetric cross-section):</strong> Same circular geometry as the cylinder but conceptually representing the 2D equatorial cross-section of a 3D sphere. The flow field is identical in the Euler 2D sense. In 3D, a sphere has lower drag than a cylinder due to three-dimensional pressure recovery. Use this case as a reference for comparing circular vs. streamlined (NACA) body performance.</li>
-  <li><strong>Square Block:</strong> Sharp leading and trailing edges produce strong separated flow, a wide low-pressure wake, and significantly higher pressure drag than the cylinder. The corners shed oblique compression waves at supersonic speeds. Compare pressure drag $\approx (p_\text{front} - p_\text{back})\times\text{area}$ across different obstacle shapes.</li>
-  <li><strong>Backward-Facing Step:</strong> Classic benchmark geometry for flow separation and reattachment. Flow separates at the step corner, forming a recirculation zone (region of reversed $u$), then reattaches on the lower wall downstream. For viscous flow the reattachment length $x_r \approx 6h$–$8h$ (Armaly et al. 1983). The inviscid Euler solver cannot capture the correct viscous reattachment but shows the expansion fan and oblique shock structure at the step corner.</li>
-  <li><strong>Arterial Stenosis (50%):</strong> A Gaussian constriction reducing lumen cross-sectional area by ≈50% — representative of an atherosclerotic plaque. Flow accelerates through the throat (Bernoulli: velocity ↑ → pressure ↓), then decelerates in the diffuser region post-stenosis. The post-stenotic pressure drop and the distal low-pressure zone are hemodynamically significant: they contribute to platelet activation and downstream thrombus formation. Clinically, a ≥70% stenosis (area) is generally considered hemodynamically significant. Compare with and without the constriction to see the pressure gradient change.</li>
-  <li><strong>Convergent-Divergent Nozzle (de Laval):</strong> The canonical compressible flow device. Flow accelerates in the converging section; at sufficient pressure ratio the throat reaches $M=1$ (choked). In the diverging section, depending on the outlet-to-inlet pressure ratio: (a) subsonic deceleration, (b) design condition (fully supersonic with isentropic expansion), or (c) intermediate — supersonic diverging section with a normal shock at some point inside. Use the <em>Outlet p/p₀</em> slider to explore these regimes. Observe the Mach number distribution: peak at throat, then rising in the supersonic case.</li>
+  <li><strong>Arbitrary geometry is trivial.</strong> Walls are simply flagged cells on a uniform Cartesian grid. The "bounce-back" boundary condition — at a wall cell, swap each distribution function with its opposite — enforces no-slip without any body-fitted mesh.</li>
+  <li><strong>Perfect parallelism.</strong> Each cell updates using only its immediate neighbours, with no global operators (no pressure Poisson solve, no Riemann problem). This maps directly onto a fragment shader: one texel = one fluid cell, one draw call = one timestep.</li>
+  <li><strong>Kinetic foundation.</strong> LBM evolves discrete particle distribution functions $f_i(\mathbf{x}, t)$ rather than the macroscopic $\rho, \mathbf{u}, p$ fields. Non-Newtonian rheology, multiphase flow, and thermal coupling all insert naturally at the kinetic level.</li>
+  <li><strong>Recovers Navier–Stokes.</strong> A Chapman–Enskog multi-scale expansion of the lattice Boltzmann equation shows that in the limit of small Knudsen number and low Mach number, it recovers the incompressible Navier–Stokes equations to second order in both space and time (Succi 2001).</li>
+</ul>
+
+<h3>2. The D2Q9 Lattice</h3>
+<p>In two dimensions we discretize velocity space with nine lattice vectors — one at rest plus eight directions connecting a cell to its Moore neighbourhood:</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">D2Q9 Discrete Velocity Set</div>
+  $$\mathbf{c}_0 = \mathbf{0}, \quad \mathbf{c}_{1,3} = (\pm 1, 0), \quad \mathbf{c}_{2,4} = (0, \pm 1), \quad \mathbf{c}_{5,6,7,8} = (\pm 1, \pm 1)$$
+</div>
+
+<p>Each cell stores nine <strong>distribution functions</strong> $f_i(\mathbf{x}, t)$, $i = 0 \ldots 8$, representing the density of particles at position $\mathbf{x}$ moving with velocity $\mathbf{c}_i$. The associated lattice weights $w_i$ follow from requiring isotropy and the correct moments of the Gauss–Hermite quadrature:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Lattice Weights</div>
+  $$w_0 = \tfrac{4}{9}, \qquad w_{1,2,3,4} = \tfrac{1}{9}, \qquad w_{5,6,7,8} = \tfrac{1}{36}$$
+</div>
+
+<p>Macroscopic density and momentum emerge as moments of the distribution:</p>
+
+<div class="eq-row">
+  <div class="eqb">
+    <div class="eqb-t">Density</div>
+    $$\rho(\mathbf{x},t) = \sum_{i=0}^{8} f_i$$
+  </div>
+  <div class="eqb">
+    <div class="eqb-t">Momentum</div>
+    $$\rho \mathbf{u}(\mathbf{x},t) = \sum_{i=0}^{8} \mathbf{c}_i f_i$$
+  </div>
+</div>
+
+<h3>3. The Lattice Boltzmann Equation: Stream + Collide</h3>
+<p>Each timestep splits into two substeps. In <strong>collision</strong>, distributions at each cell relax toward local equilibrium; in <strong>streaming</strong>, they translate to their neighbours along their respective velocity directions.</p>
+
+<h4>3a. BGK Collision</h4>
+<p>The Bhatnagar–Gross–Krook (BGK) single-relaxation-time collision operator is (Qian et al. 1992):</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">BGK Collision</div>
+  $$f_i^{*}(\mathbf{x}, t) = f_i(\mathbf{x}, t) - \frac{1}{\tau}\!\left[f_i(\mathbf{x}, t) - f_i^{eq}(\rho, \mathbf{u})\right]$$
+</div>
+
+<p>The discrete equilibrium $f_i^{eq}$ is the Maxwell–Boltzmann distribution expanded to second order in velocity:</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">Equilibrium Distribution</div>
+  $$f_i^{eq} = w_i\, \rho\!\left[\,1 + 3(\mathbf{c}_i \cdot \mathbf{u}) + \tfrac{9}{2}(\mathbf{c}_i \cdot \mathbf{u})^2 - \tfrac{3}{2}\,|\mathbf{u}|^2\,\right]$$
+</div>
+
+<p>The dimensionless <strong>relaxation time</strong> $\tau$ controls how quickly distributions relax toward equilibrium; it directly sets the kinematic viscosity.</p>
+
+<h4>3b. Streaming</h4>
+<p>Post-collision distributions translate one cell in the direction of their lattice velocity:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Streaming Step</div>
+  $$f_i(\mathbf{x} + \mathbf{c}_i\,\Delta t,\; t + \Delta t) = f_i^{*}(\mathbf{x}, t)$$
+</div>
+
+<p>This simulator uses the <strong>pull formulation</strong>: each cell fetches $f_i$ from its upstream neighbour at $\mathbf{x} - \mathbf{c}_i$. Pull streaming maps to a single fragment-shader pass with nine texel fetches per cell, which is exactly what WebGL2 is good at.</p>
+
+<h3>4. Recovery of Incompressible Navier–Stokes</h3>
+<p>A Chapman–Enskog expansion shows that in the limit of small Mach number ($|\mathbf{u}| \ll c_s$, where $c_s^2 = 1/3$ is the lattice speed of sound), the above evolves macroscopic fields obeying the incompressible Navier–Stokes equations with kinematic viscosity:</p>
+
+<div class="eqb amber">
+  <div class="eqb-t amber">Viscosity – Relaxation Relation</div>
+  $$\nu = c_s^2\!\left(\tau - \tfrac{1}{2}\right) = \tfrac{1}{3}\!\left(\tau - \tfrac{1}{2}\right) \quad\text{(lattice units)}$$
+</div>
+
+<p>The constraint $\tau > \tfrac{1}{2}$ is thus a <em>physical</em> requirement: negative effective viscosity is unstable. At $\tau \to \tfrac{1}{2}$ the scheme approaches the inviscid (Euler) limit but loses stability. Practically we keep $\tau \in [0.51, 1.5]$; this simulator clamps in that range.</p>
+
+<h3>5. Boundary Conditions</h3>
+
+<h4>5a. No-slip Walls: Full-way Bounce-back</h4>
+<p>At a wall cell, the post-streaming distributions are swapped pairwise with their opposites:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Bounce-back at Wall</div>
+  $$f_i(\mathbf{x}_{\text{wall}}, t + \Delta t) = f_{\bar{i}}^{*}(\mathbf{x}_{\text{wall}}, t), \qquad \bar{i} \text{ is the direction opposite to } i$$
+</div>
+
+<p>On the next timestep, fluid cells adjacent to the wall stream in these reversed distributions, producing zero velocity at the halfway point between the last fluid cell and the wall cell — this is the <strong>half-way bounce-back</strong> interpretation, which is second-order accurate at the wall interface (Ladd 1994).</p>
+
+<h4>5b. Velocity Inlet (Plug Flow)</h4>
+<p>On inlet cells we prescribe $\mathbf{u} = (U_{\text{in}}, 0)$, set $\rho = 1$, and overwrite all nine distributions with their equilibrium values $f_i = f_i^{eq}(\rho, \mathbf{u})$. The bounce-back walls downstream enforce the no-slip condition and the flow develops the characteristic Poiseuille profile over the entry length $L_e \approx 0.06\, \text{Re}\, D$. Students can observe this entry-flow development directly.</p>
+
+<h4>5c. Pressure Outlet / Inlet</h4>
+<p>When pressure is prescribed, density is fixed at the target value and velocity is extrapolated from the nearest interior fluid cell. In LBM, pressure and density are linked through the isothermal equation of state:</p>
+
+<div class="eqb amber">
+  <div class="eqb-t amber">LBM Pressure–Density Relation</div>
+  $$p = c_s^2 \rho = \tfrac{1}{3}\rho \quad\text{(lattice units)}$$
+</div>
+
+<h3>6. Non-Newtonian Blood: Carreau–Yasuda</h3>
+<p>Blood is a non-Newtonian shear-thinning fluid due to reversible erythrocyte aggregation at low shear. The Carreau–Yasuda model (Yasuda et al. 1981) captures this over the full physiological range:</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">Carreau–Yasuda Viscosity</div>
+  $$\mu(\dot\gamma) = \mu_\infty + (\mu_0 - \mu_\infty)\!\left[\,1 + (\lambda\,\dot\gamma)^a\,\right]^{(n-1)/a}$$
+</div>
+
+<p>Recommended parameters for human blood at 37 °C (Cho &amp; Kensey 1991):</p>
+<dl class="pgrid">
+  <dt>$\mu_0$</dt><dd>56 mPa·s  (zero-shear viscosity, dominated by RBC aggregates)</dd>
+  <dt>$\mu_\infty$</dt><dd>3.45 mPa·s  (infinite-shear viscosity, dispersed RBCs)</dd>
+  <dt>$\lambda$</dt><dd>3.313 s  (relaxation time)</dd>
+  <dt>$n$</dt><dd>0.3568  (shear-thinning exponent)</dd>
+  <dt>$a$</dt><dd>2.0  (Yasuda transition exponent)</dd>
+</dl>
+
+<p>In LBM we need the local shear rate $\dot\gamma$ at each cell. The Chapman–Enskog expansion provides this directly from the non-equilibrium part of the distribution — the momentum-flux tensor $\Pi_{\alpha\beta}^{\text{neq}}$ — without any finite differences of $\mathbf{u}$:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Local Shear Rate (Chapman–Enskog)</div>
+  $$\Pi_{\alpha\beta}^{\text{neq}} = \sum_i c_{i\alpha} c_{i\beta} (f_i - f_i^{eq}), \qquad S_{\alpha\beta} = -\frac{3}{2\rho\tau}\Pi_{\alpha\beta}^{\text{neq}}, \qquad \dot\gamma = \sqrt{2\, S_{\alpha\beta} S_{\alpha\beta}}$$
+</div>
+
+<p>The Chapman–Enskog shear rate is then fed back into Carreau–Yasuda to produce a local $\mu(\dot\gamma)$, which sets a local relaxation time $\tau_{\text{local}} = \tfrac{1}{2} + 3\nu_{\text{local}}$. This closes the loop: each cell collides with its own effective viscosity every step.</p>
+
+<h3>7. Lattice-to-Physical Unit Mapping</h3>
+<p>The simulator runs internally in <em>lattice units</em> (everything dimensionless, grid spacing $\Delta x = 1$, timestep $\Delta t = 1$). Physical SI quantities are recovered on the fly through a chosen length scale and lattice velocity:</p>
+<dl class="pgrid">
+  <dt>$\rho_0$</dt><dd>1060 kg/m³  (blood density, fixed)</dd>
+  <dt>$L$</dt><dd>1 cm  (characteristic vessel width = grid height $N_y$)</dd>
+  <dt>$\Delta x$</dt><dd>$L / N_y$  m per lattice cell</dd>
+  <dt>$U_{\text{lat}}$</dt><dd>0.05  (fixed, keeps lattice Mach $\ll$ 1)</dd>
+  <dt>$\Delta t$</dt><dd>$U_{\text{lat}}\cdot \Delta x / U_{\text{phys}}$  s per lattice step</dd>
+  <dt>$\nu_{\text{lat}}$</dt><dd>$\nu_{\text{phys}}\cdot \Delta t / \Delta x^2$</dd>
+  <dt>$\tau$</dt><dd>$\tfrac{1}{2} + 3\,\nu_{\text{lat}}$</dd>
+  <dt>$p_{\text{phys}}$</dt><dd>$\rho_0\, (\Delta x / \Delta t)^2 \cdot (\rho_{\text{lat}} - 1) / 3$  Pa</dd>
+</dl>
+
+<h3>8. Reynolds Regimes in the Vasculature</h3>
+<p>Reynolds number is the dimensionless ratio of inertial to viscous forces — it determines whether flow is dominated by friction (low Re, Stokes) or momentum (high Re, inertial, turbulent):</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">Reynolds Number</div>
+  $$\text{Re} = \frac{\rho U L}{\mu} = \frac{U L}{\nu}$$
+</div>
+
+<p>Typical values across the circulation:</p>
+<table class="vtbl">
+  <thead><tr>
+    <th>Vessel</th><th>Diameter</th><th>Velocity</th><th>Reynolds</th><th>Regime</th>
+  </tr></thead>
+  <tbody>
+    <tr><td>Ascending aorta</td><td>25 mm</td><td>30–100 cm/s</td><td>≈3000–10000</td><td>Transitional / pulsatile turbulent in systole</td></tr>
+    <tr><td>Common carotid</td><td>6 mm</td><td>20–40 cm/s</td><td>≈400–800</td><td>Laminar, inertial</td></tr>
+    <tr><td>Coronary arteries</td><td>3 mm</td><td>15–25 cm/s</td><td>≈150–300</td><td>Laminar, developing</td></tr>
+    <tr><td>Arterioles</td><td>30–100 μm</td><td>1–10 mm/s</td><td>≈0.1–3</td><td>Viscous-dominated</td></tr>
+    <tr><td>Capillaries</td><td>5–10 μm</td><td>0.3–1 mm/s</td><td>≈0.001–0.01</td><td>Stokes flow (Re → 0)</td></tr>
+  </tbody>
+</table>
+<p>This simulator's default preset (sphere in channel, U=0.30 m/s, μ=3.5 mPa·s, L=1 cm) gives Re ≈ 909, squarely in the arterial regime. Drop μ to 1 mPa·s and raise U to 1.0 m/s to push toward vortex shedding around Re ≈ 3000.</p>
+
+<h3>9. Preset Scenarios</h3>
+<ul>
+  <li><strong>Empty rectangular channel</strong> — baseline Poiseuille flow. Plug inlet develops into parabolic profile over the entry length. Good for sanity checks and for observing the centerline velocity reach $\tfrac{3}{2}U_{\text{in}}$ at full development.</li>
+  <li><strong>Sphere (disk) in channel</strong> — classic bluff-body wake. At low Re the flow is symmetric; above Re ≈ 45 (for a cylinder) the von Kármán vortex street emerges. This simulator reproduces the transition visibly. Inviscid theory predicts zero drag (d'Alembert's paradox); the finite numerical viscosity of LBM — plus the physical viscosity you dial in — gives a realistic drag and wake.</li>
+  <li><strong>Cube (square block)</strong> — sharp-edged bluff body. Separation is forced at the upstream corners, producing a wider wake and higher pressure drag than the cylinder at the same frontal area. Useful for illustrating the geometric basis of flow separation.</li>
+  <li><strong>Stenosis (50% symmetric)</strong> — a cosine-shaped symmetric narrowing representative of a concentric atherosclerotic lesion. By continuity, the throat velocity is roughly doubled; by Bernoulli, the throat pressure drops accordingly. Downstream, flow decelerates and can separate on the expansion wall — the <em>post-stenotic recirculation zone</em> that promotes platelet adhesion. Clinically, a ≥70% area stenosis is considered hemodynamically significant.</li>
+  <li><strong>Atherosclerotic plaque (asymmetric)</strong> — one-sided Gaussian-shaped lesion on the lower wall with a steep distal edge, representative of a shoulder plaque. The asymmetry produces a skewed jet, an elongated recirculation on the healthy-wall side, and sustained wall-shear gradients at the distal shoulder — geometries associated with plaque rupture risk.</li>
+  <li><strong>Saccular aneurysm</strong> — a dome carved into the upper wall. Main-flow fluid convects past the ostium while slow recirculating flow fills the dome. Dome-to-parent-vessel flow exchange and intra-aneurysmal shear are the quantities of interest for rupture-risk modelling (Cebral et al. 2005).</li>
+  <li><strong>Bifurcation (Y-split)</strong> — idealized carotid-type bifurcation. Flow divides into two daughters of equal diameter. The outer wall of each daughter experiences a stagnation-like stress concentration (the <em>apex</em>); the inner walls see accelerated flow. This is where early atherosclerotic lesions preferentially develop.</li>
+  <li><strong>Trifurcation</strong> — three-way division (less common anatomically; approximates the celiac/SMA region). Useful for comparing flow splitting behaviour with the bifurcation.</li>
+</ul>
+
+<h3>10. Numerical Limitations &amp; Known Behavior</h3>
+<ul>
+  <li><strong>Weakly compressible.</strong> LBM recovers <em>weakly</em> compressible Navier–Stokes; strict incompressibility is only reached in the limit $U_{\text{lat}} \to 0$. This simulator fixes $U_{\text{lat}} = 0.05$, giving a lattice Mach of 0.087 — compressibility error is below 1% for these flows.</li>
+  <li><strong>Half-way bounce-back is first-order in pressure.</strong> Standard bounce-back is second-order accurate for velocity but first-order for pressure near walls. For high-fidelity pressure fields along curved walls, higher-order BCs (Bouzidi, interpolated) are needed. For teaching, bounce-back is the right trade-off: simple, stable, robust against user-drawn geometries.</li>
+  <li><strong>Uniform grid.</strong> True adaptive mesh refinement in LBM requires multi-grid rescaling at interfaces (Filippova &amp; Hänel 1998; Lagrava et al. 2012) — a substantial implementation. This simulator uses a uniform fine grid (up to 640×240 = 153,600 cells); at Ultra resolution, fine geometry features resolve cleanly.</li>
+  <li><strong>Plug inlet not fully developed.</strong> The inlet BC is plug flow, not parabolic Poiseuille. Flow develops over the entry length downstream of the inlet. For a channel of height $D$ and Reynolds Re, $L_e \approx 0.06\,\text{Re}\,D$, which at Re = 1000 and D = 1 cm is 60 cm — longer than the visible domain. Therefore flow in the domain is <em>developing</em>, not fully developed. Don't compare centerline velocity with the $1.5 U_\text{in}$ Poiseuille value unless Re is small.</li>
+  <li><strong>Non-Newtonian uses last-step τ.</strong> The Chapman–Enskog shear rate uses the previous step's relaxation time, not an iteratively-converged value. For steady state this introduces a small lag but converges correctly.</li>
+  <li><strong>2D only.</strong> This solver is 2D. Real vascular flow is three-dimensional; key features (secondary flow in curved vessels, Dean vortices, fully developed 3D helical flow) are not representable. Use this for intuition, not quantitative clinical prediction.</li>
 </ul>
 
 <div class="refs">
-  <h3>12. Numerical Limitations &amp; Known Behavior</h3>
-  <p style="font-size:.87em">Understanding what the solver <em>can</em> and <em>cannot</em> do is as important as understanding what it computes:</p>
-  <ul style="font-size:.87em;margin-bottom:16px">
-    <li><strong>First-order accuracy:</strong> The Rusanov scheme is first-order in both space and time. This means flow features are numerically smeared over 2–3 cells. Sharp shocks appear as smooth ramps of width $\sim 2\Delta x$ rather than true discontinuities. Real CFD codes use second-order (MUSCL) or higher-order schemes to reduce this numerical diffusion.</li>
-    <li><strong>No viscosity:</strong> The Euler equations have no viscous terms. Boundary layers, flow separation, turbulence, and viscous drag are absent. The d'Alembert paradox (zero drag on a cylinder) is an artifact of this inviscid assumption. Navier-Stokes solvers include the viscous stress tensor $\tau_{ij} = \mu(\partial u_i/\partial x_j + \partial u_j/\partial x_i)$.</li>
-    <li><strong>Steady-state convergence:</strong> The simulator advances in (pseudo-)time toward a steady solution. Some geometries (especially bluff bodies at high Mach) produce unsteady vortex shedding even in the inviscid Euler equations — the flow will never fully converge to steady state.</li>
-    <li><strong>Wall boundary artifacts:</strong> Interior wall cells are enforced by zeroing momentum — this is a simple "bounce-back" condition that does not enforce a proper no-penetration condition at sub-cell accuracy. Sharp drawn corners may produce unphysical pressure spikes.</li>
-    <li><strong>Supersonic inlet stability:</strong> At $M > 1.5$ the inlet condition may conflict with the outlet back-pressure, causing a standing shock to form near the inlet. Lower the under-relaxation α to 0.5–0.6 for stable supersonic simulations.</li>
-    <li><strong>Grid resolution effect:</strong> Increasing resolution (more cells) sharpens all features proportionally. A shock that spans 4 cells at Coarse will span $\sim 4$ cells at Ultra — the shock appears sharper in physical space because $\Delta x$ is smaller. Always check if your feature of interest is resolved by ≥3 cells.</li>
-  </ul>
-
   <h3>References</h3>
   <ol class="ref-list">
-    <li>Price, J. F. (2023). <em>Lagrangian and Eulerian representations of fluid flow</em>. MIT OpenCourseWare — Topics in Fluid Dynamics (Res-12-001). <a href="https://ocw.mit.edu/courses/res-12-001-topics-in-fluid-dynamics-fall-2023" target="_blank">ocw.mit.edu</a></li>
-    <li>Toro, E. F. (2009). <em>Riemann Solvers and Numerical Methods for Fluid Dynamics</em> (3rd ed.). Springer. Chapters 5–6 (Godunov-type schemes, HLLC, Rusanov).</li>
-    <li>LeVeque, R. J. (2002). <em>Finite Volume Methods for Hyperbolic Problems</em>. Cambridge University Press. Chapters 3–4 (Lax–Friedrichs, stability analysis).</li>
-    <li>Anderson, J. D. (2003). <em>Modern Compressible Flow</em> (3rd ed.). McGraw-Hill. Chapters 2–3 (isentropic flow, normal shocks, C-D nozzle theory).</li>
-    <li>Rusanov, V. V. (1961). The calculation of the interaction of non-stationary shock waves and obstacles. <em>USSR Computational Mathematics and Mathematical Physics</em>, 1(2), 304–320. (Original Rusanov/LLF flux paper.)</li>
-    <li>Hirsch, C. (2007). <em>Numerical Computation of Internal and External Flows</em> (2nd ed.). Butterworth-Heinemann. Chapter 20 (upwind schemes for the Euler equations).</li>
+    <li>Qian, Y. H., d'Humières, D., &amp; Lallemand, P. (1992). Lattice BGK models for Navier-Stokes equation. <em>Europhysics Letters</em>, 17(6), 479–484. (Original D2Q9/BGK paper.)</li>
+    <li>Succi, S. (2001). <em>The Lattice Boltzmann Equation for Fluid Dynamics and Beyond</em>. Oxford University Press. Chapters 3–5 (Chapman-Enskog, BCs, forcing).</li>
+    <li>Ladd, A. J. C. (1994). Numerical simulations of particulate suspensions via a discretized Boltzmann equation. Part 1. Theoretical foundation. <em>Journal of Fluid Mechanics</em>, 271, 285–309. (Half-way bounce-back analysis.)</li>
+    <li>Cho, Y. I., &amp; Kensey, K. R. (1991). Effects of the non-Newtonian viscosity of blood on flows in a diseased arterial vessel. Part 1: Steady flows. <em>Biorheology</em>, 28(3-4), 241–262. (Carreau-Yasuda for blood.)</li>
+    <li>Yasuda, K., Armstrong, R. C., &amp; Cohen, R. E. (1981). Shear flow properties of concentrated solutions of linear and star branched polystyrenes. <em>Rheologica Acta</em>, 20(2), 163–178.</li>
+    <li>Chen, S., &amp; Doolen, G. D. (1998). Lattice Boltzmann method for fluid flows. <em>Annual Review of Fluid Mechanics</em>, 30, 329–364. (Canonical review.)</li>
+    <li>Cebral, J. R. et al. (2005). Characterization of cerebral aneurysms for assessing risk of rupture by using patient-specific computational hemodynamics models. <em>American Journal of Neuroradiology</em>, 26(10), 2550–2559.</li>
+    <li>Lagrava, D. et al. (2012). Advances in multi-domain lattice Boltzmann grid refinement. <em>Journal of Computational Physics</em>, 231(14), 4808–4822. (AMR in LBM.)</li>
   </ol>
 </div>
 </div><!-- /theory -->
+
+
 </div><!-- /page-wrap -->
 
-<!-- ACCESSIBILITY PANEL -->
+<!-- Accessibility panel -->
 <button class="acc-btn" id="accBtn" title="Accessibility options">⚙</button>
 <div class="acc-panel" id="accPanel">
   <div class="acc-panel-title">Accessibility &amp; Display</div>
@@ -553,761 +699,1708 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   </div>
 </div>
 
-
 <script>
 (function(){
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════
-   2D INCOMPRESSIBLE NAVIER-STOKES  —  Pavel-style GPU solver
-   Based on PavelDoGreat/WebGL-Fluid-Simulation (MIT License)
-   Adapted: forced inlet flow · solid obstacles · field display
-═══════════════════════════════════════════════════════════ */
+console.log('WebGL2 supported:', !!document.createElement('canvas').getContext('webgl2'));
 
-const DISP_W=900, DISP_H=350;
+/* ---------- Physical constants ---------- */
+const RHO_BLOOD = 1060.0;
+const L_PHYS = 0.01;
+const U_LAT_MIN = 0.02;
+const U_LAT_MAX = 0.04;
 
-/* Simulation parameters */
-const PRESSURE_ITER = 25;
-const CURL_CONF     = 28;    /* vorticity confinement strength — creates beautiful vortices */
-const VEL_DISS      = 0.999; /* velocity dissipation per frame */
-const DYE_DISS      = 0.988; /* dye dissipation per frame */
-const INLET_W_UV    = 0.022; /* inlet injection strip width in UV */
+const CELL_FLUID = 0, CELL_WALL = 1, CELL_INLET = 2, CELL_OUTLET = 3;
+const CY_MU0 = 56e-3, CY_MUI = 3.45e-3, CY_LAM = 3.313, CY_N = 0.3568, CY_A = 2.0;
 
-/* Simulation grid (aspect-matched to canvas) */
-const SIM_W = 330, SIM_H = 128;
-const DYE_W = 900, DYE_H = 350;
-
-/* Wall mask (CPU side, NX×NY) */
-let NX=150, NY=58;
-let wallCPU = new Uint8Array(NX*NY);
-
-/* DOM */
-const canvas = document.getElementById('cfdCanvas');
-const cbCv   = document.getElementById('cbCanvas');
-const cbCtx  = cbCv.getContext('2d');
-canvas.width = DISP_W; canvas.height = DISP_H;
-
+/* ---------- DOM ---------- */
 const $ = id => document.getElementById(id);
-const gM  = () => parseFloat($('slMach').value);
-const gSp = () => parseInt($('slSpd').value);
-const gBr = () => parseInt($('slBr').value);
-const gF  = () => $('selField').value;
-const gSL = () => { const e=$('chkSL'); return e?e.checked:true; };
-const gTr = () => { const e=$('chkTr'); return e?e.checked:true; };
-const gAs = () => { const e=$('chkAs'); return e?e.checked:true; };
+const canvas = $('cfdCanvas');
+const cbCv = $('cbCanvas');
+const cbCtx = cbCv.getContext('2d');
 
-let tool='none', drawing=false, paused=false;
-let stepN=0, fpsN=0, fpsT=0, fpsV=0;
-let dMin=0, dMax=1, scaleOK=false;
+/* ---------- WebGL2 context ---------- */
+const gl = canvas.getContext('webgl2', { alpha: false, depth: false, stencil: false, antialias: false, preserveDrawingBuffer: false });
+if (!gl) { showErr('WebGL2 is not supported in this browser.'); return; }
+const extCBF = gl.getExtension('EXT_color_buffer_float');
+const extLin = gl.getExtension('OES_texture_float_linear');
+if (!extCBF) { showErr('Your GPU/driver lacks EXT_color_buffer_float, required for float simulation.'); return; }
 
-/* ═══════════════ WebGL SETUP ══════════════════════════════ */
-
-function setupGL(){
-  const p={alpha:true,depth:false,stencil:false,antialias:false,preserveDrawingBuffer:false};
-  let gl=canvas.getContext('webgl2',p);
-  const wgl2=!!gl;
-  if(!wgl2) gl=canvas.getContext('webgl',p)||canvas.getContext('experimental-webgl',p);
-  if(!gl) throw new Error('No WebGL');
-
-  let hfExt=null, linOK=false;
-  if(wgl2){
-    gl.getExtension('EXT_color_buffer_float');
-    linOK=!!gl.getExtension('OES_texture_float_linear');
-  }else{
-    hfExt=gl.getExtension('OES_texture_half_float');
-    if(hfExt){ gl.getExtension('EXT_color_buffer_half_float'); }
-    linOK=!!gl.getExtension('OES_texture_half_float_linear');
-  }
-
-  const hfType = wgl2 ? gl.HALF_FLOAT : (hfExt ? hfExt.HALF_FLOAT_OES : null);
-
-  /* Test whether we can actually render to a half-float FBO */
-  let useHF = false;
-  if(hfType){
-    const t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
-    const iFmt=wgl2?gl.RGBA16F:gl.RGBA;
-    gl.texImage2D(gl.TEXTURE_2D,0,iFmt,4,4,0,gl.RGBA,hfType,null);
-    const f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0);
-    useHF=gl.checkFramebufferStatus(gl.FRAMEBUFFER)===gl.FRAMEBUFFER_COMPLETE;
-    gl.deleteTexture(t); gl.deleteFramebuffer(f);
-    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  }
-
-  const texType = useHF ? hfType : gl.UNSIGNED_BYTE;
-  const ifRGBA  = useHF ? (wgl2?gl.RGBA16F:gl.RGBA) : gl.RGBA;
-  const flt     = (linOK&&useHF) ? gl.LINEAR : gl.NEAREST;
-
-  return{gl,texType,ifRGBA,flt};
+function showErr(msg) {
+  const ov = $('errOv');
+  $('errMsg').textContent = msg;
+  ov.classList.add('show');
+  console.error(msg);
 }
 
-let GL;
-try{ GL=setupGL(); }catch(e){ console.error('WebGL failed:',e); return; }
-const{gl,texType,ifRGBA,flt}=GL;
+let NX = 360, NY = 144;
+let DX = L_PHYS / NY;
+let geomData = new Float32Array(NX * NY * 4);
 
-/* ═══════════════ SHADER SOURCES ═══════════════════════════ */
+const state = {
+  uin: 0.30,
+  muN: 3.5e-3,
+  viscModel: 'newtonian',
+  inletType: 'velocity',
+  inletProfile: 'plug',
+  outletType: 'zerograd',
+  pIn_mmHg: 100.0,
+  pOut_mmHg: 80.0,
+  gravity: false,
+  field: 'vel',
+  showStream: false,
+  showParticles: true,
+  scaleMode: 'true',
+  xform: 'linear',
+  manualMin: 0.0,
+  manualMax: 1.0,
+  detectSteady: true,
+  autoResetOnDiverge: true,
+  stepsPerFrame: 3,
+  preset: 'sphere',
+  cy_mu0: CY_MU0, cy_muI: CY_MUI, cy_lam: CY_LAM, cy_n: CY_N, cy_a: CY_A,
+  inletYMin: 0, inletYMax: 1,
+  dt: 1e-5, tau: 0.6, uScale: 1, pScale: 1, Re: 0, uLat: 0.05,
+};
+let pOutClamped = false, pInClamped = false;
 
-/* Shared vertex shader — passes texel-offset varyings for stencil reads */
-const VS=`
-  precision highp float;
-  attribute vec2 aP;
-  varying vec2 vU,vL,vR,vT,vB;
-  uniform vec2 tS;
-  void main(){
-    vU=aP*.5+.5;
-    vL=vU-vec2(tS.x,0.);vR=vU+vec2(tS.x,0.);
-    vT=vU+vec2(0.,tS.y);vB=vU-vec2(0.,tS.y);
-    gl_Position=vec4(aP,0.,1.);}`;
-
-/* Simple vertex for fullscreen quad without texel varyings */
-const VS2=`
-  precision highp float;
-  attribute vec2 aP; varying vec2 vU;
-  void main(){vU=aP*.5+.5;gl_Position=vec4(aP,0.,1.);}`;
-
-/* Clear/scale a texture */
-const FS_CLR=`
-  precision mediump float; precision mediump sampler2D;
-  varying highp vec2 vU;
-  uniform sampler2D uT; uniform float val;
-  void main(){gl_FragColor=val*texture2D(uT,vU);}`;
-
-/* Advection — Pavel's bilinear fallback when linear filtering unavailable */
-const FS_ADV=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU;
-  uniform sampler2D uVel,uSrc;
-  uniform vec2 tS,dS;
-  uniform float dt,diss;
-  vec4 bilp(sampler2D s,vec2 uv,vec2 ts){
-    vec2 st=uv/ts-.5,ij=floor(st),f=fract(st);
-    vec4 a=texture2D(s,(ij+vec2(.5,.5))*ts);
-    vec4 b=texture2D(s,(ij+vec2(1.5,.5))*ts);
-    vec4 c=texture2D(s,(ij+vec2(.5,1.5))*ts);
-    vec4 d=texture2D(s,(ij+vec2(1.5,1.5))*ts);
-    return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);}
-  void main(){
-    vec2 coord=vU-dt*bilp(uVel,vU,tS).xy*tS;
-    vec4 r=bilp(uSrc,coord,dS);
-    gl_FragColor=r/(1.+diss*dt);}`;
-
-/* Divergence */
-const FS_DIV=`
-  precision mediump float; precision mediump sampler2D;
-  varying highp vec2 vU,vL,vR,vT,vB;
-  uniform sampler2D uVel;
-  void main(){
-    float L=texture2D(uVel,vL).x,R=texture2D(uVel,vR).x;
-    float T=texture2D(uVel,vT).y,B=texture2D(uVel,vB).y;
-    vec2 C=texture2D(uVel,vU).xy;
-    if(vL.x<0.)L=-C.x;if(vR.x>1.)R=-C.x;
-    if(vT.y>1.)T=-C.y;if(vB.y<0.)B=-C.y;
-    gl_FragColor=vec4(.5*(R-L+T-B),0.,0.,1.);}`;
-
-/* Curl (vorticity scalar) */
-const FS_CURL=`
-  precision mediump float; precision mediump sampler2D;
-  varying highp vec2 vU,vL,vR,vT,vB;
-  uniform sampler2D uVel;
-  void main(){
-    float L=texture2D(uVel,vL).y,R=texture2D(uVel,vR).y;
-    float T=texture2D(uVel,vT).x,B=texture2D(uVel,vB).x;
-    gl_FragColor=vec4(.5*(R-L-T+B),0.,0.,1.);}`;
-
-/* Vorticity confinement — the magic that keeps vortices alive */
-const FS_VORT=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU,vL,vR,vT,vB;
-  uniform sampler2D uVel,uCurl;
-  uniform float curl,dt;
-  void main(){
-    float L=texture2D(uCurl,vL).x,R=texture2D(uCurl,vR).x;
-    float T=texture2D(uCurl,vT).x,B=texture2D(uCurl,vB).x;
-    float C=texture2D(uCurl,vU).x;
-    vec2 F=.5*vec2(abs(T)-abs(B),abs(R)-abs(L));
-    F/=length(F)+.0001;F*=curl*C;F.y*=-1.;
-    vec2 v=texture2D(uVel,vU).xy+F*dt;
-    v=clamp(v,-1000.,1000.);
-    gl_FragColor=vec4(v,0.,1.);}`;
-
-/* Pressure Jacobi iteration */
-const FS_PRES=`
-  precision mediump float; precision mediump sampler2D;
-  varying highp vec2 vU,vL,vR,vT,vB;
-  uniform sampler2D uP,uDiv;
-  void main(){
-    float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x;
-    float T=texture2D(uP,vT).x,B=texture2D(uP,vB).x;
-    float div=texture2D(uDiv,vU).x;
-    gl_FragColor=vec4((L+R+B+T-div)*.25,0.,0.,1.);}`;
-
-/* Gradient subtract — makes velocity divergence-free */
-const FS_GRAD=`
-  precision mediump float; precision mediump sampler2D;
-  varying highp vec2 vU,vL,vR,vT,vB;
-  uniform sampler2D uP,uVel;
-  void main(){
-    float L=texture2D(uP,vL).x,R=texture2D(uP,vR).x;
-    float T=texture2D(uP,vT).x,B=texture2D(uP,vB).x;
-    vec2 v=texture2D(uVel,vU).xy;
-    v-=vec2(R-L,T-B);
-    gl_FragColor=vec4(v,0.,1.);}`;
-
-/* Gaussian splat (Pavel's) — for inlet injection */
-const FS_SPLAT=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU;
-  uniform sampler2D uT;
-  uniform float ar,r;
-  uniform vec3 col;
-  uniform vec2 pt;
-  void main(){
-    vec2 p=vU-pt;p.x*=ar;
-    vec3 s=exp(-dot(p,p)/r)*col;
-    gl_FragColor=vec4(texture2D(uT,vU).xyz+s,1.);}`;
-
-/* Wall BC — zero velocity and dye inside solid cells */
-const FS_WALL=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU;
-  uniform sampler2D uSrc,uWall;
-  uniform float zero;
-  void main(){
-    float w=texture2D(uWall,vU).r;
-    vec4 v=texture2D(uSrc,vU);
-    gl_FragColor=w>.5?vec4(v.zw*0.,v.zw*0.)*0.:v;
-    if(w>.5)gl_FragColor=vec4(zero,zero,zero,1.);}`;
-
-/* Inlet dye injection — rainbow strip at left edge */
-const FS_IDYE=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU;
-  uniform sampler2D uDye;
-  uniform float iW;  /* injection width UV */
-  vec3 hsv(float h){
-    h=fract(h)*6.;
-    return pow(clamp(vec3(abs(h-3.)-1.,2.-abs(h-2.),2.-abs(h-4.)),0.,1.),vec3(.65));}
-  void main(){
-    vec3 d=texture2D(uDye,vU).rgb;
-    if(vU.x<iW){
-      float s=(1.-vU.x/iW);s=s*s*(3.-2.*s);
-      vec3 c=hsv(vU.y*2.5);
-      d=mix(d,c,s*.97);}
-    gl_FragColor=vec4(d,1.);}`;
-
-/* Display: dim field background + vivid dye overlay */
-const FS_DISP=`
-  precision highp float; precision highp sampler2D;
-  varying vec2 vU;
-  uniform sampler2D uDye,uFld,uWall;
-  uniform float uMode;  /* 0=vel,1=pres,2=vort */
-  uniform float uLo,uHi,uDye;
-  vec3 jet(float t){
-    t=clamp(t,0.,1.);
-    return vec3(clamp(1.5-abs(4.*t-3.),0.,1.),
-                clamp(1.5-abs(4.*t-2.),0.,1.),
-                clamp(1.5-abs(4.*t-1.),0.,1.));}
-  vec3 rdbu(float t){
-    t=clamp(t,0.,1.);
-    return t<.5?mix(vec3(.02,.20,.72),vec3(.95,.95,.95),t*2.)
-               :mix(vec3(.95,.95,.95),vec3(.76,.02,.02),(t-.5)*2.);}
-  void main(){
-    if(texture2D(uWall,vU).r>.5){gl_FragColor=vec4(.07,.08,.11,1.);return;}
-    vec4 fv=texture2D(uFld,vU);
-    float raw=(uMode<.5)?length(fv.xy):fv.r;
-    float range=max(uHi-uLo,1e-7);
-    float t=clamp((raw-uLo)/range,0.,1.);
-    vec3 field=(uMode>1.5)?rdbu(t):jet(t);
-    field*=.26;
-    vec3 dye=texture2D(uDye,vU).rgb;
-    dye=pow(max(dye,vec3(0.)),vec3(.72));
-    vec3 col=field+dye*(uDye>.5?2.3:0.);
-    col=1.-exp(-col*1.5);
-    col=pow(max(col,vec3(0.)),vec3(.80));
-    gl_FragColor=vec4(col,1.);}`;
-
-/* ═══════════════ COMPILE / LINK ════════════════════════════ */
-
-function cSh(t,s){
-  const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);
-  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))
-    console.error('Shader:',gl.getShaderInfoLog(sh));
-  return sh;}
-function cPr(vs,fs){
-  const p=gl.createProgram();
-  gl.attachShader(p,cSh(gl.VERTEX_SHADER,vs));
-  gl.attachShader(p,cSh(gl.FRAGMENT_SHADER,fs));
+/* ---------- GL Utilities ---------- */
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error('Shader error:\n' + gl.getShaderInfoLog(s));
+    throw new Error('Shader compile failed');
+  }
+  return s;
+}
+function link(vsSrc, fsSrc) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, vsSrc));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fsSrc));
   gl.linkProgram(p);
-  if(!gl.getProgramParameter(p,gl.LINK_STATUS))
-    console.error('Link:',gl.getProgramInfoLog(p));
-  return p;}
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+    throw new Error('Link: ' + gl.getProgramInfoLog(p));
+  return p;
+}
+function cacheUniforms(prog, names) {
+  const out = {};
+  for (const n of names) out[n] = gl.getUniformLocation(prog, n);
+  return out;
+}
+const quadBuf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+function bindQuad(prog) {
+  gl.useProgram(prog);
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  const loc = gl.getAttribLocation(prog, 'aP');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+}
 
-/* Programs */
-const pClr   = cPr(VS2, FS_CLR);
-const pAdv   = cPr(VS2, FS_ADV);
-const pDiv   = cPr(VS,  FS_DIV);
-const pCurl  = cPr(VS,  FS_CURL);
-const pVort  = cPr(VS,  FS_VORT);
-const pPres  = cPr(VS,  FS_PRES);
-const pGrad  = cPr(VS,  FS_GRAD);
-const pSplat = cPr(VS2, FS_SPLAT);
-const pWall  = cPr(VS2, FS_WALL);
-const pIDye  = cPr(VS2, FS_IDYE);
-const pDisp  = cPr(VS2, FS_DISP);
+/* ---------- Shaders (same as before, verified) ---------- */
+const VS = `#version 300 es
+in vec2 aP;
+out vec2 vUV;
+void main(){ vUV = aP * 0.5 + 0.5; gl_Position = vec4(aP, 0.0, 1.0); }`;
 
-/* Uniform helpers */
-function ul(p,n){return gl.getUniformLocation(p,n);}
-function u1f(p,n,v){gl.uniform1f(ul(p,n),v);}
-function u2f(p,n,x,y){gl.uniform2f(ul(p,n),x,y);}
-function u3f(p,n,x,y,z){gl.uniform3f(ul(p,n),x,y,z);}
-function u1i(p,n,v){gl.uniform1i(ul(p,n),v);}
-function bnd(unit,tex){gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,tex);}
+const FS_INIT = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uGeom;
+uniform float uUlat;
+layout(location=0) out vec4 outA;
+layout(location=1) out vec4 outB;
+layout(location=2) out vec4 outC;
+const float W0=4.0/9.0, W14=1.0/9.0, W58=1.0/36.0;
+void main(){
+  float ct = texture(uGeom, vUV).r;
+  float u = 0.0, v = 0.0, rho = 1.0;
+  if (ct > 1.5 && ct < 2.5) u = uUlat;
+  float usq = 1.5*(u*u + v*v);
+  float cu;
+  float f[9];
+  cu=0.0;       f[0]=W0 *rho*(1.0 - usq);
+  cu=u;         f[1]=W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=v;         f[2]=W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-u;        f[3]=W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-v;        f[4]=W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=u+v;       f[5]=W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-u+v;      f[6]=W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-u-v;      f[7]=W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=u-v;       f[8]=W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  outA = vec4(f[0], f[1], f[2], f[3]);
+  outB = vec4(f[4], f[5], f[6], f[7]);
+  outC = vec4(f[8], 0.0, 0.0, 0.0);
+}`;
 
-/* ═══════════════ BLIT / FBO ════════════════════════════════ */
+const FS_STEP = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uFA, uFB, uFC, uGeom;
+uniform vec2 uRes;
+uniform float uTau, uGx, uGy, uUlat, uRhoIn, uRhoOut;
+uniform int uNonNewt, uInletType, uOutletType, uInletProfile;
+uniform vec2 uInletYRange;
+uniform float uMu0, uMuI, uLam, uN, uA;
+layout(location=0) out vec4 outA;
+layout(location=1) out vec4 outB;
+layout(location=2) out vec4 outC;
+const float W0=4.0/9.0, W14=1.0/9.0, W58=1.0/36.0;
 
-/* Pavel's blit helper — fullscreen quad via element array buffer */
-const blit=(()=>{
-  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,-1,1,1,1,1,-1]),gl.STATIC_DRAW);
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,gl.createBuffer());
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array([0,1,2,0,2,3]),gl.STATIC_DRAW);
-  gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
-  gl.enableVertexAttribArray(0);
-  return(target,clear=false)=>{
-    if(target==null){
-      gl.viewport(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight);
-      gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-    }else{
-      gl.viewport(0,0,target.w,target.h);
-      gl.bindFramebuffer(gl.FRAMEBUFFER,target.fbo);
+ivec2 clm(ivec2 c){ return clamp(c, ivec2(0), ivec2(uRes) - ivec2(1)); }
+
+void main(){
+  ivec2 coord = ivec2(gl_FragCoord.xy);
+
+  float f0 = texelFetch(uFA, clm(coord                ), 0).r;
+  float f1 = texelFetch(uFA, clm(coord - ivec2( 1, 0)), 0).g;
+  float f2 = texelFetch(uFA, clm(coord - ivec2( 0, 1)), 0).b;
+  float f3 = texelFetch(uFA, clm(coord - ivec2(-1, 0)), 0).a;
+  float f4 = texelFetch(uFB, clm(coord - ivec2( 0,-1)), 0).r;
+  float f5 = texelFetch(uFB, clm(coord - ivec2( 1, 1)), 0).g;
+  float f6 = texelFetch(uFB, clm(coord - ivec2(-1, 1)), 0).b;
+  float f7 = texelFetch(uFB, clm(coord - ivec2(-1,-1)), 0).a;
+  float f8 = texelFetch(uFC, clm(coord - ivec2( 1,-1)), 0).r;
+
+  float ct = texelFetch(uGeom, coord, 0).r;
+
+  #define SANE(v, w) (((v) == (v)) && (v) < 1e30 && (v) > -1e30 ? max(v, 0.0) : (w))
+  f0 = SANE(f0, 4.0/9.0);
+  f1 = SANE(f1, 1.0/9.0);  f2 = SANE(f2, 1.0/9.0);
+  f3 = SANE(f3, 1.0/9.0);  f4 = SANE(f4, 1.0/9.0);
+  f5 = SANE(f5, 1.0/36.0); f6 = SANE(f6, 1.0/36.0);
+  f7 = SANE(f7, 1.0/36.0); f8 = SANE(f8, 1.0/36.0);
+
+  if (ct > 0.5 && ct < 1.5) {
+    float t;
+    t = f1; f1 = f3; f3 = t;
+    t = f2; f2 = f4; f4 = t;
+    t = f5; f5 = f7; f7 = t;
+    t = f6; f6 = f8; f8 = t;
+    outA = vec4(f0, f1, f2, f3);
+    outB = vec4(f4, f5, f6, f7);
+    outC = vec4(f8, 0.0, 0.0, 0.0);
+    return;
+  }
+
+  float rho = f0+f1+f2+f3+f4+f5+f6+f7+f8;
+  rho = clamp(rho, 0.1, 5.0);
+  float ux = (f1 - f3 + f5 - f6 - f7 + f8) / rho;
+  float uy = (f2 - f4 + f5 + f6 - f7 - f8) / rho;
+  ux = clamp(ux, -0.10, 0.10);
+  uy = clamp(uy, -0.10, 0.10);
+
+  if (ct > 1.5 && ct < 2.5) {
+    if (uInletType == 0) {
+      float u_local = uUlat;
+      if (uInletProfile == 1) {
+        float yy = float(coord.y);
+        float yc = 0.5 * (uInletYRange.x + uInletYRange.y);
+        float yh = 0.5 * (uInletYRange.y - uInletYRange.x);
+        if (yh > 0.5) {
+          float t = (yy - yc) / yh;
+          u_local = 1.2 * uUlat * max(0.0, 1.0 - t * t);
+        }
+      }
+      ux = clamp(u_local, -0.10, 0.10);
+      uy = 0.0;
+      rho = 1.0;
+    } else {
+      rho = clamp(uRhoIn, 0.5, 2.0);
+      ivec2 dn = clm(coord + ivec2(1, 0));
+      vec4 nA = texelFetch(uFA, dn, 0), nB = texelFetch(uFB, dn, 0), nC = texelFetch(uFC, dn, 0);
+      float n0=SANE(nA.r,4.0/9.0), n1=SANE(nA.g,1.0/9.0), n2=SANE(nA.b,1.0/9.0),
+            n3=SANE(nA.a,1.0/9.0), n4=SANE(nB.r,1.0/9.0), n5=SANE(nB.g,1.0/36.0),
+            n6=SANE(nB.b,1.0/36.0), n7=SANE(nB.a,1.0/36.0), n8=SANE(nC.r,1.0/36.0);
+      float nrho = clamp(n0+n1+n2+n3+n4+n5+n6+n7+n8, 0.1, 5.0);
+      ux = clamp((n1 - n3 + n5 - n6 - n7 + n8) / nrho, -0.10, 0.10);
+      uy = 0.0;
     }
-    if(clear){gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);}
-    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,0);
-  };
-})();
+  } else if (ct > 2.5 && ct < 3.5) {
+    if (uOutletType == 0) {
+      ivec2 up = clm(coord - ivec2(1, 0));
+      vec4 nA = texelFetch(uFA, up, 0);
+      vec4 nB = texelFetch(uFB, up, 0);
+      f3 = SANE(nA.a, 1.0/9.0);
+      f6 = SANE(nB.b, 1.0/36.0);
+      f7 = SANE(nB.a, 1.0/36.0);
+      rho = clamp(f0+f1+f2+f3+f4+f5+f6+f7+f8, 0.1, 5.0);
+      ux = clamp((f1 - f3 + f5 - f6 - f7 + f8) / rho, -0.10, 0.10);
+      uy = clamp((f2 - f4 + f5 + f6 - f7 - f8) / rho, -0.10, 0.10);
+    } else {
+      rho = clamp(uRhoOut, 0.5, 2.0);
+      ivec2 up = clm(coord - ivec2(1, 0));
+      vec4 nA = texelFetch(uFA, up, 0), nB = texelFetch(uFB, up, 0), nC = texelFetch(uFC, up, 0);
+      float n0=SANE(nA.r,4.0/9.0), n1=SANE(nA.g,1.0/9.0), n2=SANE(nA.b,1.0/9.0),
+            n3=SANE(nA.a,1.0/9.0), n4=SANE(nB.r,1.0/9.0), n5=SANE(nB.g,1.0/36.0),
+            n6=SANE(nB.b,1.0/36.0), n7=SANE(nB.a,1.0/36.0), n8=SANE(nC.r,1.0/36.0);
+      float nrho = clamp(n0+n1+n2+n3+n4+n5+n6+n7+n8, 0.1, 5.0);
+      ux = clamp((n1 - n3 + n5 - n6 - n7 + n8) / nrho, -0.10, 0.10);
+      uy = clamp((n2 - n4 + n5 + n6 - n7 - n8) / nrho, -0.10, 0.10);
+    }
+  }
 
-/* Before each program call, set the 'aP' attrib to location 0 */
-function useP(p){
-  gl.useProgram(p);
-  const loc=gl.getAttribLocation(p,'aP');
-  if(loc>=0){gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);}
+  float uxE = clamp(ux + uGx, -0.10, 0.10);
+  float uyE = clamp(uy + uGy, -0.10, 0.10);
+
+  float tauL = uTau;
+  if (uNonNewt == 1) {
+    float usq = 1.5*(ux*ux + uy*uy);
+    float cu, feq;
+    cu=0.0;    feq = W0 *rho*(1.0 - usq);                                 float n0 = f0 - feq;
+    cu=ux;     feq = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n1 = f1 - feq;
+    cu=uy;     feq = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n2 = f2 - feq;
+    cu=-ux;    feq = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n3 = f3 - feq;
+    cu=-uy;    feq = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n4 = f4 - feq;
+    cu=ux+uy;  feq = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n5 = f5 - feq;
+    cu=-ux+uy; feq = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n6 = f6 - feq;
+    cu=-ux-uy; feq = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n7 = f7 - feq;
+    cu=ux-uy;  feq = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);                float n8 = f8 - feq;
+    float Pxx = n1 + n3 + n5 + n6 + n7 + n8;
+    float Pyy = n2 + n4 + n5 + n6 + n7 + n8;
+    float Pxy = n5 - n6 + n7 - n8;
+    float piSq = max(Pxx*Pxx + Pyy*Pyy + 2.0*Pxy*Pxy, 0.0);
+    float tauRef = 0.6;
+    float shear = 3.0 / (rho * tauRef) * sqrt(piSq * 0.5);
+    shear = min(shear, 1e4);
+    float lamShear = max(uLam * shear, 1e-8);
+    float mu = uMuI + (uMu0 - uMuI) * pow(1.0 + pow(lamShear, uA), (uN - 1.0) / uA);
+    if (!(mu > 0.0)) mu = uMuI;
+    tauL = clamp(0.5 + 3.0 * mu / max(rho, 0.1), 0.55, 2.5);
+  }
+
+  float usq = 1.5*(uxE*uxE + uyE*uyE);
+  float cu; float feq[9];
+  cu=0.0;       feq[0] = W0 *rho*(1.0 - usq);
+  cu=uxE;       feq[1] = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=uyE;       feq[2] = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-uxE;      feq[3] = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-uyE;      feq[4] = W14*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=uxE+uyE;   feq[5] = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-uxE+uyE;  feq[6] = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=-uxE-uyE;  feq[7] = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  cu=uxE-uyE;   feq[8] = W58*rho*(1.0+3.0*cu+4.5*cu*cu - usq);
+  float w = 1.0 / tauL;
+  f0 += w*(feq[0]-f0); f1 += w*(feq[1]-f1); f2 += w*(feq[2]-f2);
+  f3 += w*(feq[3]-f3); f4 += w*(feq[4]-f4); f5 += w*(feq[5]-f5);
+  f6 += w*(feq[6]-f6); f7 += w*(feq[7]-f7); f8 += w*(feq[8]-f8);
+
+  bool pinToEq = (ct > 1.5 && ct < 2.5) ||
+                 (ct > 2.5 && ct < 3.5 && uOutletType == 1);
+  if (pinToEq) {
+    f0=feq[0]; f1=feq[1]; f2=feq[2]; f3=feq[3];
+    f4=feq[4]; f5=feq[5]; f6=feq[6]; f7=feq[7]; f8=feq[8];
+  }
+
+  f0 = clamp(f0, 1e-7, 10.0); f1 = clamp(f1, 1e-7, 10.0);
+  f2 = clamp(f2, 1e-7, 10.0); f3 = clamp(f3, 1e-7, 10.0);
+  f4 = clamp(f4, 1e-7, 10.0); f5 = clamp(f5, 1e-7, 10.0);
+  f6 = clamp(f6, 1e-7, 10.0); f7 = clamp(f7, 1e-7, 10.0);
+  f8 = clamp(f8, 1e-7, 10.0);
+
+  outA = vec4(f0, f1, f2, f3);
+  outB = vec4(f4, f5, f6, f7);
+  outC = vec4(f8, 0.0, 0.0, 0.0);
+}`;
+
+const FS_MACRO = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uFA, uFB, uFC, uGeom;
+uniform vec2 uRes;
+layout(location=0) out vec4 outMacro;
+void main(){
+  ivec2 c = ivec2(gl_FragCoord.xy);
+  vec4 A = texelFetch(uFA, c, 0);
+  vec4 B = texelFetch(uFB, c, 0);
+  vec4 C = texelFetch(uFC, c, 0);
+  vec4 G = texelFetch(uGeom, c, 0);
+  float rho = A.r+A.g+A.b+A.a + B.r+B.g+B.b+B.a + C.r;
+  float ux = (A.g - A.a + B.g - B.b - B.a + C.r) / max(rho, 1e-6);
+  float uy = (A.b - B.r + B.g + B.b - B.a - C.r) / max(rho, 1e-6);
+  outMacro = vec4(ux, uy, rho, G.r);
+}`;
+
+const FS_RENDER = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uMacro, uGeom, uStreamTex;
+uniform vec2 uRes;
+uniform float uField;
+uniform float uVmin, uVmax;
+uniform int uXform;
+uniform float uLinthresh;
+uniform float uShowStream;
+uniform float uUScale, uPScale;
+uniform float uTime;
+
+out vec4 outCol;
+
+vec3 jet(float t) {
+  t = clamp(t, 0.0, 1.0);
+  float r = clamp(1.5 - abs(4.0 * t - 3.0), 0.0, 1.0);
+  float g = clamp(1.5 - abs(4.0 * t - 2.0), 0.0, 1.0);
+  float b = clamp(1.5 - abs(4.0 * t - 1.0), 0.0, 1.0);
+  return vec3(r, g, b);
+}
+vec3 rwb(float t) {
+  t = clamp(t, 0.0, 1.0);
+  if (t < 0.5) {
+    float s = t * 2.0;
+    return mix(vec3(0.02, 0.20, 0.72), vec3(0.95, 0.95, 0.95), s);
+  }
+  float s = (t - 0.5) * 2.0;
+  return mix(vec3(0.95, 0.95, 0.95), vec3(0.76, 0.02, 0.02), s);
 }
 
-function mkTex(w,h,f){
-  const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D,0,ifRGBA,w,h,0,gl.RGBA,texType,null);
-  return t;}
+float normalize01(float raw) {
+  float EPS = 1e-12;
+  if (uXform == 1) {
+    float lr = log(max(raw, EPS));
+    float lmn = log(max(uVmin, EPS));
+    float lmx = log(max(uVmax, EPS));
+    return (lr - lmn) / max(lmx - lmn, 1e-9);
+  }
+  if (uXform == 2) {
+    float lt = max(uLinthresh, EPS);
+    float sl = sign(raw) * log(1.0 + abs(raw) / lt);
+    float mn = sign(uVmin) * log(1.0 + abs(uVmin) / lt);
+    float mx = sign(uVmax) * log(1.0 + abs(uVmax) / lt);
+    return (sl - mn) / max(mx - mn, 1e-9);
+  }
+  return (raw - uVmin) / max(uVmax - uVmin, 1e-9);
+}
 
-function mkFBO(w,h){
-  const tex=mkTex(w,h,flt);
-  const fbo=gl.createFramebuffer();
-  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);
-  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)
-    console.warn('FBO incomplete — half-float unsupported, visual quality may be reduced');
-  gl.viewport(0,0,w,h);gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
-  return{tex,fbo,w,h,tsx:1/w,tsy:1/h};}
+void main(){
+  vec4 m = texture(uMacro, vUV);
+  float ux = m.r, uy = m.g, rho = m.b, ct = m.a;
 
-function mkDFBO(w,h){
-  let a=mkFBO(w,h),b=mkFBO(w,h);
-  return{
-    get read(){return a;},get write(){return b;},
-    swap(){let t=a;a=b;b=t;},
-    w,h,tsx:1/w,tsy:1/h};}
+  vec3 col;
+  float raw;
+  if (uField < 0.5) {
+    raw = length(vec2(ux, uy)) * uUScale;
+    col = jet(normalize01(raw));
+  } else if (uField < 1.5) {
+    raw = (rho - 1.0) * uPScale;
+    col = jet(normalize01(raw));
+  } else {
+    vec2 ts = 1.0 / uRes;
+    vec4 mR = texture(uMacro, vUV + vec2( ts.x, 0.0));
+    vec4 mL = texture(uMacro, vUV + vec2(-ts.x, 0.0));
+    vec4 mT = texture(uMacro, vUV + vec2(0.0,  ts.y));
+    vec4 mB = texture(uMacro, vUV + vec2(0.0, -ts.y));
+    float vort_lat = (mR.g - mL.g) * 0.5 - (mT.r - mB.r) * 0.5;
+    float vort = vort_lat * uUScale * uRes.x;
+    col = rwb(normalize01(vort));
+  }
 
-/* Create FBO from a NEAREST-filtered RGBA8 texture (for wall mask) */
-function mkMaskTex(w,h){
-  const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
-  return t;}
+  if (ct > 0.5 && ct < 1.5) {
+    col = vec3(0.45, 0.52, 0.62);
+  } else if (ct > 1.5 && ct < 2.5) {
+    col = mix(col, vec3(0.31, 0.80, 0.77), 0.28);
+  } else if (ct > 2.5 && ct < 3.5) {
+    col = mix(col, vec3(0.96, 0.65, 0.14), 0.28);
+  }
 
-/* ═══════════════ ALLOCATE FBOs ════════════════════════════ */
+  if (uShowStream > 0.5 && ct < 0.5) {
+    float sn = texture(uStreamTex, vUV).r;
+    sn = smoothstep(0.12, 0.88, sn);
+    col = mix(col, vec3(1.0), sn * 0.75);
+  }
 
-let vel,pres,div,curl,dye;
-let wallTex,wallDat;
+  outCol = vec4(col, 1.0);
+}`;
 
-function allocFBOs(){
+const FS_STREAM_ADVECT = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uNoise;
+uniform sampler2D uMacro;
+uniform vec2 uRes;
+uniform float uDt;
+uniform float uTime;
+uniform float uInjectProb;
+uniform float uDecay;
+out vec4 outC;
+
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
+
+void main() {
+  vec4 m = texture(uMacro, vUV);
+  vec2 v = vec2(m.r, m.g);
+  float ct = m.a;
+
+  if (ct > 0.5 && ct < 1.5) {
+    outC = vec4(0.0);
+    return;
+  }
+
+  vec2 prev = vUV - v * uDt;
+  vec4 adv = texture(uNoise, prev) * uDecay;
+
+  float r = hash12(vUV * uRes + vec2(uTime * 123.4, uTime * 456.7));
+  if (r < uInjectProb) adv = vec4(1.0);
+
+  outC = adv;
+}`;
+
+const FS_PART = `#version 300 es
+precision highp float;
+in vec2 vUV;
+uniform sampler2D uParticles;
+uniform sampler2D uMacro;
+uniform sampler2D uGeom;
+uniform vec2 uRes;
+uniform vec2 uInletYRange;
+uniform float uDt;
+uniform float uTime;
+out vec4 outP;
+
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+
+vec2 findInletSpawn(float seed) {
+  float yr = hash(vec2(seed * 1.1, uTime * 0.173));
+  float xr = hash(vec2(seed * 1.7 + 0.3, uTime * 0.089));
+  float yMin = uInletYRange.x / uRes.y;
+  float yMax = uInletYRange.y / uRes.y;
+  float margin = 0.02;
+  float y = mix(yMin + margin * (yMax - yMin),
+                yMax - margin * (yMax - yMin), yr);
+  float x = 0.005 + xr * 0.015;
+  return vec2(x, y);
+}
+
+void main() {
+  vec4 p = texture(uParticles, vUV);
+  vec2 pos = p.xy;
+  float age = p.z;
+  float state_ = p.w;
+
+  if (state_ < 0.5) {
+    age -= 1.0 / 60.0;
+    if (age <= 0.0) {
+      float newSeed = hash(vec2(vUV.x * 71.3 + vUV.y * 29.7, uTime * 1.11));
+      vec2 newPos = findInletSpawn(newSeed);
+      outP = vec4(newPos, 0.0, 0.5 + newSeed * 0.5);
+      return;
+    }
+    outP = vec4(pos, age, 0.0);
+    return;
+  }
+
+  vec4 m = texture(uMacro, pos);
+  vec2 v = vec2(m.r, m.g);
+  float ct = m.a;
+
+  bool destroy = false;
+  if (pos.x < 0.001 || pos.x > 0.999 || pos.y < 0.001 || pos.y > 0.999) destroy = true;
+  if (ct > 0.5 && ct < 1.5) destroy = true;
+  if (ct > 2.5 && ct < 3.5) destroy = true;
+  if (length(v) < 1e-5 && age > 1.2) destroy = true;
+
+  if (destroy) {
+    float delay = 0.1 + hash(vec2(state_, uTime)) * 0.7;
+    outP = vec4(vec2(-10.0), delay, 0.0);
+    return;
+  }
+
+  pos += v * uDt;
+  age += 1.0 / 60.0;
+  outP = vec4(pos, age, state_);
+}`;
+
+const VS_PART = `#version 300 es
+uniform sampler2D uParticles;
+uniform float uNside;
+out float vAge;
+out float vActive;
+out float vSpeed;
+uniform sampler2D uMacro;
+void main() {
+  int id = gl_VertexID;
+  int nx = int(uNside);
+  int x = id - (id / nx) * nx;
+  int y = id / nx;
+  vec2 uvPart = (vec2(float(x), float(y)) + 0.5) / uNside;
+  vec4 p = texture(uParticles, uvPart);
+  vec2 pos = p.xy;
+  vAge = p.z;
+  vActive = p.w;
+  if (vActive < 0.5) {
+    gl_Position = vec4(-10.0, -10.0, 0.0, 1.0);
+    gl_PointSize = 0.0;
+    vSpeed = 0.0;
+    return;
+  }
+  vec4 m = texture(uMacro, pos);
+  vSpeed = length(vec2(m.r, m.g));
+  gl_Position = vec4(pos * 2.0 - 1.0, 0.0, 1.0);
+  gl_PointSize = 2.6;
+}`;
+const FS_PARTREND = `#version 300 es
+precision highp float;
+in float vAge;
+in float vActive;
+in float vSpeed;
+out vec4 outC;
+void main() {
+  if (vActive < 0.5) { discard; }
+  vec2 d = gl_PointCoord - 0.5;
+  float r2 = dot(d, d);
+  if (r2 > 0.25) discard;
+  float fade = smoothstep(0.0, 0.1, vAge);
+  float soft = smoothstep(0.25, 0.0, r2);
+  float spdFade = smoothstep(0.0, 5e-4, vSpeed) * 0.5 + 0.5;
+  float bright = 0.95 * fade * soft * spdFade;
+  outC = vec4(vec3(bright * 0.88, bright * 1.0, bright * 1.0), 1.0);
+}`;
+
+/* ---------- Programs ---------- */
+const progInit   = link(VS, FS_INIT);
+const progStep   = link(VS, FS_STEP);
+const progMacro  = link(VS, FS_MACRO);
+const progRender = link(VS, FS_RENDER);
+const progPart   = link(VS, FS_PART);
+const progPartRender = link(VS_PART, FS_PARTREND);
+const progStream = link(VS, FS_STREAM_ADVECT);
+
+const uInit = cacheUniforms(progInit, ['uGeom', 'uUlat']);
+const uStep = cacheUniforms(progStep, [
+  'uFA','uFB','uFC','uGeom','uRes','uTau','uGx','uGy','uUlat',
+  'uRhoIn','uRhoOut','uNonNewt','uInletType','uOutletType','uInletProfile','uInletYRange',
+  'uMu0','uMuI','uLam','uN','uA']);
+const uMacro = cacheUniforms(progMacro, ['uFA','uFB','uFC','uGeom','uRes']);
+const uRender = cacheUniforms(progRender, [
+  'uMacro','uGeom','uStreamTex','uRes','uField','uVmin','uVmax',
+  'uXform','uLinthresh','uShowStream','uUScale','uPScale','uTime']);
+const uPart = cacheUniforms(progPart, ['uParticles','uMacro','uGeom','uRes','uDt','uTime','uInletYRange']);
+const uPartR = cacheUniforms(progPartRender, ['uParticles','uMacro','uNside']);
+const uStream = cacheUniforms(progStream, ['uNoise','uMacro','uRes','uDt','uTime','uInjectProb','uDecay']);
+
+/* ---------- Textures & FBOs ---------- */
+function mkTex(w, h, filter) {
+  const t = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, w, h, 0, gl.RGBA, gl.FLOAT, null);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return t;
+}
+function mkFBO(texArr) {
+  const fb = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+  for (let i = 0; i < texArr.length; ++i) {
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, texArr[i], 0);
+  }
+  gl.drawBuffers(texArr.map((_, i) => gl.COLOR_ATTACHMENT0 + i));
+  if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+    console.warn('FBO incomplete');
+  return fb;
+}
+
+let fA, fB, fC, fboStep, texGeom, texMacro, fboMacro;
+let texPart, fboPart;
+let texStream, fboStream;
+let macroReadBuf = null;
+let pp = 0, pPart = 0, pStream = 0, stepN = 0, paused = false;
+const linearFilt = extLin ? gl.LINEAR : gl.NEAREST;
+
+const PSIDE = 60;
+const NPART = PSIDE * PSIDE;
+const STREAM_W = 900, STREAM_H = 360;
+let streamTexAllocated = false;
+
+function allocStreamTextures() {
+  if (streamTexAllocated) return;
+  texStream = [mkTex(STREAM_W, STREAM_H, linearFilt), mkTex(STREAM_W, STREAM_H, linearFilt)];
+  fboStream = [mkFBO([texStream[0]]), mkFBO([texStream[1]])];
+  for (const f of fboStream) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.viewport(0, 0, STREAM_W, STREAM_H);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  streamTexAllocated = true;
+}
+
+function allocTextures() {
+  fA = [mkTex(NX, NY, gl.NEAREST), mkTex(NX, NY, gl.NEAREST)];
+  fB = [mkTex(NX, NY, gl.NEAREST), mkTex(NX, NY, gl.NEAREST)];
+  fC = [mkTex(NX, NY, gl.NEAREST), mkTex(NX, NY, gl.NEAREST)];
+  fboStep = [mkFBO([fA[0], fB[0], fC[0]]), mkFBO([fA[1], fB[1], fC[1]])];
+  texGeom = mkTex(NX, NY, gl.NEAREST);
+  texMacro = mkTex(NX, NY, linearFilt);
+  fboMacro = mkFBO([texMacro]);
+  texPart = [mkTex(PSIDE, PSIDE, gl.NEAREST), mkTex(PSIDE, PSIDE, gl.NEAREST)];
+  fboPart = [mkFBO([texPart[0]]), mkFBO([texPart[1]])];
+  seedParticles();
+  macroReadBuf = new Float32Array(NX * NY * 4);
+  allocStreamTextures();
+}
+function seedParticles() {
+  const init = new Float32Array(PSIDE * PSIDE * 4);
+  for (let i = 0; i < NPART; ++i) {
+    init[i * 4    ] = -10.0;
+    init[i * 4 + 1] = -10.0;
+    init[i * 4 + 2] = Math.random() * 2.0;
+    init[i * 4 + 3] = 0.0;
+  }
+  for (const t of texPart) {
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, PSIDE, PSIDE, 0, gl.RGBA, gl.FLOAT, init);
+  }
+  pPart = 0;
+}
+function clearStream() {
+  if (!streamTexAllocated) return;
+  for (const f of fboStream) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.viewport(0, 0, STREAM_W, STREAM_H);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  pStream = 0;
+}
+
+/* ---------- Geometry ---------- */
+function setCell(x, y, t) {
+  if (x < 0 || x >= NX || y < 0 || y >= NY) return;
+  geomData[(y * NX + x) * 4] = t;
+}
+function getCell(x, y) {
+  if (x < 0 || x >= NX || y < 0 || y >= NY) return -1;
+  return geomData[(y * NX + x) * 4];
+}
+function uploadGeomFull() {
+  gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, NX, NY, 0, gl.RGBA, gl.FLOAT, geomData);
+}
+function uploadGeomPatch(x0, y0, x1, y1) {
+  x0 = Math.max(0, x0); y0 = Math.max(0, y0);
+  x1 = Math.min(NX - 1, x1); y1 = Math.min(NY - 1, y1);
+  const pw = x1 - x0 + 1, ph = y1 - y0 + 1;
+  if (pw <= 0 || ph <= 0) return;
+  const buf = new Float32Array(pw * ph * 4);
+  for (let y = 0; y < ph; ++y) {
+    for (let x = 0; x < pw; ++x) {
+      const srcI = ((y0 + y) * NX + (x0 + x)) * 4;
+      const dstI = (y * pw + x) * 4;
+      buf[dstI] = geomData[srcI];
+    }
+  }
+  gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.texSubImage2D(gl.TEXTURE_2D, 0, x0, y0, pw, ph, gl.RGBA, gl.FLOAT, buf);
+}
+function clearGeom() { geomData.fill(0); }
+
+function baseChannel() {
+  clearGeom();
+  for (let x = 0; x < NX; ++x) {
+    setCell(x, 0, CELL_WALL); setCell(x, 1, CELL_WALL);
+    setCell(x, NY - 1, CELL_WALL); setCell(x, NY - 2, CELL_WALL);
+  }
+}
+function setInletsOutlets() {
+  for (let y = 0; y < NY; ++y) {
+    if (getCell(2, y) === CELL_FLUID) setCell(0, y, CELL_INLET);
+    else                              setCell(0, y, CELL_WALL);
+    if (getCell(NX - 3, y) === CELL_FLUID) setCell(NX - 1, y, CELL_OUTLET);
+    else                                   setCell(NX - 1, y, CELL_WALL);
+  }
+}
+function drawDisk(cx, cy, r, type) {
+  const r2 = r * r;
+  for (let y = Math.max(0, cy - r); y <= Math.min(NY - 1, cy + r); ++y)
+    for (let x = Math.max(0, cx - r); x <= Math.min(NX - 1, cx + r); ++x) {
+      const dx = x - cx, dy = y - cy;
+      if (dx*dx + dy*dy <= r2) setCell(x, y, type);
+    }
+}
+function drawBox(x0, y0, x1, y1, type) {
+  for (let y = y0; y <= y1; ++y)
+    for (let x = x0; x <= x1; ++x) setCell(x, y, type);
+}
+function fillAllWalls() {
+  for (let x = 0; x < NX; ++x)
+    for (let y = 0; y < NY; ++y) setCell(x, y, CELL_WALL);
+}
+
+function loadPreset(name) {
+  switch (name) {
+    case 'channel': baseChannel(); break;
+    case 'sphere':
+      baseChannel();
+      drawDisk(Math.floor(NX * 0.32), Math.floor(NY * 0.5), Math.floor(NY * 0.18), CELL_WALL);
+      break;
+    case 'cube': {
+      baseChannel();
+      const cx = Math.floor(NX * 0.32), cy = Math.floor(NY * 0.5), s = Math.floor(NY * 0.30);
+      drawBox(cx - Math.floor(s / 2), cy - Math.floor(s / 2), cx + Math.floor(s / 2), cy + Math.floor(s / 2), CELL_WALL);
+      break;
+    }
+    case 'stenosis': {
+      baseChannel();
+      const xc = Math.floor(NX * 0.42), hw = Math.floor(NY * 0.5), occl = 0.50;
+      for (let dx = -hw; dx <= hw; ++dx) {
+        const x = xc + dx;
+        if (x < 2 || x >= NX - 2) continue;
+        const prof = 0.5 * (1.0 + Math.cos(Math.PI * dx / hw));
+        const th = Math.floor(prof * NY * occl * 0.5);
+        for (let k = 0; k < th; ++k) {
+          setCell(x, 2 + k, CELL_WALL);
+          setCell(x, NY - 3 - k, CELL_WALL);
+        }
+      }
+      break;
+    }
+    case 'plaque': {
+      baseChannel();
+      const xc = Math.floor(NX * 0.40), hw = Math.floor(NY * 0.65), peak = Math.floor(NY * 0.40);
+      for (let dx = -hw; dx <= hw; ++dx) {
+        const x = xc + dx;
+        if (x < 2 || x >= NX - 2) continue;
+        let prof;
+        if (dx < 0) prof = Math.pow(1.0 - Math.abs(dx) / hw, 1.2);
+        else prof = Math.pow(Math.max(0, 1.0 - dx / hw), 2.2);
+        const th = Math.floor(prof * peak);
+        for (let k = 0; k < th; ++k) setCell(x, 2 + k, CELL_WALL);
+      }
+      break;
+    }
+    case 'aneurysm': {
+      clearGeom();
+      const topEdge = Math.floor(NY * 0.32), botEdge = Math.floor(NY * 0.82);
+      for (let x = 0; x < NX; ++x)
+        for (let y = 0; y < NY; ++y) {
+          if (y < topEdge || y > botEdge) setCell(x, y, CELL_WALL);
+          else setCell(x, y, CELL_FLUID);
+        }
+      const xc = Math.floor(NX * 0.50), rAn = Math.floor(NY * 0.22);
+      for (let x = xc - rAn; x <= xc + rAn; ++x)
+        for (let y = Math.max(0, topEdge - rAn); y <= topEdge; ++y) {
+          const dx = x - xc, dy = y - topEdge;
+          if (dx * dx + dy * dy <= rAn * rAn) setCell(x, y, CELL_FLUID);
+        }
+      break;
+    }
+    case 'bifurcation': {
+      fillAllWalls();
+      const splitX = Math.floor(NX * 0.38);
+      const parentHalf = Math.floor(NY * 0.14), dauHalf = Math.floor(NY * 0.09);
+      const parentY = Math.floor(NY * 0.50);
+      const dauTopY = Math.floor(NY * 0.25), dauBotY = Math.floor(NY * 0.75);
+      for (let x = 0; x < NX; ++x) {
+        if (x < splitX) {
+          for (let y = parentY - parentHalf; y <= parentY + parentHalf; ++y) setCell(x, y, CELL_FLUID);
+        } else {
+          const t = (x - splitX) / Math.max(1, NX - 1 - splitX);
+          const topC = parentY + t * (dauTopY - parentY);
+          const botC = parentY + t * (dauBotY - parentY);
+          const hw = parentHalf + t * (dauHalf - parentHalf);
+          for (let y = Math.floor(topC - hw); y <= Math.ceil(topC + hw); ++y) setCell(x, y, CELL_FLUID);
+          for (let y = Math.floor(botC - hw); y <= Math.ceil(botC + hw); ++y) setCell(x, y, CELL_FLUID);
+        }
+      }
+      break;
+    }
+    case 'trifurcation': {
+      fillAllWalls();
+      const splitX = Math.floor(NX * 0.32);
+      const parentHalf = Math.floor(NY * 0.16), dauHalf = Math.floor(NY * 0.07);
+      const parentY = Math.floor(NY * 0.50);
+      const centres = [0.18, 0.50, 0.82].map(f => Math.floor(NY * f));
+      for (let x = 0; x < NX; ++x) {
+        if (x < splitX) {
+          for (let y = parentY - parentHalf; y <= parentY + parentHalf; ++y) setCell(x, y, CELL_FLUID);
+        } else {
+          const t = (x - splitX) / Math.max(1, NX - 1 - splitX);
+          const hw = parentHalf + t * (dauHalf - parentHalf);
+          for (const c0 of centres) {
+            const cy = parentY + t * (c0 - parentY);
+            for (let y = Math.floor(cy - hw); y <= Math.ceil(cy + hw); ++y) setCell(x, y, CELL_FLUID);
+          }
+        }
+      }
+      break;
+    }
+  }
+  setInletsOutlets();
+  computeInletYRange();
+  uploadGeomFull();
+  resetSim();
+  resetSteady();
+  forceDiagnosticsUpdate();
+}
+
+function computeInletYRange() {
+  let yMin = NY, yMax = -1;
+  for (let y = 0; y < NY; ++y) {
+    if (getCell(0, y) === CELL_INLET) {
+      if (y < yMin) yMin = y;
+      if (y > yMax) yMax = y;
+    }
+  }
+  if (yMax < yMin) { yMin = 0; yMax = NY - 1; }
+  state.inletYMin = yMin;
+  state.inletYMax = yMax;
+}
+
+/* ---------- Parameter updates ---------- */
+function updateLatticeParams() {
+  DX = L_PHYS / NY;
+  const ulatRaw = U_LAT_MAX * (0.3 / Math.max(state.uin, 0.05));
+  state.uLat = Math.max(U_LAT_MIN, Math.min(U_LAT_MAX, ulatRaw));
+  const dt = state.uLat * DX / Math.max(state.uin, 1e-4);
+  const mu_eff = state.muN;
+  const nu = mu_eff / RHO_BLOOD;
+  const nu_lat = nu * dt / (DX * DX);
+  state.tau = Math.max(0.55, Math.min(2.5, 0.5 + 3 * nu_lat));
+  state.dt = dt;
+  state.uScale = DX / dt;
+  state.pScale = RHO_BLOOD * (DX / dt) * (DX / dt) / 3.0;
+  state.Re = state.uin * L_PHYS / nu;
+}
+
+/* ---------- Simulation passes ---------- */
+function resetSim() {
+  stepN = 0;
+  updateLatticeParams();
+  gl.viewport(0, 0, NX, NY);
+  bindQuad(progInit);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboStep[0]);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.uniform1i(uInit.uGeom, 0);
+  gl.uniform1f(uInit.uUlat, state.uLat);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboStep[1]);
+  gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboMacro);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  pp = 0;
+  lastAutoReset = performance.now();
+  divergenceStrikes = 0;
+}
+
+function setStepUniforms() {
+  gl.useProgram(progStep);
+  gl.uniform2f(uStep.uRes, NX, NY);
+  gl.uniform1f(uStep.uTau, state.tau);
+  gl.uniform1f(uStep.uUlat, state.uLat);
+  let gx = 0, gy = 0;
+  if (state.gravity) {
+    const g = 9.81;
+    const gLat = g * state.dt * state.dt / DX;
+    gy = -gLat;
+  }
+  gl.uniform1f(uStep.uGx, gx);
+  gl.uniform1f(uStep.uGy, gy);
+
+  const P_MMHG_TO_PA = 133.322;
+  let rhoIn = 1.0, rhoOut = 1.0;
+  pInClamped = false;
+  pOutClamped = false;
+  const bothP = state.inletType === 'pressure' && state.outletType === 'pressure';
+  const inP   = state.inletType === 'pressure';
+  const outP  = state.outletType === 'pressure';
+  if (bothP) {
+    const dP = state.pIn_mmHg - state.pOut_mmHg;
+    const tgt = (dP * P_MMHG_TO_PA) / Math.max(state.pScale, 1e-9);
+    const dR  = Math.max(-0.10, Math.min(0.10, tgt));
+    if (Math.abs(dR - tgt) > 1e-4) { pInClamped = true; pOutClamped = true; }
+    rhoIn = 1.0 + dR;
+    rhoOut = 1.0;
+  } else if (inP) {
+    const tgt = (state.pIn_mmHg * P_MMHG_TO_PA) / Math.max(state.pScale, 1e-9);
+    const dR  = Math.max(-0.10, Math.min(0.10, tgt));
+    if (Math.abs(dR - tgt) > 1e-4) pInClamped = true;
+    rhoIn = 1.0 + dR;
+  } else if (outP) {
+    rhoOut = 1.0;
+  }
+  gl.uniform1f(uStep.uRhoIn, rhoIn);
+  gl.uniform1f(uStep.uRhoOut, rhoOut);
+
+  gl.uniform1i(uStep.uNonNewt, state.viscModel === 'carreau' ? 1 : 0);
+  gl.uniform1i(uStep.uInletType, state.inletType === 'velocity' ? 0 : 1);
+  gl.uniform1i(uStep.uOutletType, state.outletType === 'zerograd' ? 0 : 1);
+  gl.uniform1i(uStep.uInletProfile, state.inletProfile === 'parabolic' ? 1 : 0);
+  gl.uniform2f(uStep.uInletYRange, state.inletYMin, state.inletYMax);
+
+  const mulat = muP => muP / RHO_BLOOD * state.dt / (DX * DX);
+  gl.uniform1f(uStep.uMu0, mulat(state.cy_mu0));
+  gl.uniform1f(uStep.uMuI, mulat(state.cy_muI));
+  gl.uniform1f(uStep.uLam, state.cy_lam / state.dt);
+  gl.uniform1f(uStep.uN, state.cy_n);
+  gl.uniform1f(uStep.uA, state.cy_a);
+}
+function stepOnce() {
+  bindQuad(progStep);
+  gl.viewport(0, 0, NX, NY);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboStep[1 - pp]);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, fA[pp]);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, fB[pp]);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, fC[pp]);
+  gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.uniform1i(uStep.uFA, 0);
+  gl.uniform1i(uStep.uFB, 1);
+  gl.uniform1i(uStep.uFC, 2);
+  gl.uniform1i(uStep.uGeom, 3);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  pp = 1 - pp;
+  stepN++;
+}
+function computeMacro() {
+  bindQuad(progMacro);
+  gl.viewport(0, 0, NX, NY);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboMacro);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, fA[pp]);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, fB[pp]);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, fC[pp]);
+  gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.uniform1i(uMacro.uFA, 0);
+  gl.uniform1i(uMacro.uFB, 1);
+  gl.uniform1i(uMacro.uFC, 2);
+  gl.uniform1i(uMacro.uGeom, 3);
+  gl.uniform2f(uMacro.uRes, NX, NY);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
+
+let vmin = 0, vmax = 1;
+let trueMin = 0, trueMax = 1;
+let p1 = 0, p5 = 0, p95 = 1, p99 = 1;
+
+const DIAG_EVERY_STEADY = 120;
+const DIAG_EVERY_STARTUP = 12;
+const STARTUP_DIAGS = 20;
+let diagFrames = 0;
+let diagsRun = 0;
+let divergenceStrikes = 0;
+let consecutiveDivergences = 0;
+let lastAutoReset = 0;
+let keHistory = [];
+const KE_HISTORY_LEN = 6;
+let steadyState = false;
+
+function resetSteady() {
+  steadyState = false;
+  keHistory = [];
+  diagsRun = 0;
+  diagFrames = 0;
+  divergenceStrikes = 0;
+}
+function diagInterval() {
+  return diagsRun < STARTUP_DIAGS ? DIAG_EVERY_STARTUP : DIAG_EVERY_STEADY;
+}
+
+function forceDiagnosticsUpdate() {
+  diagFrames = diagInterval();
+  diagsRun = 0;
+}
+
+function readMacroField() {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboMacro);
+  gl.readPixels(0, 0, NX, NY, gl.RGBA, gl.FLOAT, macroReadBuf);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
+function runDiagnostics() {
+  readMacroField();
+  const fluidVals = [];
+  let ke = 0;
+  let badCells = 0;
+  let totalFluid = 0;
+  for (let j = 0; j < NY; ++j) {
+    for (let i = 0; i < NX; ++i) {
+      const k = (j * NX + i) * 4;
+      const ux = macroReadBuf[k], uy = macroReadBuf[k + 1];
+      const rho = macroReadBuf[k + 2], ct = macroReadBuf[k + 3];
+      if (ct < 0.5) {
+        totalFluid++;
+        if (!isFinite(ux) || !isFinite(uy) || !isFinite(rho) ||
+            rho < 0.1 || rho > 5.0) {
+          badCells++;
+          continue;
+        }
+        const sp2 = ux * ux + uy * uy;
+        ke += sp2;
+        let val;
+        if (state.field === 'vel') {
+          val = Math.sqrt(sp2) * state.uScale;
+        } else if (state.field === 'pres') {
+          val = (rho - 1.0) * state.pScale;
+        } else {
+          const iR = Math.min(NX - 1, i + 1), iL = Math.max(0, i - 1);
+          const jT = Math.min(NY - 1, j + 1), jB = Math.max(0, j - 1);
+          const kR = (j * NX + iR) * 4, kL = (j * NX + iL) * 4;
+          const kT = (jT * NX + i) * 4, kB = (jB * NX + i) * 4;
+          const dvdx = (macroReadBuf[kR + 1] - macroReadBuf[kL + 1]) * 0.5;
+          const dudy = (macroReadBuf[kT] - macroReadBuf[kB]) * 0.5;
+          val = (dvdx - dudy) * state.uScale * NX;
+        }
+        fluidVals.push(val);
+      }
+    }
+  }
+
+  const now = performance.now();
+  const settleGrace = 5000;
+  const settled = (now - lastAutoReset) > settleGrace && stepN > 120;
+  const badFraction = totalFluid > 0 ? badCells / totalFluid : 0;
+  const minBadCells = 50;
+  const badThreshold = 0.05;
+  if (settled && state.autoResetOnDiverge && badFraction > badThreshold && badCells > minBadCells) {
+    consecutiveDivergences++;
+    if (consecutiveDivergences >= 2) {
+      state.autoResetOnDiverge = false;
+      $('chkAR').checked = false;
+      console.error(`LBM: ${consecutiveDivergences} consecutive divergences. Disabling auto-reset.`);
+      const stat = $('simStat');
+      stat.textContent = '● unrecoverable — auto-reset disabled';
+      stat.className = 'sim-run paused';
+      stat.style.color = '#ef4444';
+      paused = true;
+      $('btnPlay').textContent = '▶ Resume';
+      return;
+    }
+    console.warn(`LBM instability: ${badCells} bad cells (${(badFraction*100).toFixed(2)}%). Resetting.`);
+    const stat = $('simStat');
+    stat.textContent = '● instability — resetting';
+    stat.className = 'sim-run paused';
+    stat.style.color = '#fbbf24';
+    resetSim();
+    resetSteady();
+    seedParticles();
+    clearStream();
+    lastAutoReset = now;
+    setTimeout(() => {
+      stat.textContent = paused ? '● paused' : '● running';
+      stat.className = paused ? 'sim-run paused' : 'sim-run';
+      stat.style.color = '';
+    }, 5000);
+    return;
+  }
+  if (!badCells && settled) consecutiveDivergences = 0;
+
+  if (fluidVals.length < 10) return;
+
+  fluidVals.sort((a, b) => a - b);
+  const n = fluidVals.length;
+  trueMin = fluidVals[0];
+  trueMax = fluidVals[n - 1];
+  p1  = fluidVals[Math.max(0, Math.floor(n * 0.01))];
+  p5  = fluidVals[Math.max(0, Math.floor(n * 0.05))];
+  p95 = fluidVals[Math.min(n - 1, Math.floor(n * 0.95))];
+  p99 = fluidVals[Math.min(n - 1, Math.floor(n * 0.99))];
+  applyScaleMode();
+
+  keHistory.push(ke);
+  if (keHistory.length > KE_HISTORY_LEN) keHistory.shift();
+  if (state.detectSteady && keHistory.length === KE_HISTORY_LEN) {
+    const mean = keHistory.reduce((s, v) => s + v, 0) / keHistory.length;
+    let maxDev = 0;
+    for (const v of keHistory) maxDev = Math.max(maxDev, Math.abs(v - mean));
+    const rel = maxDev / Math.max(mean, 1e-9);
+    if (rel < 5e-3 && stepN > 200) {
+      steadyState = true;
+      paused = true;
+      $('btnPlay').textContent = '▶ Resume';
+      const stat = $('simStat');
+      stat.textContent = '● steady state (solver stopped)';
+      stat.className = 'sim-run paused';
+      stat.style.color = '#4ade80';
+    }
+  }
+  diagsRun++;
+}
+
+function applyScaleMode() {
+  if (state.scaleMode === 'manual') {
+    vmin = state.manualMin;
+    vmax = state.manualMax;
+    return;
+  }
+  let lo, hi;
+  if (state.scaleMode === 'p1-99')     { lo = p1;       hi = p99;     }
+  else if (state.scaleMode === 'true') { lo = trueMin;  hi = trueMax; }
+  else                                 { lo = p5;       hi = p95;     }
+
+  if (state.field === 'vel') {
+    const peak = Math.max(trueMax, hi, state.uin * 1.5, 1e-3);
+    vmax = peak;
+    if (state.xform === 'log') {
+      vmin = Math.max(vmax * 1e-4, 1e-6);
+    } else {
+      vmin = 0;
+    }
+  } else if (state.field === 'pres') {
+    let mn = lo, mx = hi;
+    if (mn < 0 && mx > 0) {
+      const m = Math.max(Math.abs(mn), Math.abs(mx));
+      mn = -m; mx = m;
+    }
+    if (Math.abs(mx - mn) < 1e-6) mx = mn + 1;
+    vmin = mn; vmax = mx;
+  } else {
+    const m = Math.max(Math.abs(lo), Math.abs(hi), 1e-3);
+    vmin = -m; vmax = m;
+  }
+}
+
+/* ---------- Particle / Stream ---------- */
+function advanceParticles() {
+  bindQuad(progPart);
+  gl.viewport(0, 0, PSIDE, PSIDE);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboPart[1 - pPart]);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texPart[pPart]);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texMacro);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.uniform1i(uPart.uParticles, 0);
+  gl.uniform1i(uPart.uMacro, 1);
+  gl.uniform1i(uPart.uGeom, 2);
+  gl.uniform2f(uPart.uRes, NX, NY);
+  gl.uniform2f(uPart.uInletYRange, state.inletYMin, state.inletYMax);
+  const visSpeed = 4.0 * state.stepsPerFrame;
+  gl.uniform1f(uPart.uDt, visSpeed / NX);
+  gl.uniform1f(uPart.uTime, performance.now() * 0.001);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  pPart = 1 - pPart;
+}
+function advanceStream() {
+  bindQuad(progStream);
+  gl.viewport(0, 0, STREAM_W, STREAM_H);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fboStream[1 - pStream]);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texStream[pStream]);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texMacro);
+  gl.uniform1i(uStream.uNoise, 0);
+  gl.uniform1i(uStream.uMacro, 1);
+  gl.uniform2f(uStream.uRes, STREAM_W, STREAM_H);
+  gl.uniform1f(uStream.uDt, 30.0 / NX);
+  gl.uniform1f(uStream.uTime, performance.now() * 0.001);
+  gl.uniform1f(uStream.uInjectProb, 0.007);
+  gl.uniform1f(uStream.uDecay, 0.982);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  pStream = 1 - pStream;
+}
+function renderParticles() {
+  gl.useProgram(progPartRender);
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  const loc = gl.getAttribLocation(progPartRender, 'aP');
+  if (loc >= 0) {
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  }
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texPart[pPart]);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texMacro);
+  gl.uniform1i(uPartR.uParticles, 0);
+  gl.uniform1i(uPartR.uMacro, 1);
+  gl.uniform1f(uPartR.uNside, PSIDE);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.drawArrays(gl.POINTS, 0, NPART);
   gl.disable(gl.BLEND);
-  vel  = mkDFBO(SIM_W,SIM_H);
-  pres = mkDFBO(SIM_W,SIM_H);
-  div  = mkFBO(SIM_W,SIM_H);
-  curl = mkFBO(SIM_W,SIM_H);
-  dye  = mkDFBO(DYE_W,DYE_H);
-  /* Wall mask: RGBA8, NX×NY, updated from CPU each time walls change */
-  wallTex = mkMaskTex(NX,NY);
-  wallDat = new Uint8Array(NX*NY*4);
-  uploadWall();
 }
 
-function uploadWall(){
-  for(let k=0;k<NX*NY;k++){
-    const p=k*4,w=wallCPU[k]?255:0;
-    wallDat[p]=w;wallDat[p+1]=w;wallDat[p+2]=w;wallDat[p+3]=255;}
-  gl.bindTexture(gl.TEXTURE_2D,wallTex);
-  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,NX,NY,0,gl.RGBA,gl.UNSIGNED_BYTE,wallDat);}
-
-function clearDye(){
-  gl.disable(gl.BLEND);
-  blit(dye.read,true);blit(dye.write,true);}
-
-/* ═══════════════ PHYSICS STEP ═════════════════════════════ */
-
-function physicsStep(dt){
-  gl.disable(gl.BLEND);
-
-  /* 1. Curl (vorticity scalar field) */
-  useP(pCurl);
-  u2f(pCurl,'tS',vel.tsx,vel.tsy);
-  bnd(0,vel.read.tex);u1i(pCurl,'uVel',0);
-  blit(curl);
-
-  /* 2. Vorticity confinement — amplifies vortices */
-  useP(pVort);
-  u2f(pVort,'tS',vel.tsx,vel.tsy);
-  bnd(0,vel.read.tex);u1i(pVort,'uVel',0);
-  bnd(1,curl.tex);    u1i(pVort,'uCurl',1);
-  u1f(pVort,'curl',CURL_CONF);
-  u1f(pVort,'dt',dt);
-  blit(vel.write);vel.swap();
-
-  /* 3. Divergence */
-  useP(pDiv);
-  u2f(pDiv,'tS',vel.tsx,vel.tsy);
-  bnd(0,vel.read.tex);u1i(pDiv,'uVel',0);
-  blit(div);
-
-  /* 4. Clear pressure with damping (Pavel's trick) */
-  useP(pClr);
-  bnd(0,pres.read.tex);u1i(pClr,'uT',0);
-  u1f(pClr,'val',0.85);
-  blit(pres.write);pres.swap();
-
-  /* 5. Pressure Jacobi iterations */
-  useP(pPres);
-  u2f(pPres,'tS',pres.tsx,pres.tsy);
-  bnd(1,div.tex);u1i(pPres,'uDiv',1);
-  for(let i=0;i<PRESSURE_ITER;i++){
-    bnd(0,pres.read.tex);u1i(pPres,'uP',0);
-    blit(pres.write);pres.swap();}
-
-  /* 6. Gradient subtract → divergence-free velocity */
-  useP(pGrad);
-  u2f(pGrad,'tS',vel.tsx,vel.tsy);
-  bnd(0,pres.read.tex);u1i(pGrad,'uP',0);
-  bnd(1,vel.read.tex); u1i(pGrad,'uVel',1);
-  blit(vel.write);vel.swap();
-
-  /* 7. Advect velocity */
-  useP(pAdv);
-  u2f(pAdv,'tS',vel.tsx,vel.tsy);
-  u2f(pAdv,'dS',vel.tsx,vel.tsy);
-  u1f(pAdv,'dt',dt);u1f(pAdv,'diss',1-VEL_DISS);
-  bnd(0,vel.read.tex);u1i(pAdv,'uVel',0);
-  bnd(1,vel.read.tex);u1i(pAdv,'uSrc',1);
-  blit(vel.write);vel.swap();
-
-  /* 8. Apply wall BCs — zero velocity inside solid cells */
-  useP(pWall);
-  bnd(0,vel.read.tex);u1i(pWall,'uSrc',0);
-  bnd(1,wallTex);     u1i(pWall,'uWall',1);
-  u1f(pWall,'zero',0.);
-  blit(vel.write);vel.swap();
-
-  /* 9. Inject inlet velocity (horizontal flow from left) */
-  injectInlet(dt);}
-
-/* Inject inlet velocity using splats along left edge */
-function injectInlet(dt){
-  const speed = gM() * 480.0;  /* scale with Mach: M=0.6 → ~288 sim units */
-  const ar = DYE_W / DYE_H;
-  const r  = 0.00012;          /* splat radius (narrow) */
-  useP(pSplat);
-  u1f(pSplat,'ar',SIM_W/SIM_H);
-  u1f(pSplat,'r',r);
-  /* Inject 8 overlapping splats to cover full height */
-  for(let j=0;j<8;j++){
-    const y=(j+0.5)/8;
-    bnd(0,vel.read.tex);u1i(pSplat,'uT',0);
-    u2f(pSplat,'pt',INLET_W_UV*.5,y);
-    u3f(pSplat,'col',speed,0.,0.);
-    blit(vel.write);vel.swap();}}
-
-/* ═══════════════ DYE STEP ═════════════════════════════════ */
-
-function dyeStep(dt){
-  gl.disable(gl.BLEND);
-
-  /* Advect dye */
-  useP(pAdv);
-  u2f(pAdv,'tS',vel.tsx,vel.tsy);
-  u2f(pAdv,'dS',dye.tsx,dye.tsy);
-  u1f(pAdv,'dt',dt);u1f(pAdv,'diss',1-DYE_DISS);
-  bnd(0,vel.read.tex);u1i(pAdv,'uVel',0);
-  bnd(1,dye.read.tex);u1i(pAdv,'uSrc',1);
-  blit(dye.write);dye.swap();
-
-  /* Wall BC — zero dye inside walls */
-  useP(pWall);
-  bnd(0,dye.read.tex);u1i(pWall,'uSrc',0);
-  bnd(1,wallTex);     u1i(pWall,'uWall',1);
-  u1f(pWall,'zero',0.);
-  blit(dye.write);dye.swap();
-
-  /* Inject rainbow dye at inlet */
-  if(gTr()){
-    useP(pIDye);
-    bnd(0,dye.read.tex);u1i(pIDye,'uDye',0);
-    u1f(pIDye,'iW',INLET_W_UV);
-    blit(dye.write);dye.swap();}
+function renderToCanvas(time) {
+  bindQuad(progRender);
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, texMacro);
+  gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, texGeom);
+  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, texStream[pStream]);
+  gl.uniform1i(uRender.uMacro, 0);
+  gl.uniform1i(uRender.uGeom, 1);
+  gl.uniform1i(uRender.uStreamTex, 2);
+  gl.uniform2f(uRender.uRes, NX, NY);
+  const fieldIdx = state.field === 'vel' ? 0.0 : state.field === 'pres' ? 1.0 : 2.0;
+  gl.uniform1f(uRender.uField, fieldIdx);
+  gl.uniform1f(uRender.uVmin, vmin);
+  gl.uniform1f(uRender.uVmax, vmax);
+  let xformCode = 0;
+  if (state.xform === 'log') {
+    xformCode = (state.field === 'vel') ? 1 : 2;
+  }
+  gl.uniform1i(uRender.uXform, xformCode);
+  const linthresh = Math.max(1e-6, (Math.abs(vmax) + Math.abs(vmin)) * 0.01);
+  gl.uniform1f(uRender.uLinthresh, linthresh);
+  gl.uniform1f(uRender.uShowStream, state.showStream ? 1.0 : 0.0);
+  gl.uniform1f(uRender.uUScale, state.uScale);
+  gl.uniform1f(uRender.uPScale, state.pScale);
+  gl.uniform1f(uRender.uTime, time * 0.001);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
-/* ═══════════════ DISPLAY ═══════════════════════════════════ */
-
-/* Determine which field texture + mode to use */
-function getFieldFBO(){
-  const m=gF();
-  if(m==='pres') return{fbo:pres.read,mode:1};
-  if(m==='vort') return{fbo:curl,mode:2};
-  /* vel, mach, dens all show velocity magnitude */
-  return{fbo:vel.read,mode:0};
+/* ---------- Colorbar ---------- */
+function drawColorbar() {
+  const w = cbCv.width, h = cbCv.height;
+  cbCtx.clearRect(0, 0, w, h);
+  const grad = cbCtx.createLinearGradient(0, 0, w, 0);
+  if (state.field === 'vort') {
+    for (let s = 0; s <= 20; ++s) {
+      const t = s / 20;
+      let r, g, b;
+      if (t < 0.5) {
+        const u = t * 2;
+        r = Math.round((0.02 + 0.93 * u) * 255);
+        g = Math.round((0.20 + 0.75 * u) * 255);
+        b = Math.round((0.72 + 0.23 * u) * 255);
+      } else {
+        const u = (t - 0.5) * 2;
+        r = Math.round((0.95 - 0.19 * u) * 255);
+        g = Math.round((0.95 - 0.93 * u) * 255);
+        b = Math.round((0.95 - 0.93 * u) * 255);
+      }
+      grad.addColorStop(t, `rgb(${r},${g},${b})`);
+    }
+  } else {
+    for (let s = 0; s <= 20; ++s) {
+      const t = s / 20;
+      const r = Math.round(Math.max(0, Math.min(1, 1.5 - Math.abs(4 * t - 3))) * 255);
+      const g = Math.round(Math.max(0, Math.min(1, 1.5 - Math.abs(4 * t - 2))) * 255);
+      const b = Math.round(Math.max(0, Math.min(1, 1.5 - Math.abs(4 * t - 1))) * 255);
+      grad.addColorStop(t, `rgb(${r},${g},${b})`);
+    }
+  }
+  cbCtx.fillStyle = grad;
+  cbCtx.fillRect(0, 0, w, h);
 }
 
-/* Auto-scale: read one texel per frame to slowly track the field range */
-let readBuf=null;
-function sampleScale(){
-  if(!gAs()||!scaleOK) return;
-  if(!readBuf) readBuf=new Uint8Array(4);
-  const{fbo,mode}=getFieldFBO();
-  gl.bindFramebuffer(gl.FRAMEBUFFER,fbo.fbo);
-  /* Sample a few positions and get rough idea of magnitude */
-  /* We don't call readPixels (slow) — instead use the tip from field mode */
-  /* Just let dMin/dMax track based on mode heuristics */
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+/* ---------- Status UI ---------- */
+const fmt2 = v => {
+  if (!isFinite(v)) return '—';
+  return v.toFixed(2);
+};
+
+let fpsN = 0, fpsT = 0, fpsV = 0;
+let stepAccum = 0;
+function updateStats() {
+  $('sRe').textContent = state.Re < 1 ? fmt2(state.Re) : Math.round(state.Re);
+  $('sTau').textContent = fmt2(state.tau);
+  $('sSt').textContent = stepN;
+  $('sFPS').textContent = fpsV;
+
+  if (keHistory.length >= 2) {
+    const mean = keHistory.reduce((s, v) => s + v, 0) / keHistory.length;
+    let maxDev = 0;
+    for (const v of keHistory) maxDev = Math.max(maxDev, Math.abs(v - mean));
+    const rel = maxDev / Math.max(mean, 1e-9);
+    $('sRes').textContent = (rel * 100).toFixed(2) + '%';
+  } else {
+    $('sRes').textContent = '—';
+  }
+
+  const lbl = $('cbLo'), hbl = $('cbHi');
+  const tinyTol = 1e-3 * Math.max(Math.abs(vmax - vmin), 1e-6);
+  const showTrue = state.scaleMode !== 'true' && state.scaleMode !== 'manual' &&
+                   (Math.abs(trueMin - vmin) > tinyTol || Math.abs(trueMax - vmax) > tinyTol);
+  if (showTrue) {
+    lbl.textContent = fmt2(vmin) + '  (min ' + fmt2(trueMin) + ')';
+    hbl.textContent = fmt2(vmax) + '  (max ' + fmt2(trueMax) + ')';
+  } else {
+    lbl.textContent = fmt2(vmin);
+    hbl.textContent = fmt2(vmax);
+  }
+  const unit = state.field === 'vel' ? 'm/s' : state.field === 'pres' ? 'Pa' : '1/s';
+  $('cbU').textContent = unit + (state.xform === 'log' ? '  (log)' : '');
+  $('vReHint').textContent = `Re ≈ ${Math.round(state.Re)}`;
+  $('pClampHint').style.display = pOutClamped ? 'inline' : 'none';
+  $('pInClampHint').style.display = pInClamped ? 'inline' : 'none';
 }
 
-let fldLo=0,fldHi=1;
-function updateScale(){
-  const m=gF(),speed=gM()*480.;
-  if(m==='vel'){fldLo=0;fldHi=speed*1.5;}
-  else if(m==='mach'){fldLo=0;fldHi=speed*1.5;}
-  else if(m==='pres'){fldLo=-speed*.4;fldHi=speed*.4;}
-  else if(m==='vort'){fldLo=-speed*.015;fldHi=speed*.015;}
-  else if(m==='dens'){fldLo=0;fldHi=speed*1.5;}
-}
+/* ---------- Main Loop ---------- */
+function frame(time) {
+  if (!paused) {
+    updateLatticeParams();
+    setStepUniforms();
+    for (let k = 0; k < state.stepsPerFrame; ++k) {
+      stepOnce();
+      stepAccum++;
+    }
+  }
+  computeMacro();
 
-function render(){
-  const{fbo,mode}=getFieldFBO();
-  updateScale();
+  if (!paused) {
+    diagFrames++;
+    if (diagFrames >= diagInterval()) {
+      diagFrames = 0;
+      runDiagnostics();
+    }
+    if (state.showParticles) advanceParticles();
+    if (state.showStream)    advanceStream();
+  }
 
-  gl.disable(gl.BLEND);
-  useP(pDisp);
-  bnd(0,dye.read.tex);    u1i(pDisp,'uDye',0);
-  bnd(1,fbo.tex);         u1i(pDisp,'uFld',1);
-  bnd(2,wallTex);         u1i(pDisp,'uWall',2);
-  u1f(pDisp,'uMode',mode);
-  u1f(pDisp,'uLo',fldLo);
-  u1f(pDisp,'uHi',fldHi);
-  u1f(pDisp,'uDye',gTr()?1.:0.);
-  blit(null);
+  renderToCanvas(time);
+  if (state.showParticles) renderParticles();
+  drawColorbar();
 
-  /* Streamlines as white lines overlaid */
-  if(gSL()) drawStreamlines();
-
-  /* Colorbar */
-  const isV=gF()==='vort';
-  const grad=cbCtx.createLinearGradient(0,0,cbCv.width,0);
-  const cm=isV?rdbuRGB:jetRGB;
-  for(let s=0;s<=20;s++){const t=s/20;const[r,g,b]=cm(t);grad.addColorStop(t,`rgb(${r},${g},${b})`);}
-  cbCtx.fillStyle=grad;cbCtx.fillRect(0,0,cbCv.width,cbCv.height);
-
-  /* Colorbar labels */
-  const fmt=v=>v>=10000?v.toExponential(1):v>=100?v.toFixed(0):v>=1?v.toFixed(2):v.toExponential(2);
-  $('cbLo').textContent=fmt(fldLo);$('cbHi').textContent=fmt(fldHi);
-  $('cbU').textContent=({vel:'m/s',pres:'Pa',dens:'kg/m³',mach:'Ma',vort:'1/s'}[gF()]||'');
-  $('sDt').textContent=(0.016).toExponential(2);
-  $('sM').textContent=(gM()).toFixed(2);
-  $('sSt').textContent=stepN;
   fpsN++;
-  const now=performance.now();
-  if(now-fpsT>600){fpsV=Math.round(fpsN*1000/(now-fpsT));fpsN=0;fpsT=now;}
-  $('sFPS').textContent=fpsV;
-  const vh=$('vVel');
-  if(vh) vh.textContent=`≈${(gM()*340).toFixed(0)} m/s`;
+  if (time - fpsT > 500) {
+    const dt = (time - fpsT) / 1000;
+    fpsV = Math.round(fpsN / dt);
+    const mcs = (NX * NY * stepAccum) / dt * 1e-6;
+    $('sMcs').textContent = mcs < 1 ? mcs.toFixed(2) : mcs.toFixed(1);
+    stepAccum = 0;
+    fpsN = 0; fpsT = time;
+    updateStats();
+  }
+  requestAnimationFrame(frame);
 }
 
-/* ═══════════════ CPU STREAMLINES ══════════════════════════ */
-/* We can't easily read velocity from FBO every frame (slow readPixels),
-   so streamlines are computed from the last-known CPU side velocity hint.
-   For now, show static streamline arrows based on inlet direction. */
+/* ---------- User Input ---------- */
+let tool = 'none', drawing = false, brushR = 3, isErasing = false;
+function setTool(t) {
+  tool = t;
+  ['tNone','tWall','tErase'].forEach(id => $(id).classList.remove('on'));
+  if (t === 'none')  { $('tNone').classList.add('on'); $('dhint').classList.remove('on'); }
+  if (t === 'wall')  { $('tWall').classList.add('on'); $('dhint').classList.add('on'); }
+  if (t === 'erase') { $('tErase').classList.add('on'); $('dhint').classList.add('on'); }
+}
 
-let slBuf=null,slTex=null,pSLProg=null;
-/* Actually for streamlines we need the velocity on CPU.
-   We'll defer this — just skip streamlines in pure GPU mode. */
-function drawStreamlines(){ /* TODO: GPU streamline pass */ }
+function canvasToCell(e) {
+  const r = canvas.getBoundingClientRect();
+  const px = (e.clientX - r.left) / r.width;
+  const py = (e.clientY - r.top) / r.height;
+  return { i: Math.round(px * (NX - 1)), j: Math.round((1 - py) * (NY - 1)) };
+}
+function applyBrush(i, j, typ) {
+  const r = brushR, r2 = r * r;
+  let x0 = i - r, y0 = j - r, x1 = i + r, y1 = j + r;
+  for (let dy = -r; dy <= r; ++dy)
+    for (let dx = -r; dx <= r; ++dx) {
+      if (dx*dx + dy*dy > r2 + 0.5) continue;
+      const ci = i + dx, cj = j + dy;
+      if (ci <= 1 || ci >= NX - 2 || cj <= 1 || cj >= NY - 2) continue;
+      setCell(ci, cj, typ);
+    }
+  uploadGeomPatch(x0, y0, x1, y1);
+  forceDiagnosticsUpdate();
+}
 
-/* Colormap CPUs */
-function jetRGB(t){t=Math.max(0,Math.min(1,t));return[
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-3)))*255),
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-2)))*255),
-  Math.round(Math.max(0,Math.min(1,1.5-Math.abs(4*t-1)))*255)];}
-function rdbuRGB(t){t=Math.max(0,Math.min(1,t));if(t<.5){const f=t*2;return[
-  Math.round((.02+.92*f)*255),Math.round((.20+.74*f)*255),Math.round((.72+.22*f)*255)];}
-  const f=(t-.5)*2;return[Math.round((.94-.18*f)*255),Math.round((.94-.92*f)*255),Math.round((.94-.92*f)*255)];}
+canvas.addEventListener('mousedown', e => {
+  if (tool === 'none') return;
+  drawing = true;
+  isErasing = (e.button === 2) || tool === 'erase';
+  const {i, j} = canvasToCell(e);
+  applyBrush(i, j, isErasing ? CELL_FLUID : CELL_WALL);
+});
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  const ind = $('bInd');
+  if (tool !== 'none') {
+    const pxPerCell = r.width / NX;
+    const sz = brushR * 2 * pxPerCell;
+    ind.style.display = 'block';
+    ind.style.width = sz + 'px';
+    ind.style.height = sz + 'px';
+    ind.style.left = e.clientX + 'px';
+    ind.style.top = e.clientY + 'px';
+  } else {
+    ind.style.display = 'none';
+  }
+  if (drawing && tool !== 'none') {
+    const {i, j} = canvasToCell(e);
+    applyBrush(i, j, isErasing ? CELL_FLUID : CELL_WALL);
+  }
+});
+canvas.addEventListener('mouseup', () => { drawing = false; });
+canvas.addEventListener('mouseleave', () => {
+  drawing = false;
+  $('bInd').style.display = 'none';
+});
+canvas.addEventListener('contextmenu', e => { e.preventDefault(); });
+canvas.addEventListener('touchstart', e => {
+  if (tool === 'none') return;
+  e.preventDefault();
+  drawing = true; isErasing = (tool === 'erase');
+  const t = e.touches[0];
+  const {i, j} = canvasToCell(t);
+  applyBrush(i, j, isErasing ? CELL_FLUID : CELL_WALL);
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  if (!drawing) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const {i, j} = canvasToCell(t);
+  applyBrush(i, j, isErasing ? CELL_FLUID : CELL_WALL);
+}, { passive: false });
+canvas.addEventListener('touchend', () => { drawing = false; });
 
-/* ═══════════════ PRESETS ═══════════════════════════════════ */
+/* ---------- UI Bindings ---------- */
+$('slUin').addEventListener('input', e => {
+  state.uin = parseFloat(e.target.value);
+  $('vUin').textContent = state.uin.toFixed(2) + ' m/s';
+  updateLatticeParams();
+  resetSteady();
+  updateStats();
+  forceDiagnosticsUpdate();
+});
+$('slMu').addEventListener('input', e => {
+  const mPas = parseFloat(e.target.value);
+  state.muN = mPas * 1e-3;
+  $('vMu').textContent = mPas.toFixed(2) + ' mPa·s';
+  updateLatticeParams();
+  resetSteady();
+  updateStats();
+  forceDiagnosticsUpdate();
+});
+$('selVisc').addEventListener('change', e => {
+  state.viscModel = e.target.value;
+  $('grpMu').style.opacity = state.viscModel === 'newtonian' ? '1' : '0.4';
+  $('grpMu').style.pointerEvents = state.viscModel === 'newtonian' ? 'auto' : 'none';
+  $('cyCard').style.display = state.viscModel === 'carreau' ? 'flex' : 'none';
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
+$('selField').addEventListener('change', e => {
+  state.field = e.target.value;
+  keHistory = [];
+  diagsRun = 0;
+  diagFrames = diagInterval();
+  forceDiagnosticsUpdate();
+});
+$('selRes').addEventListener('change', e => {
+  const [nx, ny] = e.target.value.split('x').map(Number);
+  NX = nx; NY = ny; DX = L_PHYS / NY;
+  geomData = new Float32Array(NX * NY * 4);
+  allocTextures();
+  loadPreset(state.preset);
+});
+$('chkSL').addEventListener('change', e => {
+  state.showStream = e.target.checked;
+  if (!e.target.checked) clearStream();
+});
+$('chkPa').addEventListener('change', e => { state.showParticles = e.target.checked; });
+$('selAs').addEventListener('change', e => {
+  state.scaleMode = e.target.value;
+  $('grpManRange').style.display = state.scaleMode === 'manual' ? 'flex' : 'none';
+  if (state.scaleMode === 'manual') {
+    $('txtMin').value = vmin.toFixed(2);
+    $('txtMax').value = vmax.toFixed(2);
+    state.manualMin = vmin;
+    state.manualMax = vmax;
+  }
+  applyScaleMode();
+  diagFrames = diagInterval();
+  forceDiagnosticsUpdate();
+});
+$('selXf').addEventListener('change', e => {
+  state.xform = e.target.value;
+  applyScaleMode();
+  forceDiagnosticsUpdate();
+});
+$('txtMin').addEventListener('input', e => {
+  const v = parseFloat(e.target.value);
+  if (isFinite(v)) { state.manualMin = v; applyScaleMode(); }
+});
+$('txtMax').addEventListener('input', e => {
+  const v = parseFloat(e.target.value);
+  if (isFinite(v)) { state.manualMax = v; applyScaleMode(); }
+});
+$('chkGr').addEventListener('change', e => { state.gravity = e.target.checked; resetSteady(); forceDiagnosticsUpdate(); });
+$('chkSS').addEventListener('change', e => {
+  state.detectSteady = e.target.checked;
+  if (!e.target.checked) resetSteady();
+});
+$('chkAR').addEventListener('change', e => {
+  state.autoResetOnDiverge = e.target.checked;
+  divergenceStrikes = 0;
+});
+$('slSpd').addEventListener('input', e => {
+  state.stepsPerFrame = parseInt(e.target.value);
+  $('vSpd').textContent = '×' + state.stepsPerFrame;
+});
+$('selInlet').addEventListener('change', e => {
+  state.inletType = e.target.value;
+  $('grpPin').style.display = state.inletType === 'pressure' ? 'flex' : 'none';
+  $('grpInletProfile').style.display = state.inletType === 'velocity' ? 'flex' : 'none';
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
+$('selInletProfile').addEventListener('change', e => {
+  state.inletProfile = e.target.value;
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
+$('selOutlet').addEventListener('change', e => {
+  state.outletType = e.target.value;
+  $('grpPout').style.display = state.outletType === 'pressure' ? 'flex' : 'none';
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
+$('slPin').addEventListener('input', e => {
+  state.pIn_mmHg = parseFloat(e.target.value);
+  $('vPin').textContent = state.pIn_mmHg.toFixed(2);
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
+$('slPout').addEventListener('input', e => {
+  state.pOut_mmHg = parseFloat(e.target.value);
+  $('vPout').textContent = state.pOut_mmHg.toFixed(2);
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
 
-function idx(i,j){return i+j*NX;}
+function wireCy(id, key, unit) {
+  const s = $(id);
+  const v = $('v' + id.substring(2));
+  s.addEventListener('input', e => {
+    const val = parseFloat(e.target.value);
+    state[key] = unit ? val * unit : val;
+    v.textContent = val.toFixed(2);
+    resetSteady();
+    forceDiagnosticsUpdate();
+  });
+}
+wireCy('slCy0', 'cy_mu0', 1e-3);
+wireCy('slCyI', 'cy_muI', 1e-3);
+wireCy('slCyL', 'cy_lam', 1);
+wireCy('slCyN', 'cy_n',   1);
+wireCy('slCyA', 'cy_a',   1);
+$('btnCyDefault').addEventListener('click', () => {
+  state.cy_mu0 = CY_MU0; $('slCy0').value = 56; $('vCy0').textContent = '56.00';
+  state.cy_muI = CY_MUI; $('slCyI').value = 3.45; $('vCyI').textContent = '3.45';
+  state.cy_lam = CY_LAM; $('slCyL').value = 3.31; $('vCyL').textContent = '3.31';
+  state.cy_n = CY_N;     $('slCyN').value = 0.36; $('vCyN').textContent = '0.36';
+  state.cy_a = CY_A;     $('slCyA').value = 2.00; $('vCyA').textContent = '2.00';
+  resetSteady();
+  forceDiagnosticsUpdate();
+});
 
-function loadPreset(name){
-  wallCPU.fill(0);
-  if(name==='naca'||name==='naca8'){
-    const aoa=(name==='naca8'?8:4)*Math.PI/180,ch=Math.floor(NX*.27);
-    const x0=Math.floor(NX*.36),y0=Math.floor(NY*.5);
-    for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++){
-      const dx=(i-x0)/ch,dy=(j-y0)/ch;
-      const xr=dx*Math.cos(aoa)+dy*Math.sin(aoa);
-      const yr=-dx*Math.sin(aoa)+dy*Math.cos(aoa);
-      if(xr>=0&&xr<=1){
-        const xs=Math.max(xr,.0001);
-        const yt=5*.12*(.2969*Math.sqrt(xs)-.1260*xs-.3516*xs*xs+.2843*xs*xs*xs-.1015*xs*xs*xs*xs);
-        if(Math.abs(yr)<=yt*1.05)wallCPU[idx(i,j)]=1;}}
-  }else if(name==='cylinder'||name==='sphere'){
-    const cx=Math.floor(NX*.40),cy=Math.floor(NY*.5),rad=Math.floor(NY*.13);
-    for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++)
-      if(Math.hypot(i-cx,j-cy)<=rad)wallCPU[idx(i,j)]=1;
-  }else if(name==='square'){
-    const w=Math.floor(NX*.09),h=Math.floor(NY*.24);
-    const x0=Math.floor(NX*.40),y0=Math.floor(NY/2-h/2);
-    for(let j=y0;j<y0+h;j++)for(let i=x0;i<x0+w;i++)
-      if(i>1&&i<NX-2)wallCPU[idx(i,j)]=1;
-  }else if(name==='step'){
-    const sx=Math.floor(NX*.28),sh2=Math.floor(NY*.48);
-    for(let i=0;i<sx;i++)for(let j=NY-sh2;j<NY;j++)wallCPU[idx(i,j)]=1;
-    for(let j=NY-sh2;j<NY;j++)wallCPU[idx(sx,j)]=1;
-  }else if(name==='stenosis'){
-    const yc=NY*.5,rb=NY*.44,xs=NX*.44,sg=NX*.060;
-    for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++){
-      const g=Math.exp(-.5*((i-xs)/sg)**2);
-      const r=rb*(1-.65*g);if(Math.abs(j-yc)>r)wallCPU[idx(i,j)]=1;}
-  }else if(name==='nozzle'){
-    const yc=NY*.5,ir=NY*.40,tr=NY*.14,er=NY*.37,tx=NX*.45;
-    for(let j=0;j<NY;j++)for(let i=2;i<NX-2;i++){
-      const r=i<=tx?ir+(tr-ir)*(i/tx):tr+(er-tr)*((i-tx)/(NX-tx));
-      if(Math.abs(j-yc)>r)wallCPU[idx(i,j)]=1;}}
-  uploadWall();clearDye();scaleOK=false;}
+$('selPre').addEventListener('change', e => {
+  state.preset = e.target.value;
+  loadPreset(state.preset);
+});
 
-/* ═══════════════ MAIN LOOP ════════════════════════════════ */
+$('btnPlay').addEventListener('click', () => {
+  if (steadyState) { steadyState = false; keHistory = []; }
+  paused = !paused;
+  $('btnPlay').textContent = paused ? '▶ Resume' : '⏸ Pause';
+  const stat = $('simStat');
+  stat.textContent = paused ? '● paused' : '● running';
+  stat.className = paused ? 'sim-run paused' : 'sim-run';
+  stat.style.color = '';
+});
+$('btnReset').addEventListener('click', () => {
+  resetSim();
+  resetSteady();
+  seedParticles();
+  clearStream();
+  forceDiagnosticsUpdate();
+  if (paused) $('btnPlay').click();
+});
+$('btnClear').addEventListener('click', () => {
+  clearGeom();
+  uploadGeomFull();
+  resetSim();
+  resetSteady();
+  clearStream();
+  forceDiagnosticsUpdate();
+});
 
-let lastT=0;
-function loop(ts){
-  const dt=Math.min((ts-lastT)/1000,.016666);
-  lastT=ts;
-  if(!paused){
-    const sub=gSp();
-    for(let s=0;s<sub;s++){
-      physicsStep(dt/sub);
-      dyeStep(dt/sub);}
-    stepN+=sub;
-    if(!scaleOK&&stepN>10)scaleOK=true;}
-  render();
-  requestAnimationFrame(loop);}
+$('tNone').addEventListener('click', () => setTool('none'));
+$('tWall').addEventListener('click', () => setTool('wall'));
+$('tErase').addEventListener('click', () => setTool('erase'));
+$('slBr').addEventListener('input', e => {
+  brushR = parseInt(e.target.value);
+  $('vBr').textContent = brushR + ' px';
+});
 
-/* ═══════════════ CANVAS INPUT ═════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  switch (e.key) {
+    case ' ': e.preventDefault(); $('btnPlay').click(); break;
+    case 'r': case 'R': $('btnReset').click(); break;
+    case 'c': case 'C': $('btnClear').click(); break;
+    case 'w': case 'W': setTool('wall'); break;
+    case 'e': case 'E': setTool('erase'); break;
+    case 'Escape': setTool('none'); break;
+    case 's': case 'S': {
+      const c = $('chkSL'); c.checked = !c.checked; state.showStream = c.checked; break;
+    }
+    case '1': $('selField').value = 'vel';  state.field = 'vel';  forceDiagnosticsUpdate(); break;
+    case '2': $('selField').value = 'pres'; state.field = 'pres'; forceDiagnosticsUpdate(); break;
+    case '3': $('selField').value = 'vort'; state.field = 'vort'; forceDiagnosticsUpdate(); break;
+  }
+});
 
-function getCell(e){
-  const r=canvas.getBoundingClientRect();
-  return{i:Math.round((e.clientX-r.left)/r.width*(NX-1)),
-         j:Math.round((e.clientY-r.top)/r.height*(NY-1))};}
-function applyDraw(e){
-  if(tool==='none')return;
-  const{i,j}=getCell(e),br=gBr();
-  for(let dj=-br;dj<=br;dj++)for(let di=-br;di<=br;di++){
-    if(di*di+dj*dj>br*br+.5)continue;
-    const ci=i+di,cj=j+dj;if(ci<=1||ci>=NX-2||cj<=0||cj>=NY-1)continue;
-    if(tool==='wall')wallCPU[idx(ci,cj)]=1;
-    else wallCPU[idx(ci,cj)]=0;}
-  uploadWall();}
-canvas.addEventListener('mousedown', e=>{drawing=true;applyDraw(e);});
-canvas.addEventListener('mousemove', e=>{if(drawing)applyDraw(e);});
-canvas.addEventListener('mouseup',   ()=>drawing=false);
-canvas.addEventListener('mouseleave',()=>drawing=false);
-canvas.addEventListener('contextmenu',e=>{e.preventDefault();const p=tool;tool='erase';applyDraw(e);tool=p;});
-canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;applyDraw(e.touches[0]);},{passive:false});
-canvas.addEventListener('touchmove', e=>{e.preventDefault();if(drawing)applyDraw(e.touches[0]);},{passive:false});
-canvas.addEventListener('touchend',  ()=>drawing=false);
+// Accessibility panel
+const accBtn = $('accBtn'), accPanel = $('accPanel');
+accBtn.addEventListener('click', () => accPanel.classList.toggle('open'));
+document.addEventListener('click', e => {
+  if (!accPanel.contains(e.target) && e.target !== accBtn) accPanel.classList.remove('open');
+});
+$('accDark').addEventListener('change', e => {
+  document.body.classList.toggle('dark-mode', e.target.checked);
+  try { localStorage.setItem('acc_dark', e.target.checked ? '1' : ''); } catch {}
+});
+document.querySelectorAll('[data-sz]').forEach(b => b.addEventListener('click', () => {
+  document.body.classList.remove('size-sm', 'size-md', 'size-lg');
+  if (b.dataset.sz) document.body.classList.add(b.dataset.sz);
+  document.querySelectorAll('[data-sz]').forEach(x => x.classList.toggle('active', x === b));
+  try { localStorage.setItem('acc_sz', b.dataset.sz); } catch {}
+}));
+document.querySelectorAll('[data-fi]').forEach(b => b.addEventListener('click', () => {
+  document.body.classList.remove('font-serif', 'font-mono');
+  if (b.dataset.fi) document.body.classList.add(b.dataset.fi);
+  document.querySelectorAll('[data-fi]').forEach(x => x.classList.toggle('active', x === b));
+  try { localStorage.setItem('acc_fi', b.dataset.fi); } catch {}
+}));
+try {
+  if (localStorage.getItem('acc_dark') === '1') {
+    document.body.classList.add('dark-mode');
+    $('accDark').checked = true;
+  }
+  const sz = localStorage.getItem('acc_sz');
+  if (sz) {
+    document.body.classList.remove('size-sm', 'size-md', 'size-lg');
+    document.body.classList.add(sz);
+    document.querySelectorAll('[data-sz]').forEach(b => b.classList.toggle('active', b.dataset.sz === sz));
+  }
+  const fi = localStorage.getItem('acc_fi');
+  if (fi) {
+    document.body.classList.add(fi);
+    document.querySelectorAll('[data-fi]').forEach(b => b.classList.toggle('active', b.dataset.fi === fi));
+  }
+} catch {}
 
-/* ═══════════════ PUBLIC API ════════════════════════════════ */
+/* ---------- Boot ---------- */
+allocTextures();
+$('grpPin').style.display = state.inletType === 'pressure' ? 'flex' : 'none';
+$('grpPout').style.display = state.outletType === 'pressure' ? 'flex' : 'none';
+$('cyCard').style.display = state.viscModel === 'carreau' ? 'flex' : 'none';
+$('grpInletProfile').style.display = state.inletType === 'velocity' ? 'flex' : 'none';
 
-window.SIM={
-  togglePause(){
-    paused=!paused;
-    $('btnPlay').textContent=paused?'▶ Resume':'⏸ Pause';
-    $('simStat').textContent=paused?'● paused':'● running';
-    $('simStat').className=paused?'sim-run paused':'sim-run';},
-  reset(){clearDye();scaleOK=false;},
-  setTool(t){
-    tool=t;['tNone','tWall','tErase'].forEach(id=>$(id).classList.remove('on'));
-    if(t==='none') $('tNone').classList.add('on');
-    if(t==='wall') {$('tWall').classList.add('on');$('dhint').classList.add('on');}
-    if(t==='erase'){$('tErase').classList.add('on');$('dhint').classList.add('on');}
-    if(t==='none') $('dhint').classList.remove('on');},
-  clearWalls(){wallCPU.fill(0);uploadWall();clearDye();},
-  loadPreset(n){loadPreset(n);}};
+function renderCyEquation() {
+  if (typeof katex === 'undefined') {
+    setTimeout(renderCyEquation, 50);
+    return;
+  }
+  katex.render(
+    String.raw`\mu(\dot\gamma) = \mu_\infty + (\mu_0 - \mu_\infty)\left[1 + (\lambda\dot\gamma)^a\right]^{(n-1)/a}`,
+    $('cyEq'),
+    { throwOnError: false, displayMode: false }
+  );
+}
+renderCyEquation();
 
-/* ═══════════════ BINDINGS ══════════════════════════════════ */
-
-$('slMach').addEventListener('input',()=>$('vMach').textContent=parseFloat($('slMach').value).toFixed(2));
-$('slPout').addEventListener('input',()=>$('vPout').textContent=parseFloat($('slPout').value).toFixed(2));
-$('slSpd').addEventListener('input', ()=>$('vSpd').textContent='×'+$('slSpd').value);
-$('slRlx').addEventListener('input', ()=>$('vRlx').textContent=parseFloat($('slRlx').value).toFixed(2));
-$('slBr').addEventListener('input',  ()=>$('vBr').textContent=$('slBr').value+' px');
-$('selRes').addEventListener('change',e=>{
-  const[nx,ny]=e.target.value.split('x').map(Number);NX=nx;NY=ny;
-  wallCPU=new Uint8Array(NX*NY);loadPreset($('selPre').value);});
-
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;
-  switch(e.key){
-    case ' ':e.preventDefault();SIM.togglePause();break;
-    case 'r':case 'R':SIM.reset();break;
-    case 'c':case 'C':SIM.clearWalls();break;
-    case 'w':case 'W':SIM.setTool('wall');break;
-    case 'e':case 'E':SIM.setTool('erase');break;
-    case 'Escape':SIM.setTool('none');break;
-    case '1':$('selField').value='vel'; break;
-    case '2':$('selField').value='pres';break;
-    case '3':$('selField').value='dens';break;
-    case '4':$('selField').value='mach';break;
-    case '5':$('selField').value='vort';break;}});
-
-const accBtn=$('accBtn'),accPanel=$('accPanel');
-accBtn.addEventListener('click',()=>accPanel.classList.toggle('open'));
-document.addEventListener('click',e=>{if(!accPanel.contains(e.target)&&e.target!==accBtn)accPanel.classList.remove('open');});
-$('accDark').addEventListener('change',e=>{document.body.classList.toggle('dark-mode',e.target.checked);localStorage.setItem('acc_dark',e.target.checked?'1':'');});
-document.querySelectorAll('[data-sz]').forEach(b=>b.addEventListener('click',()=>{document.body.classList.remove('size-sm','size-md','size-lg');if(b.dataset.sz)document.body.classList.add(b.dataset.sz);document.querySelectorAll('[data-sz]').forEach(x=>x.classList.toggle('active',x===b));localStorage.setItem('acc_sz',b.dataset.sz);}));
-document.querySelectorAll('[data-fi]').forEach(b=>b.addEventListener('click',()=>{document.body.classList.remove('font-serif','font-mono');if(b.dataset.fi)document.body.classList.add(b.dataset.fi);document.querySelectorAll('[data-fi]').forEach(x=>x.classList.toggle('active',x===b));localStorage.setItem('acc_fi',b.dataset.fi);}));
-(function(){
-  if(localStorage.getItem('acc_dark')==='1'){document.body.classList.add('dark-mode');$('accDark').checked=true;}
-  const sz=localStorage.getItem('acc_sz')||'';if(sz){document.body.classList.add(sz);document.querySelectorAll('[data-sz]').forEach(b=>b.classList.toggle('active',b.dataset.sz===sz));}
-  const fi=localStorage.getItem('acc_fi')||'';if(fi){document.body.classList.add(fi);document.querySelectorAll('[data-fi]').forEach(b=>b.classList.toggle('active',b.dataset.fi===fi));}})();
-
-/* ═══════════════ BOOT ══════════════════════════════════════ */
-allocFBOs();
-loadPreset('naca');
-SIM.setTool('none');
-$('tNone').classList.add('on');
-requestAnimationFrame(loop);
+loadPreset('sphere');
+setTool('none');
+updateStats();
+requestAnimationFrame(frame);
 
 })();
+
 </script>
 </body>
 </html>
