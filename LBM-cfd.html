@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2D Hemodynamic Flow Solver | A.Mirza</title>
+<title>2D LBM Flow Solver | A.Mirza</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
@@ -172,7 +172,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
     <div class="nav-dropdown-menu">
       <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
       <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
-      <a class="nav-dropdown-item" style="color:var(--teal);font-weight:600" href="#">🩸 Hemodynamic Flow Solver</a>
+      <a class="nav-dropdown-item" style="color:var(--teal);font-weight:600" href="#">🩸 LBM Flow Solver</a>
       <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
       <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
     </div>
@@ -181,8 +181,8 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 
 <div class="page-wrap">
 <header class="hero">
-  <div class="hero-kicker">Interactive Simulator · 2D Incompressible Hemodynamics</div>
-  <h1>Hemodynamic Flow Solver</h1>
+  <div class="hero-kicker">Interactive Simulator · 2D Incompressible LBMs</div>
+  <h1>LBM Flow Solver</h1>
   <p class="hero-sub">A browser-based GPU lattice Boltzmann solver for 2D incompressible blood flow at the vessel scale. Explore pulsatile flow through stenoses, aneurysms, bifurcations, and user-drawn vasculature in real time. Toggle between Newtonian and shear-thinning (Carreau–Yasuda) rheology, add gravity, switch between velocity and pressure inlets, and watch recirculation zones develop downstream of plaques. Full mathematical derivation and numerical theory below.</p>
   <div class="hero-pills">
     <span class="hero-pill">D2Q9 Lattice Boltzmann</span>
@@ -417,7 +417,7 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 <div class="sim-wrap" style="position:relative">
   <div class="sim-top">
     <div style="display:flex;align-items:center;gap:10px">
-      <span class="sim-ttl">2D Incompressible Hemodynamics · D2Q9 LBM · WebGL2 GPU Solver</span>
+      <span class="sim-ttl">2D Incompressible LBMs · D2Q9 LBM · WebGL2 GPU Solver</span>
       <span class="sim-run" id="simStat">● running</span>
     </div>
     <div class="stats-r">
