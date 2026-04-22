@@ -18,7 +18,7 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 | **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
 | **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
 | **Maxwell–Boltzmann Simulator** | `maxwell-boltzmann.html` | Interactive 2D ideal-gas simulation with speed distribution |
-| **Euler CFD Simulator** | `euler-cfd.html` | Interactive 2D compressible Euler flow solver (Rusanov flux) |
+| **LBM CFD Simulator** | `euler-cfd.html` | Interactive 2D incompressible flow solver (Lattice-Boltzmann Method) |
 | **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
@@ -107,7 +107,7 @@ Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Fo
 
 ---
 
-## Euler CFD Simulator (`euler-cfd.html`)
+## LBM CFD Simulator (`LBM-cfd.html`)
 
 Browser-based 2D compressible flow solver using the finite-volume method. Built as an educational tool for fluid mechanics, compressible flow, and numerical methods courses.
 
