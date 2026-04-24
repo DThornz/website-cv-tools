@@ -274,7 +274,6 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
       <label class="chk"><input type="checkbox" id="chkPa"> Tracer particles</label>
       <label class="chk"><input type="checkbox" id="chkGr" checked> Gravity (−y)</label>
       <label class="chk"><input type="checkbox" id="chkSS"> Auto-stop at steady state</label>
-      <label class="chk"><input type="checkbox" id="chkAR"> Auto-reset on divergence</label>
     </div>
   </div>
   <div class="csep"></div>
@@ -536,14 +535,74 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
 <p>This simulator uses the <strong>pull formulation</strong>: each cell fetches $f_i$ from its upstream neighbour at $\mathbf{x} - \mathbf{c}_i$. Pull streaming maps to a single fragment-shader pass with nine texel fetches per cell, which is exactly what WebGL2 is good at.</p>
 
 <h3>4. Recovery of Incompressible Navier–Stokes</h3>
-<p>A Chapman–Enskog expansion shows that in the limit of small Mach number ($|\mathbf{u}| \ll c_s$, where $c_s^2 = 1/3$ is the lattice speed of sound), the above evolves macroscopic fields obeying the incompressible Navier–Stokes equations with kinematic viscosity:</p>
+<p>The lattice Boltzmann equation governing the continuous-time, continuous-space evolution of the distributions, before discretization onto a lattice, is:</p>
 
-<div class="eqb amber">
-  <div class="eqb-t amber">Viscosity – Relaxation Relation</div>
-  $$\nu = c_s^2\!\left(\tau - \tfrac{1}{2}\right) = \tfrac{1}{3}\!\left(\tau - \tfrac{1}{2}\right) \quad\text{(lattice units)}$$
+<div class="eqb">
+  <div class="eqb-t">Discrete-Velocity Boltzmann Equation</div>
+  $$\partial_t f_i + \mathbf{c}_i \cdot \nabla f_i = -\frac{1}{\tau}\!\left(f_i - f_i^{eq}\right)$$
 </div>
 
-<p>The constraint $\tau > \tfrac{1}{2}$ is thus a <em>physical</em> requirement: negative effective viscosity is unstable. At $\tau \to \tfrac{1}{2}$ the scheme approaches the inviscid (Euler) limit but loses stability. Practically we keep $\tau \in [0.51, 1.5]$; this simulator clamps in that range.</p>
+<p>We now derive the macroscopic equations this evolves in the low-Mach, small-gradient limit using the <strong>Chapman–Enskog expansion</strong> — a multi-scale technique originally developed for the continuous Boltzmann equation (Chapman 1916; Enskog 1917) and adapted to LBM by Frisch, Hasslacher &amp; Pomeau (1986) and later rigorized by Qian et al. (1992).</p>
+
+<h4>4a. Multi-scale expansion</h4>
+<p>Introduce a formal smallness parameter $\varepsilon$ (proportional to the Knudsen number, $\text{Kn} = \ell / L$ = mean free path over macroscopic length) and expand both the distribution and derivatives at multiple scales:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Chapman–Enskog Ansatz</div>
+  $$f_i = f_i^{(0)} + \varepsilon f_i^{(1)} + \varepsilon^2 f_i^{(2)} + \cdots$$
+  $$\partial_t = \varepsilon \,\partial_{t_1} + \varepsilon^2 \,\partial_{t_2}, \qquad \nabla = \varepsilon \nabla_1$$
+</div>
+
+<p>Here $t_1$ is the advective (convective) timescale and $t_2$ is the diffusive (viscous) timescale — these must be kept separate because viscous effects are $O(\varepsilon^2)$ smaller than advection. Substituting into the Boltzmann equation and matching orders of $\varepsilon$ yields a hierarchy of equations.</p>
+
+<h4>4b. Order-by-order solution</h4>
+<p><strong>$O(\varepsilon^0)$:</strong> $\;f_i^{(0)} = f_i^{eq}$. The zeroth-order distribution is the equilibrium itself — this is the definition of local thermodynamic equilibrium.</p>
+
+<p><strong>$O(\varepsilon^1)$:</strong></p>
+<div class="eqb">
+  $$\partial_{t_1} f_i^{(0)} + \mathbf{c}_i \cdot \nabla_1 f_i^{(0)} = -\tfrac{1}{\tau} f_i^{(1)}$$
+</div>
+<p>This gives the first-order correction $f_i^{(1)} = -\tau\!\left(\partial_{t_1} + \mathbf{c}_i\cdot\nabla_1\right)\!f_i^{eq}$.</p>
+
+<p><strong>$O(\varepsilon^2)$:</strong></p>
+<div class="eqb">
+  $$\partial_{t_2} f_i^{(0)} + \partial_{t_1} f_i^{(1)} + \mathbf{c}_i\cdot\nabla_1 f_i^{(1)} = -\tfrac{1}{\tau} f_i^{(2)}$$
+</div>
+
+<h4>4c. Moments yield continuity and momentum</h4>
+<p>Summing over all lattice velocities ($\sum_i \cdot$) gives the macroscopic <strong>continuity equation</strong>. Using the moment constraints $\sum_i f_i^{eq} = \rho$ and $\sum_i f_i^{(k)} = 0$ for $k \geq 1$ (required to preserve $\rho$):</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">Continuity</div>
+  $$\partial_t \rho + \nabla \cdot (\rho \mathbf{u}) = 0$$
+</div>
+
+<p>Multiplying by $\mathbf{c}_i$ before summing ($\sum_i \mathbf{c}_i \cdot$) gives the <strong>momentum equation</strong>. The zeroth moment of $\mathbf{c}_i \mathbf{c}_i f_i^{eq}$ is the <em>equilibrium momentum-flux tensor</em> $\Pi^{(0)}_{\alpha\beta} = \rho u_\alpha u_\beta + p\,\delta_{\alpha\beta}$ (where $p = c_s^2\rho$), and the first-order correction produces a viscous stress:</p>
+
+<div class="eqb">
+  <div class="eqb-t">Non-equilibrium Momentum Flux</div>
+  $$\Pi^{(1)}_{\alpha\beta} = \sum_i c_{i\alpha} c_{i\beta}\, f_i^{(1)} = -\tau\, c_s^2 \rho \!\left(\partial_\alpha u_\beta + \partial_\beta u_\alpha\right) + O(\text{Ma}^3)$$
+</div>
+
+<p>Combining all moments through $O(\varepsilon^2)$ and dropping $O(\text{Ma}^3)$ terms:</p>
+
+<div class="eqb teal">
+  <div class="eqb-t teal">Momentum (Navier–Stokes)</div>
+  $$\partial_t(\rho \mathbf{u}) + \nabla\cdot(\rho\mathbf{u}\otimes\mathbf{u}) = -\nabla p + \nabla\cdot\!\left[\mu\!\left(\nabla\mathbf{u} + (\nabla\mathbf{u})^T\right)\right]$$
+</div>
+
+<p>with the identifications:</p>
+
+<div class="eqb amber">
+  <div class="eqb-t amber">Macroscopic Parameters Emerging from LBM</div>
+  $$p = c_s^2 \rho = \tfrac{1}{3}\rho \qquad \nu = c_s^2\!\left(\tau - \tfrac{1}{2}\right) = \tfrac{1}{3}\!\left(\tau - \tfrac{1}{2}\right)$$
+</div>
+
+<h4>4d. The $-\tfrac{1}{2}$ correction and why it matters</h4>
+<p>A subtle but critical point: the discrete-time lattice update differs from the continuous-time Boltzmann equation by a <strong>second-order Taylor error</strong>. Expanding $f_i(\mathbf{x} + \mathbf{c}_i\Delta t, t + \Delta t)$ in $\Delta t$ and comparing with the continuous equation produces an effective relaxation time $\tau_{\text{eff}} = \tau - \tfrac{1}{2}$. This half-step shift is what produces the $(\tau - \tfrac{1}{2})$ in the viscosity formula — not $\tau$ alone. The constraint $\tau &gt; \tfrac{1}{2}$ is thus a <em>physical</em> requirement: negative effective viscosity is unstable. At $\tau \to \tfrac{1}{2}$ the scheme approaches the inviscid (Euler) limit but loses stability. Practically we keep $\tau \in [0.55, 2.5]$ in this simulator.</p>
+
+<h4>4e. Weak compressibility</h4>
+<p>LBM recovers the <em>compressible</em> Navier–Stokes equations with an isothermal equation of state $p = c_s^2 \rho$. Incompressibility is only reached in the limit $\text{Ma} = |\mathbf{u}|/c_s \to 0$. The relative density variation scales as $\Delta\rho/\rho \sim \text{Ma}^2$, so at lattice Mach $0.1$ the compressibility error is about $1\%$ — which is why LBM is described as <em>weakly compressible</em>. This simulator keeps lattice Mach comfortably below $0.1$ (adaptive $U_{\text{lat}} \in [0.02, 0.04]$), so compressibility error is well under $1\%$ for all supported inlet velocities.</p>
 
 <h3>5. Boundary Conditions</h3>
 
@@ -656,6 +715,9 @@ body.font-mono,body.font-mono *:not(code):not(pre){font-family:'DM Mono','Courie
   <h3>References</h3>
   <ol class="ref-list">
     <li>Qian, Y. H., d'Humières, D., &amp; Lallemand, P. (1992). Lattice BGK models for Navier-Stokes equation. <em>Europhysics Letters</em>, 17(6), 479–484. (Original D2Q9/BGK paper.)</li>
+    <li>Chapman, S. (1916). On the law of distribution of molecular velocities, and on the theory of viscosity and thermal conduction, in a non-uniform simple monatomic gas. <em>Philosophical Transactions of the Royal Society A</em>, 216, 279–348.</li>
+    <li>Enskog, D. (1917). <em>Kinetische Theorie der Vorgänge in mässig verdünnten Gasen</em>. Uppsala dissertation. (Independent development of the same multi-scale expansion.)</li>
+    <li>Frisch, U., Hasslacher, B., &amp; Pomeau, Y. (1986). Lattice-gas automata for the Navier-Stokes equation. <em>Physical Review Letters</em>, 56(14), 1505–1508. (First demonstration of NS recovery from a discrete-velocity kinetic model.)</li>
     <li>Succi, S. (2001). <em>The Lattice Boltzmann Equation for Fluid Dynamics and Beyond</em>. Oxford University Press. Chapters 3–5 (Chapman-Enskog, BCs, forcing).</li>
     <li>Ladd, A. J. C. (1994). Numerical simulations of particulate suspensions via a discretized Boltzmann equation. Part 1. Theoretical foundation. <em>Journal of Fluid Mechanics</em>, 271, 285–309. (Half-way bounce-back analysis.)</li>
     <li>Cho, Y. I., &amp; Kensey, K. R. (1991). Effects of the non-Newtonian viscosity of blood on flows in a diseased arterial vessel. Part 1: Steady flows. <em>Biorheology</em>, 28(3-4), 241–262. (Carreau-Yasuda for blood.)</li>
@@ -747,16 +809,15 @@ const state = {
   outletType: 'zerograd',
   pIn_mmHg: 100.0,
   pOut_mmHg: 80.0,
-  gravity: false,
+  gravity: true,
   field: 'vel',
-  showStream: false,
-  showParticles: true,
+  showStream: true,
+  showParticles: false,
   scaleMode: 'true',
   xform: 'linear',
   manualMin: 0.0,
   manualMax: 1.0,
-  detectSteady: true,
-  autoResetOnDiverge: true,
+  detectSteady: false,
   stepsPerFrame: 3,
   preset: 'sphere',
   cy_mu0: CY_MU0, cy_muI: CY_MUI, cy_lam: CY_LAM, cy_n: CY_N, cy_a: CY_A,
@@ -1587,8 +1648,6 @@ function resetSim() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, fboMacro);
   gl.clear(gl.COLOR_BUFFER_BIT);
   pp = 0;
-  lastAutoReset = performance.now();
-  divergenceStrikes = 0;
 }
 
 function setStepUniforms() {
@@ -1684,9 +1743,6 @@ const DIAG_EVERY_STARTUP = 12;
 const STARTUP_DIAGS = 20;
 let diagFrames = 0;
 let diagsRun = 0;
-let divergenceStrikes = 0;
-let consecutiveDivergences = 0;
-let lastAutoReset = 0;
 let keHistory = [];
 const KE_HISTORY_LEN = 6;
 let steadyState = false;
@@ -1696,7 +1752,6 @@ function resetSteady() {
   keHistory = [];
   diagsRun = 0;
   diagFrames = 0;
-  divergenceStrikes = 0;
 }
 function diagInterval() {
   return diagsRun < STARTUP_DIAGS ? DIAG_EVERY_STARTUP : DIAG_EVERY_STEADY;
@@ -1717,20 +1772,12 @@ function runDiagnostics() {
   readMacroField();
   const fluidVals = [];
   let ke = 0;
-  let badCells = 0;
-  let totalFluid = 0;
   for (let j = 0; j < NY; ++j) {
     for (let i = 0; i < NX; ++i) {
       const k = (j * NX + i) * 4;
       const ux = macroReadBuf[k], uy = macroReadBuf[k + 1];
       const rho = macroReadBuf[k + 2], ct = macroReadBuf[k + 3];
       if (ct < 0.5) {
-        totalFluid++;
-        if (!isFinite(ux) || !isFinite(uy) || !isFinite(rho) ||
-            rho < 0.1 || rho > 5.0) {
-          badCells++;
-          continue;
-        }
         const sp2 = ux * ux + uy * uy;
         ke += sp2;
         let val;
@@ -1751,45 +1798,6 @@ function runDiagnostics() {
       }
     }
   }
-
-  const now = performance.now();
-  const settleGrace = 5000;
-  const settled = (now - lastAutoReset) > settleGrace && stepN > 120;
-  const badFraction = totalFluid > 0 ? badCells / totalFluid : 0;
-  const minBadCells = 50;
-  const badThreshold = 0.05;
-  if (settled && state.autoResetOnDiverge && badFraction > badThreshold && badCells > minBadCells) {
-    consecutiveDivergences++;
-    if (consecutiveDivergences >= 2) {
-      state.autoResetOnDiverge = false;
-      $('chkAR').checked = false;
-      console.error(`LBM: ${consecutiveDivergences} consecutive divergences. Disabling auto-reset.`);
-      const stat = $('simStat');
-      stat.textContent = '● unrecoverable — auto-reset disabled';
-      stat.className = 'sim-run paused';
-      stat.style.color = '#ef4444';
-      paused = true;
-      $('btnPlay').textContent = '▶ Resume';
-      return;
-    }
-    console.warn(`LBM instability: ${badCells} bad cells (${(badFraction*100).toFixed(2)}%). Resetting.`);
-    const stat = $('simStat');
-    stat.textContent = '● instability — resetting';
-    stat.className = 'sim-run paused';
-    stat.style.color = '#fbbf24';
-    resetSim();
-    resetSteady();
-    seedParticles();
-    clearStream();
-    lastAutoReset = now;
-    setTimeout(() => {
-      stat.textContent = paused ? '● paused' : '● running';
-      stat.className = paused ? 'sim-run paused' : 'sim-run';
-      stat.style.color = '';
-    }, 5000);
-    return;
-  }
-  if (!badCells && settled) consecutiveDivergences = 0;
 
   if (fluidVals.length < 10) return;
 
@@ -2211,10 +2219,6 @@ $('chkGr').addEventListener('change', e => { state.gravity = e.target.checked; r
 $('chkSS').addEventListener('change', e => {
   state.detectSteady = e.target.checked;
   if (!e.target.checked) resetSteady();
-});
-$('chkAR').addEventListener('change', e => {
-  state.autoResetOnDiverge = e.target.checked;
-  divergenceStrikes = 0;
 });
 $('slSpd').addEventListener('input', e => {
   state.stepsPerFrame = parseInt(e.target.value);
