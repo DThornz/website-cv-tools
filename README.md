@@ -5,7 +5,7 @@ Department of Biomedical Engineering, Florida International University.
 
 Deployed via **GitHub Pages** · Static hosting · No backend required
 
-🌐 **Live site:** [dthornz.github.io/website-cv-tools](https://dthornz.github.io/website-cv-tools)
+**Live site:** [dthornz.github.io/website-cv-tools](https://dthornz.github.io/website-cv-tools)
 
 ---
 
@@ -184,7 +184,7 @@ Client-side academic reference validation tool. Paste a reference list and valid
 - Scores each reference (0–100) with pass/fail/needs-review badge and per-signal breakdown
 - Styled to match this portfolio site (teal accent, DM fonts, dark mode, accessibility panel)
 
-🌐 **Live app:** [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/)
+**Live app:** [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/)
 
 ---
 
