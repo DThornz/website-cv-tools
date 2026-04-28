@@ -18,8 +18,9 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 | **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
 | **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
 | **Maxwell–Boltzmann Simulator** | `maxwell-boltzmann.html` | Interactive 2D ideal-gas simulation with speed distribution |
-| **LBM CFD Simulator** | `euler-cfd.html` | Interactive 2D incompressible flow solver (Lattice-Boltzmann Method) |
+| **LBM CFD Simulator** | `LBM-cfd.html` | Interactive 2D incompressible flow solver (Lattice-Boltzmann Method) |
 | **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
+| **Reference Validator** | [academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) | Validate academic reference lists against CrossRef, EPMC, Semantic Scholar, arXiv, and more |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
 
@@ -168,6 +169,27 @@ Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergen
 
 ---
 
+## Reference Validator ([academic-ref-validator](https://github.com/DThornz/academic-ref-validator))
+
+Client-side academic reference validation tool. Paste a reference list and validate each entry against multiple APIs — no server, no data transmitted.
+
+**Verification sources:**
+- CrossRef (DOI lookup + metadata cross-check)
+- doi.org CSL-JSON content negotiation (catches redirected DOIs)
+- Europe PMC, Semantic Scholar, arXiv, Google Books, Open Library (title/author text search)
+
+**Features:**
+- Detects fake DOIs, recycled/stolen DOIs (title mismatch against CrossRef record), and opaque publisher redirects
+- Author cross-check, journal name normalisation, volume/page validation
+- Opt-in fuzzy title matching for OCR errors, diacritics, and typos
+- Three preloaded example sets: All Fake, All Fake BME, All Real BME
+- Scores each reference (0–100) with pass/fail/needs-review badge and per-signal breakdown
+- Styled to match this portfolio site (teal accent, DM fonts, dark mode, accessibility panel)
+
+🌐 **Live app:** [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/)
+
+---
+
 ## Local Development / Editor
 
 `cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
@@ -189,7 +211,7 @@ website-cv-tools/
 ├── projects.html           ← Research project showcase
 ├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
 ├── maxwell-boltzmann.html  ← Maxwell–Boltzmann 2D gas simulator
-├── euler-cfd.html          ← 2D compressible Euler CFD simulator
+├── LBM-cfd.html            ← 2D incompressible LBM CFD simulator
 ├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
 ├── dissertation.html       ← PhD dissertation page
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
