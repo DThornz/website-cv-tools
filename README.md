@@ -110,40 +110,38 @@ Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Fo
 
 ## LBM CFD Simulator (`LBM-cfd.html`)
 
-Browser-based 2D compressible flow solver using the finite-volume method. Built as an educational tool for fluid mechanics, compressible flow, and numerical methods courses.
+Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale. Built as an educational tool for hemodynamics, fluid mechanics, and computational methods.
 
 **Physics & Numerics:**
-- 2D compressible Euler equations in conservation form: ∂U/∂t + ∂F/∂x + ∂G/∂y = 0
-- Conserved state: (ρ, ρu, ρv, ρE) — density, x/y-momentum, total energy
-- Rusanov (Local Lax-Friedrichs) flux scheme, first-order accurate
-- Adaptive timestep: Δt/Δx = CFL/max(|u|+c), CFL = 0.40
-- Under-relaxation blend: U_new = α·U_Rusanov + (1-α)·U_old, α ∈ [0.3, 1.0]
-- Non-dimensionalization: ρ₀=1.225 kg/m³, c₀=340 m/s, p₀≈101,030 Pa
+- D2Q9 lattice Boltzmann with BGK single-relaxation-time collision operator
+- Chapman–Enskog expansion recovering incompressible Navier–Stokes to second order
+- Half-way bounce-back no-slip boundary conditions (Ladd 1994, 2nd-order accurate)
+- Optional Carreau–Yasuda non-Newtonian blood rheology: μ₀ = 56 mPa·s, μ∞ = 3.45 mPa·s
+- Local shear rate computed from Chapman–Enskog momentum-flux tensor (no finite differences)
+- WebGL2 GPU compute via fragment shaders — one texel per cell, one draw call per timestep
+- Blood properties: ρ = 1060 kg/m³; Reynolds range Re ≤ 2000
 
 **Simulator Features:**
-- Inlet Mach slider M ∈ [0.1, 2.0] with subsonic/transonic/supersonic regimes
-- Outlet pressure ratio p/p₀ ∈ [0.3, 1.6] (back-pressure control)
-- Display fields: velocity (m/s), pressure (Pa), density (kg/m³), Mach number
-- 4 grid resolutions: 90×35 → 300×117 cells
-- 1–12 substeps per frame for speed control
-- Plasma colormap (dark purple → orange → yellow) with auto-scaling colorbar
-- 200 stream tracers advected by velocity field
-- **8 preset scenarios**: Blank, NACA 0012 at 4°, NACA 0012 at 8°, Circular Cylinder, Sphere, Square Block, Backward-Facing Step, Arterial Stenosis (50%), Convergent-Divergent Nozzle
-- Draw tools: Wall pencil, Erase, Clear All, brush radius control
-- Real-time stats: Δt/Δx, M_max, step count, FPS
+- Inlet BC: velocity (plug or fully-developed parabolic) or pressure
+- Outlet BC: zero-gradient or fixed pressure
+- Display fields: velocity |U| (m/s), pressure (Pa), vorticity (ω, 1/s)
+- 6 grid resolutions: 240×96 (Coarse) → 1280×480 (Giga)
+- **8 vascular preset geometries**: empty channel, sphere/disk, square block, symmetric stenosis (50%), asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation
+- Draw tools: wall pencil, erase, brush radius control
+- Real-time stats: Re, FPS, step count
 
 **Educational Content:**
-- Lagrangian vs. Eulerian description (referencing Price 2023)
-- Derivation of the 2D Euler conservation law system
-- Ideal gas equation of state and speed of sound
-- Non-dimensionalization procedure
-- Finite-volume cell update formula
-- Rusanov flux formula with dissipation coefficient
-- CFL stability analysis with critical bug explanation
-- Under-relaxation theory
-- Boundary condition table (inlet, outlet, slip, wall)
-- Preset scenario physics explanations
-- 6 APA-format references (Price, Toro, LeVeque, Anderson, Rusanov, Hirsch)
+- Why LBM for hemodynamics (vs. body-fitted mesh Navier–Stokes)
+- D2Q9 discrete velocity set and lattice weights
+- BGK collision operator and equilibrium distribution
+- Streaming step (pull formulation)
+- Chapman–Enskog multi-scale expansion → incompressible NS
+- Viscosity from relaxation time: ν = cs²(τ − ½)Δt
+- Bounce-back BC derivation (half-way interpretation)
+- Carreau–Yasuda non-Newtonian closure loop
+- Lattice-to-physical unit mapping
+- Reynolds regimes across the vasculature with reference table
+- 7 cited references (Qian 1992, Chapman 1916, Enskog 1917, Frisch/Hasslacher/Pomeau 1986, Succi 2001, Ladd 1994, Lagrava 2012)
 
 ---
 

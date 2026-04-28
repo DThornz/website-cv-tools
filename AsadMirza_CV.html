@@ -2142,20 +2142,20 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
               </div>
             </div>
 
-            <!-- Euler CFD Simulator -->
+            <!-- LBM CFD Simulator -->
             <div class="entry-card">
               <button class="entry-toggle" onclick="toggleEntry(this)">
                 <span class="entry-year">2025–2026</span>
                 <div class="entry-title-col">
-                  <div class="entry-title">2D Euler CFD Flow Simulator</div>
-                  <div class="entry-subtitle">Educational tool · FIU BME / Fluid Mechanics</div>
-                  <div class="entry-badges"><span class="badge badge-first">Compressible Flow</span><span class="badge badge-award">Rusanov Flux · CFL</span></div>
+                  <div class="entry-title">2D LBM Flow Solver — GPU Hemodynamics Simulator</div>
+                  <div class="entry-subtitle">Educational tool · FIU BME / Fluid Mechanics / Hemodynamics</div>
+                  <div class="entry-badges"><span class="badge badge-first">D2Q9 LBM · BGK Collision</span><span class="badge badge-award">WebGL2 GPU · Carreau–Yasuda</span></div>
                 </div>
                 <span class="chevron-xs">▼</span>
               </button>
               <div class="entry-body">
                 <div class="entry-inner">
-                  <div class="entry-abstract">Browser-based 2D compressible Euler flow solver using the Rusanov (Local Lax-Friedrichs) finite-volume scheme. Students explore subsonic and transonic flows around 8 preset geometries (NACA 0012 airfoil at 4° and 8°, circular cylinder, sphere, square block, backward-facing step, arterial stenosis, convergent-divergent nozzle) and draw custom obstacles. Adaptive CFL-stable timestep (CFL=0.40), under-relaxation slider, plasma colormap, 200 stream tracers, and real-time stats (Δt/Δx, M_max, FPS). Full mathematical derivation — Euler conservation laws, Rusanov flux formula, CFL condition, boundary conditions — with 6 cited references including Price (2023) MIT OCW.</div>
+                  <div class="entry-abstract">Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale, built as an educational tool for hemodynamics and computational fluid mechanics. Implements the D2Q9 lattice with BGK single-relaxation-time collision, half-way bounce-back no-slip walls, and optional Carreau–Yasuda non-Newtonian blood rheology (μ₀ = 56 mPa·s, μ∞ = 3.45 mPa·s) with local shear rate computed from the Chapman–Enskog momentum-flux tensor. Runs entirely on the GPU via WebGL2 fragment shaders — one texel per fluid cell, one draw call per timestep — scaling to 1280×480 cells at interactive frame rates. Eight vascular preset geometries (empty channel, sphere/disk, square block, symmetric stenosis, asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation) allow students to observe post-stenotic recirculation, von Kármán vortex shedding, and pressure drop across lesions. Display fields: velocity |U|, pressure, and vorticity (ω). Full theoretical derivation included: LBM kinetic foundation, BGK operator, Chapman–Enskog expansion recovering incompressible Navier–Stokes, bounce-back BC analysis (Ladd 1994), Carreau–Yasuda closure, lattice-to-physical unit mapping, and Reynolds regimes in the vasculature, with 7 cited references.</div>
                   <div class="entry-link-row">
                     <a class="entry-link" href="LBM-cfd.html" target="_blank">🌊 Open Interactive Simulator</a>
                   </div>

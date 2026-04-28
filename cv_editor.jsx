@@ -245,10 +245,10 @@ const INITIAL_DATA = {
               images: [], videos: [], notes: ""
             },
             {
-              id: uid(), year: "2025-2026", title: "2D Euler CFD Flow Simulator",
-              subtitle: "Educational tool · FIU BME / Fluid Mechanics",
-              badges: [{ id: uid(), text: "Compressible Flow", type: "first" }, { id: uid(), text: "Rusanov Flux · CFL", type: "award" }],
-              abstract: "Browser-based 2D compressible Euler flow solver using the Rusanov (Local Lax-Friedrichs) finite-volume scheme. Students explore subsonic and transonic flows around 8 preset geometries (NACA 0012 airfoil at 4° and 8°, circular cylinder, sphere, square block, backward-facing step, arterial stenosis, convergent-divergent nozzle) and draw custom obstacles. Adaptive CFL-stable timestep (CFL=0.40), under-relaxation, plasma colormap, 200 stream tracers, real-time stats. Full mathematical derivation (Euler conservation laws, Rusanov flux, CFL condition, boundary conditions) with 6 cited references.",
+              id: uid(), year: "2025-2026", title: "2D LBM Flow Solver — GPU Hemodynamics Simulator",
+              subtitle: "Educational tool · FIU BME / Fluid Mechanics / Hemodynamics",
+              badges: [{ id: uid(), text: "D2Q9 LBM · BGK Collision", type: "first" }, { id: uid(), text: "WebGL2 GPU · Carreau–Yasuda", type: "award" }],
+              abstract: "Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale. Implements D2Q9 lattice with BGK collision, half-way bounce-back no-slip walls, and optional Carreau–Yasuda non-Newtonian rheology (μ₀=56 mPa·s, μ∞=3.45 mPa·s) with local shear rate from the Chapman–Enskog momentum-flux tensor. Runs on the GPU via WebGL2 fragment shaders, scaling to 1280×480 cells. Eight vascular presets (empty channel, sphere/disk, square block, symmetric stenosis, asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation). Display fields: velocity, pressure, vorticity. Full theoretical derivation: BGK operator, Chapman–Enskog expansion → incompressible NS, bounce-back BCs, Carreau–Yasuda closure, unit mapping, Reynolds regimes. 7 cited references.",
               metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "LBM-cfd.html" }],
               images: [], videos: [], notes: ""
             },
