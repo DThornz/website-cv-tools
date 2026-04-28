@@ -249,7 +249,15 @@ const INITIAL_DATA = {
               subtitle: "Educational tool · FIU BME / Fluid Mechanics",
               badges: [{ id: uid(), text: "Compressible Flow", type: "first" }, { id: uid(), text: "Rusanov Flux · CFL", type: "award" }],
               abstract: "Browser-based 2D compressible Euler flow solver using the Rusanov (Local Lax-Friedrichs) finite-volume scheme. Students explore subsonic and transonic flows around 8 preset geometries (NACA 0012 airfoil at 4° and 8°, circular cylinder, sphere, square block, backward-facing step, arterial stenosis, convergent-divergent nozzle) and draw custom obstacles. Adaptive CFL-stable timestep (CFL=0.40), under-relaxation, plasma colormap, 200 stream tracers, real-time stats. Full mathematical derivation (Euler conservation laws, Rusanov flux, CFL condition, boundary conditions) with 6 cited references.",
-              metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "euler-cfd.html" }],
+              metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "LBM-cfd.html" }],
+              images: [], videos: [], notes: ""
+            },
+            {
+              id: uid(), year: "2026", title: "Academic Reference Validator",
+              subtitle: "Open-source academic tool · GitHub Pages",
+              badges: [{ id: uid(), text: "CrossRef · EPMC · Semantic Scholar", type: "first" }, { id: uid(), text: "DOI Verification", type: "award" }],
+              abstract: "Client-side web tool for validating academic reference lists against CrossRef, Europe PMC, Semantic Scholar, arXiv, Google Books, and Open Library. Detects fake DOIs, recycled/stolen DOIs (via title cross-check against CrossRef metadata), and opaque publisher redirects using doi.org CSL-JSON content negotiation. Performs author cross-checks, journal name normalisation, and volume/page validation. Supports opt-in fuzzy title matching for OCR errors, diacritics, and typos. Includes three preloaded example sets and scores each reference 0–100 with per-signal breakdown. All processing runs entirely client-side — no data transmitted.",
+              metaItems: [], links: [{ id: uid(), text: "📑 Open Reference Validator", url: "https://dthornz.github.io/academic-ref-validator/" }, { id: uid(), text: "💾 GitHub", url: "https://github.com/DThornz/academic-ref-validator" }],
               images: [], videos: [], notes: ""
             },
             {
