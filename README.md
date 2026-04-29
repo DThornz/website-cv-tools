@@ -86,27 +86,6 @@ Each tool is documented in its own repository:
 
 ---
 
-## Reference Validator ([academic-ref-validator](https://github.com/DThornz/academic-ref-validator))
-
-Client-side academic reference validation tool. Paste a reference list and validate each entry against multiple APIs — no server, no data transmitted.
-
-**Verification sources:**
-- CrossRef (DOI lookup + metadata cross-check)
-- doi.org CSL-JSON content negotiation (catches redirected DOIs)
-- Europe PMC, Semantic Scholar, arXiv, Google Books, Open Library (title/author text search)
-
-**Features:**
-- Detects fake DOIs, recycled/stolen DOIs (title mismatch against CrossRef record), and opaque publisher redirects
-- Author cross-check, journal name normalisation, volume/page validation
-- Opt-in fuzzy title matching for OCR errors, diacritics, and typos
-- Three preloaded example sets: All Fake, All Fake BME, All Real BME
-- Scores each reference (0–100) with pass/fail/needs-review badge and per-signal breakdown
-- Styled to match this portfolio site (teal accent, DM fonts, dark mode, accessibility panel)
-
-**Live app:** [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/)
-
----
-
 ## Local Development / Editor
 
 `cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
