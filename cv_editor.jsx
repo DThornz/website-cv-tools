@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+﻿import { useState, useRef, useEffect, useCallback } from "react";
 
 // ─────────────────────────────────────────────────────────────
 //  INITIAL CV DATA  (pre-loaded with Asad's full CV)
@@ -233,7 +233,7 @@ const INITIAL_DATA = {
               subtitle: "For BME 2740 & BME 6715 · FIU BME",
               badges: [{ id: uid(), text: "Nobel (1952) Model", type: "first" }, { id: uid(), text: "RK4 · Canvas API", type: "award" }],
               abstract: "Browser-based interactive implementation of the Hodgkin–Huxley (1952) neuron model. Features 4th-order Runge–Kutta integration (dt=0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents I_Na/I_K/I_L, steady-state curves (x∞ vs V), time constants (τx vs V), and V–n phase portrait. Students adjust all HH parameters, apply channel blockers (TTX/TEA), scale kinetics by temperature (Q10=3), and explore threshold, refractory period, and tonic firing.",
-              metaItems: [], links: [{ id: uid(), text: "🧠 Open Interactive Simulator", url: "hodgkin-huxley.html" }],
+              metaItems: [], links: [{ id: uid(), text: "🧠 Open Interactive Simulator", url: "https://dthornz.github.io/hodgkin-huxley/" }],
               images: [], videos: [], notes: ""
             },
             {
@@ -241,7 +241,7 @@ const INITIAL_DATA = {
               subtitle: "Educational tool · FIU BME",
               badges: [{ id: uid(), text: "Canvas API · Chart.js · KaTeX", type: "award" }],
               abstract: "Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection, real-time histogram with running average and theoretical MB curve, speed-colored particle rendering, full derivation from first principles, and historical background with 6 cited references.",
-              metaItems: [], links: [{ id: uid(), text: "⛛ Open Interactive Simulator", url: "maxwell-boltzmann.html" }],
+              metaItems: [], links: [{ id: uid(), text: "⛛ Open Interactive Simulator", url: "https://dthornz.github.io/maxwell-boltzmann/" }],
               images: [], videos: [], notes: ""
             },
             {
@@ -249,7 +249,7 @@ const INITIAL_DATA = {
               subtitle: "Educational tool · FIU BME / Fluid Mechanics / Hemodynamics",
               badges: [{ id: uid(), text: "D2Q9 LBM · BGK Collision", type: "first" }, { id: uid(), text: "WebGL2 GPU · Carreau–Yasuda", type: "award" }],
               abstract: "Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale. Implements D2Q9 lattice with BGK collision, half-way bounce-back no-slip walls, and optional Carreau–Yasuda non-Newtonian rheology (μ₀=56 mPa·s, μ∞=3.45 mPa·s) with local shear rate from the Chapman–Enskog momentum-flux tensor. Runs on the GPU via WebGL2 fragment shaders, scaling to 1280×480 cells. Eight vascular presets (empty channel, sphere/disk, square block, symmetric stenosis, asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation). Display fields: velocity, pressure, vorticity. Full theoretical derivation: BGK operator, Chapman–Enskog expansion → incompressible NS, bounce-back BCs, Carreau–Yasuda closure, unit mapping, Reynolds regimes. 7 cited references.",
-              metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "LBM-cfd.html" }],
+              metaItems: [], links: [{ id: uid(), text: "🌊 Open Interactive Simulator", url: "https://dthornz.github.io/lbm-cfd/" }],
               images: [], videos: [], notes: ""
             },
             {
@@ -654,8 +654,8 @@ input:checked+.toggle-slider::before{transform:translateX(20px);background:#fff}
   <a class="site-nav-link" href="index.html">Home</a>
   <a class="site-nav-link curr" href="AsadMirza_CV.html">CV</a>
   <a class="site-nav-link" href="projects.html">Projects</a>
-  <a class="site-nav-link" href="hodgkin-huxley.html">HH Model</a>
-  <a class="site-nav-link" href="fea-cfd-calc.html">FEA / CFD</a>
+  <a class="site-nav-link" href="https://dthornz.github.io/hodgkin-huxley/">HH Model</a>
+  <a class="site-nav-link" href="https://dthornz.github.io/eng-fea-cfd-calc/">FEA / CFD</a>
 </div>
 
 <div class="top-bar">

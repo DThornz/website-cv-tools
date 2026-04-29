@@ -9,18 +9,26 @@ Deployed via **GitHub Pages** · Static hosting · No backend required
 
 ---
 
-## Pages
+## Pages in this repo
 
 | Page | File | Description |
 |------|------|-------------|
-| **Home** | `index.html` | Landing page with links to all tools |
+| **Home** | `index.html` | Landing page linking to all tools |
 | **Curriculum Vitae** | `AsadMirza_CV.html` | Full interactive academic CV |
 | **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
-| **HH Neuron Model** | `hodgkin-huxley.html` | Interactive Hodgkin–Huxley simulator |
-| **Maxwell–Boltzmann Simulator** | `maxwell-boltzmann.html` | Interactive 2D ideal-gas simulation with speed distribution |
-| **LBM CFD Simulator** | `LBM-cfd.html` | Interactive 2D incompressible flow solver (Lattice-Boltzmann Method) |
-| **FEA / CFD Calculator** | `fea-cfd-calc.html` | Engineering calculator hub (25+ tools) |
-| **Reference Validator** | [academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) | Validate academic reference lists against CrossRef, EPMC, Semantic Scholar, arXiv, and more |
+| **PhD Dissertation** | `dissertation.html` | Dissertation overview page |
+
+## Linked tool repos (separate GitHub Pages)
+
+Each tool lives in its own repository and GitHub Pages deployment. The nav bar and shared design system are reproduced in each repo so all pages feel like one site.
+
+| Tool | Repo | Live URL |
+|------|------|----------|
+| **HH Neuron Model** | [DThornz/hodgkin-huxley](https://github.com/DThornz/hodgkin-huxley) | [dthornz.github.io/hodgkin-huxley](https://dthornz.github.io/hodgkin-huxley/) |
+| **Maxwell–Boltzmann Simulator** | [DThornz/maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann) | [dthornz.github.io/maxwell-boltzmann](https://dthornz.github.io/maxwell-boltzmann/) |
+| **LBM CFD Simulator** | [DThornz/lbm-cfd](https://github.com/DThornz/lbm-cfd) | [dthornz.github.io/lbm-cfd](https://dthornz.github.io/lbm-cfd/) |
+| **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
+| **Reference Validator** | [DThornz/academic-ref-validator](https://github.com/DThornz/academic-ref-validator) | [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
 
@@ -66,104 +74,15 @@ Research portfolio with filterable cards that expand into full-detail modals.
 
 ---
 
-## Hodgkin–Huxley Neuron Model (`hodgkin-huxley.html`)
+## Tool repos (see their own READMEs for full details)
 
-Fully interactive browser simulation of the Nobel Prize-winning 1952 model.
+Each tool is documented in its own repository:
 
-**Mathematical content:**
-- Complete derivation of all 4 ODEs with equivalent circuit diagram (SVG)
-- Full rate functions α/β for m, h, n gates with empirical constants on absolute voltage scale (Vrest = −65 mV)
-- Parameter table with physiological interpretations
-- 7 cited references (Hodgkin & Huxley 1952, Goldman UC Davis, Cambridge DAMTP, FSU Bertram, etc.)
-- Scientific accuracy: species (*Loligo forbesi*), axon diameter (0.5–0.8 mm), experimental dates (1947–1952)
-
-**Simulator features:**
-- 4th-order Runge–Kutta integration (dt = 0.01 ms) on absolute voltage scale (Vrest = −65 mV, peak AP ~+40 mV)
-- **Speed control** — 8 levels from ⅛× to 14×
-- **Auto-pause** — halts when membrane returns to rest post-stimulus
-- 6 real-time Canvas plots: V(t), gating variables m/h/n, ionic currents INa/IK/IL, steady-state curves x∞(V), time constants τx(V), V–n phase portrait
-- Stimulus modes: step / pulse train / ramp / sinusoidal
-- All parameters adjustable: ḡNa, ḡK, ḡL, ENa, EK, EL, Cm, temperature (Q10 scaling)
-- Channel blockers: Na⁺ (simulate TTX), K⁺ (simulate TEA)
-- AP spike counter, peak voltage, firing rate readout
-- **Phase Demo** preset — auto-runs and populates the V–n phase portrait with a limit-cycle orbit
-
----
-
-## FEA / CFD Calculator (`fea-cfd-calc.html`)
-
-25+ client-side engineering calculators. All run in the browser — no data sent anywhere.
-
-### Fluid Mechanics
-Y+ estimation · Reynolds / Mach / Strouhal / Dean / Péclet numbers · Turbulence inlet BCs (k, ε, ω, νₜ) · Turbulence intensity & length scale · Boundary layer (Blasius + Schlichting) · Pipe entry length · Hagen-Poiseuille (Q↔ΔP) · Darcy-Weisbach (Colebrook-White) · Hydraulic diameter
-
-### Biomedical CFD
-Power Law & Carreau viscosity models (blood, Cho & Kensey parameters) · Newtonian validity check (γ̇ threshold) · Womersley number · Wall shear stress from Q or ΔP · OSI / TAWSS from pasted time-series
-
-### Structural FEA
-Elastic constants conversion (E, ν, G, K, λ) · Von Mises + Tresca + safety factor · Pressure vessel (thin-wall + Lamé thick-wall) · Beam deflection (cantilever, simply supported, UDL) · Second moment of area
-
-### Unit Converters (live, type-to-convert)
-Pressure · Dynamic viscosity · Kinematic viscosity · Velocity · Length · Force · Density · Temperature (°C / °F / K / °R)
-
----
-
-## LBM CFD Simulator (`LBM-cfd.html`)
-
-Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale. Built as an educational tool for hemodynamics, fluid mechanics, and computational methods.
-
-**Physics & Numerics:**
-- D2Q9 lattice Boltzmann with BGK single-relaxation-time collision operator
-- Chapman–Enskog expansion recovering incompressible Navier–Stokes to second order
-- Half-way bounce-back no-slip boundary conditions (Ladd 1994, 2nd-order accurate)
-- Optional Carreau–Yasuda non-Newtonian blood rheology: μ₀ = 56 mPa·s, μ∞ = 3.45 mPa·s
-- Local shear rate computed from Chapman–Enskog momentum-flux tensor (no finite differences)
-- WebGL2 GPU compute via fragment shaders — one texel per cell, one draw call per timestep
-- Blood properties: ρ = 1060 kg/m³; Reynolds range Re ≤ 2000
-
-**Simulator Features:**
-- Inlet BC: velocity (plug or fully-developed parabolic) or pressure
-- Outlet BC: zero-gradient or fixed pressure
-- Display fields: velocity |U| (m/s), pressure (Pa), vorticity (ω, 1/s)
-- 6 grid resolutions: 240×96 (Coarse) → 1280×480 (Giga)
-- **8 vascular preset geometries**: empty channel, sphere/disk, square block, symmetric stenosis (50%), asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation
-- Draw tools: wall pencil, erase, brush radius control
-- Real-time stats: Re, FPS, step count
-
-**Educational Content:**
-- Why LBM for hemodynamics (vs. body-fitted mesh Navier–Stokes)
-- D2Q9 discrete velocity set and lattice weights
-- BGK collision operator and equilibrium distribution
-- Streaming step (pull formulation)
-- Chapman–Enskog multi-scale expansion → incompressible NS
-- Viscosity from relaxation time: ν = cs²(τ − ½)Δt
-- Bounce-back BC derivation (half-way interpretation)
-- Carreau–Yasuda non-Newtonian closure loop
-- Lattice-to-physical unit mapping
-- Reynolds regimes across the vasculature with reference table
-- 7 cited references (Qian 1992, Chapman 1916, Enskog 1917, Frisch/Hasslacher/Pomeau 1986, Succi 2001, Ladd 1994, Lagrava 2012)
-
----
-
-## Maxwell–Boltzmann Gas Simulator (`maxwell-boltzmann.html`)
-
-Interactive 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an educational tool for statistical mechanics and kinetic theory.
-
-**Simulation features:**
-- Hard-disk elastic collision model with spatial-hash grid O(N) detection (scales to 800 particles at interactive frame rates)
-- Speed-colored particle rendering (blue → teal → red by speed)
-- Real-time speed histogram (green bars) with exponential running average (red line)
-- Theoretical 2D Maxwell–Boltzmann curve (gray dashed) computed from instantaneous temperature
-- Adaptive x-axis scaling based on 99th-percentile speed
-- Energy controls (± thermal energy), reshuffle, reset, pause
-
-**Educational content:**
-- Full mathematical derivation of the 2D distribution from first principles (4 steps: Gaussian components → polar transform → normalization → characteristic speeds)
-- Historical background: Maxwell (1860) and Boltzmann (1872) with portraits
-- Correct characteristic speeds: *v*\_p = √(k\_BT/m), ⟨v⟩ = √(πk\_BT/2m), *v*\_rms = √(2k\_BT/m)
-- Equipartition theorem: ⟨KE⟩ = k\_BT in 2D (2 translational DOF)
-- 6 APA-format references with clickable citation highlighting
-- KaTeX-rendered equations
+- **[hodgkin-huxley](https://github.com/DThornz/hodgkin-huxley)** — Interactive HH neuron model (RK4, 6 real-time plots, channel blockers, temperature scaling)
+- **[maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann)** — 2D ideal-gas molecular dynamics with live MB speed distribution
+- **[lbm-cfd](https://github.com/DThornz/lbm-cfd)** — GPU D2Q9 LBM hemodynamics solver (WebGL2, Carreau–Yasuda, 8 vascular presets)
+- **[eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc)** — 25+ client-side FEA/CFD/biomedical engineering calculators
+- **[academic-ref-validator](https://github.com/DThornz/academic-ref-validator)** — Reference list validator (CrossRef, EPMC, Semantic Scholar, DOI verification)
 
 ---
 
@@ -207,10 +126,6 @@ website-cv-tools/
 ├── index.html              ← Landing page
 ├── AsadMirza_CV.html       ← Interactive academic CV
 ├── projects.html           ← Research project showcase
-├── hodgkin-huxley.html     ← HH neuron model + interactive simulator
-├── maxwell-boltzmann.html  ← Maxwell–Boltzmann 2D gas simulator
-├── LBM-cfd.html            ← 2D incompressible LBM CFD simulator
-├── fea-cfd-calc.html       ← FEA/CFD engineering calculators
 ├── dissertation.html       ← PhD dissertation page
 ├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
 ├── cv_editor.jsx           ← React GUI editor (run locally)

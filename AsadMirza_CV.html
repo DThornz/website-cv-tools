@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1005,10 +1005,10 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <div class="nav-dropdown">
   <a class="site-nav-link" href="projects.html">Projects ▾</a>
   <div class="nav-dropdown-menu">
-    <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
-    <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
-    <a class="nav-dropdown-item" href="LBM-cfd.html">🌊 LBM CFD Simulator</a>
-    <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/hodgkin-huxley/">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/maxwell-boltzmann/">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/lbm-cfd/">🌊 LBM CFD Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ FEA / CFD Calc</a>
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/academic-ref-validator/">📑 Reference Validator</a>
   </div>
@@ -2115,7 +2115,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <div class="entry-inner">
                   <div class="entry-abstract">Browser-based interactive implementation of the Hodgkin–Huxley (1952) neuron model developed as an educational resource for BME students. Features 4th-order Runge–Kutta integration (dt = 0.01 ms) with real-time plots of V(t), gating variables m/h/n, ionic currents I<sub>Na</sub>/I<sub>K</sub>/I<sub>L</sub>, steady-state curves (x<sub>∞</sub> vs V), time constants (τ<sub>x</sub> vs V), and a V–n phase portrait. Students adjust all HH parameters, apply channel blockers (TTX/TEA), scale kinetics by temperature (Q<sub>10</sub>=3), and explore threshold, refractory period, and tonic firing.</div>
                   <div class="entry-link-row">
-                    <a class="entry-link" href="hodgkin-huxley.html" target="_blank">🧠 Open Interactive Simulator</a>
+                    <a class="entry-link" href="https://dthornz.github.io/hodgkin-huxley/" target="_blank">🧠 Open Interactive Simulator</a>
                   </div>
                 </div>
               </div>
@@ -2136,7 +2136,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <div class="entry-inner">
                   <div class="entry-abstract">Browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Features spatial-hash O(N) collision detection (500+ particles at 60 fps), real-time speed histogram with running average and theoretical MB curve, speed-colored particle rendering, and an adaptive x-axis. Educational content includes a full derivation from first principles, historical background on Maxwell and Boltzmann, and 6 cited references.</div>
                   <div class="entry-link-row">
-                    <a class="entry-link" href="maxwell-boltzmann.html" target="_blank">⚛ Open Interactive Simulator</a>
+                    <a class="entry-link" href="https://dthornz.github.io/maxwell-boltzmann/" target="_blank">⚛ Open Interactive Simulator</a>
                   </div>
                 </div>
               </div>
@@ -2157,7 +2157,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <div class="entry-inner">
                   <div class="entry-abstract">Browser-based GPU lattice Boltzmann (LBM) solver for 2D incompressible blood flow at the vessel scale, built as an educational tool for hemodynamics and computational fluid mechanics. Implements the D2Q9 lattice with BGK single-relaxation-time collision, half-way bounce-back no-slip walls, and optional Carreau–Yasuda non-Newtonian blood rheology (μ₀ = 56 mPa·s, μ∞ = 3.45 mPa·s) with local shear rate computed from the Chapman–Enskog momentum-flux tensor. Runs entirely on the GPU via WebGL2 fragment shaders — one texel per fluid cell, one draw call per timestep — scaling to 1280×480 cells at interactive frame rates. Eight vascular preset geometries (empty channel, sphere/disk, square block, symmetric stenosis, asymmetric plaque, saccular aneurysm, Y-bifurcation, trifurcation) allow students to observe post-stenotic recirculation, von Kármán vortex shedding, and pressure drop across lesions. Display fields: velocity |U|, pressure, and vorticity (ω). Full theoretical derivation included: LBM kinetic foundation, BGK operator, Chapman–Enskog expansion recovering incompressible Navier–Stokes, bounce-back BC analysis (Ladd 1994), Carreau–Yasuda closure, lattice-to-physical unit mapping, and Reynolds regimes in the vasculature, with 7 cited references.</div>
                   <div class="entry-link-row">
-                    <a class="entry-link" href="LBM-cfd.html" target="_blank">🌊 Open Interactive Simulator</a>
+                    <a class="entry-link" href="https://dthornz.github.io/lbm-cfd/" target="_blank">🌊 Open Interactive Simulator</a>
                   </div>
                 </div>
               </div>

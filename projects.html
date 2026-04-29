@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -501,10 +501,10 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <div class="nav-dropdown">
   <a class="site-nav-link curr" href="projects.html">Projects ▾</a>
   <div class="nav-dropdown-menu">
-    <a class="nav-dropdown-item" href="hodgkin-huxley.html">🧠 HH Neuron Model</a>
-    <a class="nav-dropdown-item" href="maxwell-boltzmann.html">⚛ MB Gas Simulator</a>
-    <a class="nav-dropdown-item" href="LBM-cfd.html">🌊 LBM CFD Simulator</a>
-    <a class="nav-dropdown-item" href="fea-cfd-calc.html">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/hodgkin-huxley/">🧠 HH Neuron Model</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/maxwell-boltzmann/">⚛ MB Gas Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/lbm-cfd/">🌊 LBM CFD Simulator</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ FEA / CFD Calc</a>
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/academic-ref-validator/">📑 Reference Validator</a>
   </div>
@@ -576,7 +576,7 @@ Carreau-Yasuda: μ(γ̇) = μ∞ + (μ₀−μ∞)[1+(λγ̇)ᵃ]^((n−1)/a)"
   <!-- ══ PROJECT: Hodgkin-Huxley Model ══════════════════════════ -->
   <div class="proj-card" data-tags="code bio edu phys sim"
     data-title="Hodgkin–Huxley Interactive Neuron Model"
-    data-subtitle="Educational tool · hodgkin-huxley.html · 2026"
+    data-subtitle="Live · dthornz.github.io/hodgkin-huxley · 2026"
     data-year="2026"
     data-desc="A fully interactive, browser-based implementation of the landmark 1952 Hodgkin–Huxley neuron model — the quantitative framework for action potential generation that won the Nobel Prize in Physiology or Medicine in 1963. Built as an educational tool for biomedical engineering students studying computational neuroscience and membrane biophysics."
     data-desc2="The page integrates a 4th-order Runge–Kutta solver (dt=0.01 ms) with real-time Canvas API plots showing membrane potential, gating variables (m, h, n), ionic currents (INa, IK, IL), steady-state curves (m∞, h∞, n∞), time constants (τm, τh, τn), and a V–n phase portrait. Students can adjust all HH parameters, apply channel blockers (TTX/TEA), change temperature (Q10 scaling), switch stimulus types (step/pulse/ramp/sinusoidal), and observe threshold phenomena, refractory periods, and tonic firing."
@@ -584,7 +584,7 @@ Carreau-Yasuda: μ(γ̇) = μ∞ + (μ₀−μ∞)[1+(λγ̇)ᵃ]^((n−1)/a)"
     data-equations="Cm·dV/dt = Iext − gNa·m³h·(V−ENa) − gK·n⁴·(V−EK) − gL·(V−EL)
 dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
 φ(T) = 3^((T−6.3)/10)    # Q10 temperature scaling"
-    data-links='[{"text":"🧠 Open Interactive Model","url":"hodgkin-huxley.html"}]'
+    data-links='[{"text":"🧠 Open Interactive Model","url":"https://dthornz.github.io/hodgkin-huxley/"}]'
     data-gallery=""
     onclick="openModal(this)">
     <div class="proj-media">
@@ -605,7 +605,7 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
       <div class="proj-footer">
         <span class="proj-year">2026</span>
         <div class="proj-links">
-          <a class="proj-link" href="hodgkin-huxley.html" onclick="event.stopPropagation()">Open →</a>
+          <a class="proj-link" href="https://dthornz.github.io/hodgkin-huxley/" onclick="event.stopPropagation()">Open →</a>
         </div>
       </div>
     </div>
@@ -615,7 +615,7 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
   <!-- ══ PROJECT: Maxwell–Boltzmann Simulator ══════════════════ -->
   <div class="proj-card" data-tags="code edu phys sim"
     data-title="Maxwell–Boltzmann Gas Simulator (2D)"
-    data-subtitle="Educational tool · maxwell-boltzmann.html · 2026"
+    data-subtitle="Live · dthornz.github.io/maxwell-boltzmann · 2026"
     data-year="2026"
     data-desc="A browser-based 2D ideal-gas molecular dynamics simulation demonstrating the emergence of the Maxwell–Boltzmann speed distribution from elastic hard-disk collisions. Built as an interactive educational tool for biomedical engineering and physics students studying statistical mechanics and kinetic gas theory."
     data-desc2="The simulation implements spatial-hash O(N) collision detection (allowing hundreds of particles at interactive frame rates), a real-time speed histogram with running average, and a theoretical Maxwell–Boltzmann curve computed from the instantaneous mean kinetic energy. The page includes a full mathematical derivation of the 2D distribution from first principles, historical background on Maxwell and Boltzmann, and properly cited figures and references."
@@ -624,7 +624,7 @@ dm/dt = φ·[αm(V)·(1−m) − βm(V)·m]
 v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
 ⟨KE⟩ = k_BT    (2D equipartition)"
     data-tech="JavaScript · Canvas API · Chart.js · KaTeX"
-    data-links='[{"text":"🚀 Launch Simulator","url":"maxwell-boltzmann.html"}]'
+    data-links='[{"text":"🚀 Launch Simulator","url":"https://dthornz.github.io/maxwell-boltzmann/"}]'
     onclick="openModal(this)"
   >
     <div class="proj-media">
@@ -644,7 +644,7 @@ v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
       <div class="proj-footer">
         <span class="proj-year">2026</span>
         <div class="proj-links">
-          <a class="proj-link" href="maxwell-boltzmann.html" target="_blank" onclick="event.stopPropagation()">Launch →</a>
+          <a class="proj-link" href="https://dthornz.github.io/maxwell-boltzmann/" target="_blank" onclick="event.stopPropagation()">Launch →</a>
         </div>
       </div>
     </div>
@@ -925,7 +925,7 @@ Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
   <!-- ══ PROJECT 8: FEA/CFD Calculator ══════════════════════════ -->
   <div class="proj-card" data-tags="code cfd fea sim edu"
     data-title="FEA / CFD Engineering Calculator"
-    data-subtitle="Live on this site · fea-cfd-calc.html"
+    data-subtitle="Live · dthornz.github.io/eng-fea-cfd-calc"
     data-year="2026"
     data-desc="A comprehensive single-page engineering calculator hub with 25+ client-side calculators for fluid mechanics, biomedical CFD, and structural FEA. Designed as a teaching and research aid. All calculations run in the browser — no server, no data sent."
     data-desc2="Includes: Y+ estimation (pipe/flat-plate/external), turbulence inlet BC generator (k, ε, ω, νₜ), non-Newtonian viscosity models (Carreau/Power Law), Womersley number, WSS/OSI calculator with pasted time-series, Hagen-Poiseuille, Darcy-Weisbach with Colebrook-White iteration, elastic constants converter, Von Mises / Tresca, beam deflection, and 7 live unit converters."
@@ -933,7 +933,7 @@ Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
     data-equations="y⁺ = u_τ·Δy/ν  →  Δy = y⁺·ν/u_τ    # Y+ wall distance
 k = 1.5·(U·I)²              # turbulent kinetic energy
 ε = Cμ^(3/4)·k^(3/2)/ℓ     # turbulent dissipation"
-    data-links='[{"text":"🔗 Open Calculator","url":"fea-cfd-calc.html"}]'
+    data-links='[{"text":"🔗 Open Calculator","url":"https://dthornz.github.io/eng-fea-cfd-calc/"}]'
     data-gallery=""
     onclick="openModal(this)">
     <div class="proj-media">
@@ -954,7 +954,7 @@ k = 1.5·(U·I)²              # turbulent kinetic energy
       <div class="proj-footer">
         <span class="proj-year">2026</span>
         <div class="proj-links">
-          <a class="proj-link" href="fea-cfd-calc.html" onclick="event.stopPropagation()">Open →</a>
+          <a class="proj-link" href="https://dthornz.github.io/eng-fea-cfd-calc/" onclick="event.stopPropagation()">Open →</a>
         </div>
       </div>
     </div>
