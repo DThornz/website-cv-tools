@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -323,7 +323,9 @@ body.dark-mode{
 }
 
 /* ── Navigation ── */
-body.dark-mode .site-nav-linkbody.dark-mode .site-nav-link:hoverbody.dark-mode .site-nav-link.currbody.dark-mode .site-nav-logobody.dark-mode .nav-link{color:#7a90ae!important}
+body.dark-mode .site-nav-link,body.dark-mode .nav-link{color:#7a90ae!important}
+body.dark-mode .site-nav-link:hover,body.dark-mode .site-nav-link.curr{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
+body.dark-mode .site-nav-logo{color:#2dd4bf!important}
 body.dark-mode .nav-link:hover,body.dark-mode .nav-link.active{color:#2dd4bf!important;background:rgba(45,212,191,.08)!important}
 body.dark-mode .nav-logo{color:#2dd4bf!important}
 body.dark-mode .nav{background:rgba(6,14,28,.96)!important;border-color:#1c3050!important}
@@ -504,7 +506,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <a class="nav-dropdown-item" href="https://dthornz.github.io/hodgkin-huxley/">🧠 HH Neuron Model</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/maxwell-boltzmann/">⚛ MB Gas Simulator</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/lbm-cfd/">🌊 LBM CFD Simulator</a>
-    <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ FEA / CFD Calc</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ Eng / FEA / CFD Calc</a>
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/academic-ref-validator/">📑 Reference Validator</a>
   </div>
@@ -651,7 +653,46 @@ v_p = √(k_BT/m)    ⟨v⟩ = √(πk_BT/2m)    v_rms = √(2k_BT/m)
   </div>
 
 
-  <!-- ══ PROJECT 1: CAVD Biomarkers ═══════════════════════════════ -->
+
+
+  <!-- ══ PROJECT: LBM CFD Simulator ═══════════════════════════ -->
+  <div class="proj-card" data-tags="code cfd bio sim edu"
+    data-title="2D LBM CFD Simulator"
+    data-subtitle="Live · dthornz.github.io/lbm-cfd · 2026"
+    data-year="2026"
+    data-desc="A browser-based GPU lattice-Boltzmann solver for 2D incompressible blood flow at the vessel scale. Uses the D2Q9/BGK scheme recovered from the Chapman–Enskog expansion to approximate the incompressible Navier–Stokes equations. Built as an interactive research and teaching tool for biomedical CFD students."
+    data-desc2="Runs entirely on the GPU via WebGL2 fragment shaders, achieving interactive frame rates for grids up to 512×256. Supports Newtonian and shear-thinning Carreau–Yasuda non-Newtonian blood rheology, pulsatile inlet BCs, velocity and pressure boundaries, and 8 vascular presets (straight channel, stenosis, aneurysm, bifurcation, and more). Users can draw custom obstacles in real time and visualise velocity magnitude, pressure, or vorticity."
+    data-metrics='[["D2Q9","Lattice scheme"],["WebGL2","GPU solver"],["8","Vascular presets"]]'
+    data-equations="f_i(x+e_i,t+1) = f_i(x,t) − (f_i − f_i^eq)/τ    # BGK collision
+f_i^eq = w_i·ρ·[1 + (e_i·u)/c_s² + (e_i·u)²/2c_s⁴ − u²/2c_s²]
+μ_eff = μ_∞ + (μ₀−μ_∞)·[1+(λγ̇)²]^((n−1)/2)   # Carreau–Yasuda"
+    data-tech="WebGL2 · GLSL · JavaScript · KaTeX"
+    data-links='[{"text":"🚀 Launch Simulator","url":"https://dthornz.github.io/lbm-cfd/"}]'
+    onclick="openModal(this)"
+  >
+    <div class="proj-media">
+      <div class="proj-media-placeholder">
+        <span class="ph-icon">🌊</span>
+        <span class="ph-text">Interactive GPU flow simulation</span>
+      </div>
+      <span class="proj-media-badge">CFD · WebGL2</span>
+    </div>
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag cfd">CFD</span>
+        <span class="proj-tag code">Software</span>
+        <span class="proj-tag bio">Biomedical</span>
+      </div>
+      <div class="proj-title">2D LBM CFD Simulator</div>
+      <div class="proj-desc">GPU lattice-Boltzmann solver for 2D blood flow. D2Q9/BGK scheme, Carreau–Yasuda rheology, 8 vascular presets, real-time obstacle drawing.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/lbm-cfd/" onclick="event.stopPropagation()">Launch →</a>
+        </div>
+      </div>
+    </div>
+  </div>  <!-- ══ PROJECT 1: CAVD Biomarkers ═══════════════════════════════ -->
   <!--
     TO ADD MEDIA:
       Option A — YouTube:  set data-yt="YOUR_VIDEO_ID"
@@ -924,12 +965,12 @@ Graph smooth: r_i = Σ(w_j·r_j)      # length-weighted neighbor avg"
 
   <!-- ══ PROJECT 8: FEA/CFD Calculator ══════════════════════════ -->
   <div class="proj-card" data-tags="code cfd fea sim edu"
-    data-title="FEA / CFD Engineering Calculator"
-    data-subtitle="Live · dthornz.github.io/eng-fea-cfd-calc"
+    data-title="Eng / FEA / CFD Calculator Hub"
+    data-subtitle="Live · dthornz.github.io/eng-fea-cfd-calc · 2026"
     data-year="2026"
-    data-desc="A comprehensive single-page engineering calculator hub with 25+ client-side calculators for fluid mechanics, biomedical CFD, and structural FEA. Designed as a teaching and research aid. All calculations run in the browser — no server, no data sent."
-    data-desc2="Includes: Y+ estimation (pipe/flat-plate/external), turbulence inlet BC generator (k, ε, ω, νₜ), non-Newtonian viscosity models (Carreau/Power Law), Womersley number, WSS/OSI calculator with pasted time-series, Hagen-Poiseuille, Darcy-Weisbach with Colebrook-White iteration, elastic constants converter, Von Mises / Tresca, beam deflection, and 7 live unit converters."
-    data-metrics='[["25+","Calculators"],["7","Unit sets"],["0","Server needed"]]'
+    data-desc="A comprehensive single-page engineering calculator hub with 80+ client-side calculators across 12 disciplines. Designed as a teaching and research aid. All calculations run in the browser — no server, no data sent."
+    data-desc2="Covers: Fluid Mechanics (Y+, Reynolds/Dean/Mach/Womersley, turbulence BCs, boundary layer, pipe flow), Biomedical CFD (Carreau/Power Law, WSS/OSI/TAWSS), Structural FEA (elastic constants, Von Mises/Tresca, pressure vessel, beam deflection), Thermodynamics (conduction, convection, radiation, fin efficiency), Advanced Mechanics (fracture, fatigue, torsion, buckling), Electrical Eng. (RC/RL/RLC, Op-Amp), Biomedical Eng. (Nernst, Goldman, hemodynamics), Dynamics & Control (MSD system, projectile), Civil Eng. (Manning, Darcy seepage), Geometry, Calculus & vector ∇ tools, and 7 live Unit Converters."
+    data-metrics='[["80+","Calculators"],["12","Disciplines"],["0","Server needed"]]'
     data-equations="y⁺ = u_τ·Δy/ν  →  Δy = y⁺·ν/u_τ    # Y+ wall distance
 k = 1.5·(U·I)²              # turbulent kinetic energy
 ε = Cμ^(3/4)·k^(3/2)/ℓ     # turbulent dissipation"
@@ -949,8 +990,8 @@ k = 1.5·(U·I)²              # turbulent kinetic energy
         <span class="proj-tag fea">FEA</span>
         <span class="proj-tag code">Web</span>
       </div>
-      <div class="proj-title">FEA / CFD Engineering Calculator</div>
-      <div class="proj-desc">25+ client-side calculators covering Y+, turbulence BCs, blood rheology, WSS/OSI, beam deflection, and unit conversion.</div>
+      <div class="proj-title">Eng / FEA / CFD Calculator Hub</div>
+      <div class="proj-desc">80+ client-side calculators across 12 engineering disciplines. Covers CFD, FEA, thermodynamics, electrical, biomedical, civil, geometry, calculus, and more.</div>
       <div class="proj-footer">
         <span class="proj-year">2026</span>
         <div class="proj-links">
