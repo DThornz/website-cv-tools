@@ -30,6 +30,7 @@ Each tool lives in its own repository and GitHub Pages deployment. The nav bar a
 | **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
 | **Reference Validator** | [DThornz/academic-ref-validator](https://github.com/DThornz/academic-ref-validator) | [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) |
 | **1D Energy Transport Simulator** | [DThornz/1D-Energy-Transport-Sim](https://github.com/DThornz/1D-Energy-Transport-Sim) | [dthornz.github.io/1D-Energy-Transport-Sim](https://dthornz.github.io/1D-Energy-Transport-Sim/) |
+| **Advanced Curve Fitting Studio** | [DThornz/advanced-curve-fitting-studio](https://github.com/DThornz/advanced-curve-fitting-studio) | [dthornz.github.io/advanced-curve-fitting-studio](https://dthornz.github.io/advanced-curve-fitting-studio/) |
 
 All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
 
@@ -85,6 +86,7 @@ Each tool is documented in its own repository:
 - **[eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc)** — 25+ client-side FEA/CFD/biomedical engineering calculators
 - **[academic-ref-validator](https://github.com/DThornz/academic-ref-validator)** — Reference list validator (CrossRef, EPMC, Semantic Scholar, DOI verification)
 - **[1D-Energy-Transport-Sim](https://github.com/DThornz/1D-Energy-Transport-Sim)** — Finite difference solver for the 1D heat equation (Cartesian, cylindrical, spherical; Dirichlet/Neumann BCs; Von Neumann stability; Thomas solver steady-state overlay)
+- **[advanced-curve-fitting-studio](https://github.com/DThornz/advanced-curve-fitting-studio)** — Browser-based nonlinear regression with 24 models (LM fitting, 7 model groups including electrophysiology, multi-tab sessions, residual diagnostics, parameter sweeps, annotation tools, PNG/SVG export)
 
 ---
 
