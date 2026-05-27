@@ -131,7 +131,7 @@ No patent license of any kind is granted under this License, whether expressly, 
 
 ## 6. ATTRIBUTION
 
-Any publication, presentation, thesis, report, or dissemination of research results that uses or is derived from the Software must include clear and prominent attribution to the Licensor in the form: *"Advanced Curve Fitting Studio, Asad Mirza (2026), https://dthornz.github.io/advanced-curve-fitting-studio/"*.
+Any publication, presentation, thesis, report, or dissemination of research results that uses or is derived from the Software must include clear and prominent attribution to the Licensor in the form: *"Curve Fitting Studio, Asad Mirza (2026), https://dthornz.github.io/curve-fitting-studio/"*.
 
 Nothing in this License grants permission to use the Licensor's name, institutional affiliation, likeness, or logos for endorsement, promotion, or advertising without prior written consent.
 

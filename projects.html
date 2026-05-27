@@ -509,7 +509,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <a class="nav-dropdown-item" href="https://dthornz.github.io/eng-fea-cfd-calc/">⚙ Eng / FEA / CFD Calc</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/academic-ref-validator/">📑 Reference Validator</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/1D-Energy-Transport-Sim/">🌡 1D Energy Transport Sim</a>
-    <a class="nav-dropdown-item" href="https://dthornz.github.io/advanced-curve-fitting-studio/">📈 Curve Fitting Studio</a>
+    <a class="nav-dropdown-item" href="https://dthornz.github.io/curve-fitting-studio/">📈 Curve Fitting Studio</a>
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
   </div>
 </div>
@@ -954,6 +954,37 @@ TAWSS = (1/T)·∫|τ| dt              # time-averaged WSS"
         <span class="proj-year">2026</span>
         <div class="proj-links">
           <a class="proj-link" href="https://dthornz.github.io/1D-Energy-Transport-Sim/" onclick="event.stopPropagation()">Open →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ PROJECT: Curve Fitting Studio ════════════════════ -->
+  <div class="proj-card" data-tags="code edu"
+    data-title="Curve Fitting Studio"
+    data-subtitle="Live · dthornz.github.io/curve-fitting-studio · 2026"
+    data-year="2026"
+    data-desc="A browser-native, fully offline nonlinear regression platform inspired by MATLAB's Curve Fitting App, built for scientists, engineers, and researchers. Features 39 built-in models spanning exponential, sigmoidal, peak/spectral, oscillatory, polynomial, and electrophysiology families (Boltzmann G-V, HH conductance, Kir, GHK flux), plus custom Math.js equations with auto-detected parameters and a visual equation editor (30+ example equations). Implements four solvers — Levenberg–Marquardt, Gauss–Newton, Nelder-Mead, BFGS — with multi-start pilot optimization, Huber IRLS robust fitting, parameter bounds, and parameter locking."
+    data-desc2="Diagnostic outputs include R², Adj-R², RMSE, AIC, BIC, MAE, Durbin–Watson, Wald–Wolfowitz runs test, Jacobian condition number, and a parameter correlation heatmap with plain-English suggestions. Additional capabilities: 95% CI and PI bands, weighted fitting, outlier detection and masking, data pre-processing (smoothing filters + Fourier filter + FFT/STFT spectrogram), F-test for nested model comparison, prediction/calibration lookup (IC50, EC50, Km), parameter sweep sliders, Try All Models ranking, plot annotations, Python/R/MATLAB/LaTeX export, multi-tab workspace, session save/restore, and Web Worker background fitting. All computation runs client-side — no data transmitted."
+    data-metrics='[["39","Built-in Models"],["4","Fit Algorithms"],["100%","Client-Side"]]'
+    data-equations="SSE = Σ(yᵢ − f(xᵢ,p))²       # objective function
+J_ij = ∂f/∂pⱼ|xᵢ            # numerical Jacobian (ε=1e-7)
+(JᵀJ + λ·diag(JᵀJ))·δ = Jᵀr  # LM normal equations (Marquardt scaling)"
+    data-links='[{"text":"📈 Open Curve Fitting Studio","url":"https://dthornz.github.io/curve-fitting-studio/"},{"text":"💾 GitHub","url":"https://github.com/DThornz/curve-fitting-studio"}]'
+    data-gallery=""
+    onclick="openModal(this)">
+    <div class="proj-body">
+      <div class="proj-tags">
+        <span class="proj-tag code">Software</span>
+        <span class="proj-tag code">Educational</span>
+      </div>
+      <div class="proj-title">Curve Fitting Studio</div>
+      <div class="proj-desc">Browser-native offline nonlinear regression platform — 39 models, 4 solvers, CI/PI bands, Huber IRLS, Fourier pre-processing, Python/R/MATLAB export, and electrophysiology model families.</div>
+      <div class="proj-footer">
+        <span class="proj-year">2026</span>
+        <div class="proj-links">
+          <a class="proj-link" href="https://dthornz.github.io/curve-fitting-studio/" onclick="event.stopPropagation()">Open →</a>
         </div>
       </div>
     </div>
