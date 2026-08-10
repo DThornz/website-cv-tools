@@ -1026,6 +1026,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 <div class="top-bar">
   <div class="top-bar-name">Asad Mirza, PhD</div>
   <div class="top-bar-right">
+    <button class="tb-btn" onclick="toggleView()" id="view-toggle" title="Switch between the full CV and a concise résumé view">📃 Résumé view</button>
     <button class="tb-btn" onclick="toggleAll()" id="all-btn">⊞ Expand All</button>
     <button class="tb-btn primary" onclick="openExport()">⬇ Export CV (Word)</button>
   </div>
@@ -1047,6 +1048,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <a class="nav-link" href="#supervision">👥 Supervision</a>
   <a class="nav-link" href="#funding">🏆 Funding & Awards</a>
   <a class="nav-link" href="#skills">⚙️ Skills</a>
+  <a class="nav-link" href="#selected-projects">🧩 Projects</a>
   <a class="nav-link" href="#service">🌐 Service</a>
 </nav>
 
@@ -1099,9 +1101,15 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 </div>
 
 <!-- STATEMENT -->
-<div class="highlight-box">
+<!-- Résumé-mode summary (industry/consulting framing) — shown only in Résumé view / export -->
+<div class="highlight-box resume-summary" id="resume-summary" hidden>
+  Biomedical Engineer and Research Professor with a PhD in Biomedical Engineering and deep expertise in <strong>computational modeling, simulation, and data-driven analysis</strong> of complex physiological systems. Proven strength leading interdisciplinary research, mentoring students, and translating multiscale physical and biological processes into predictive computational frameworks using <strong>ANSYS, COMSOL, and MATLAB</strong>. Seeking roles in industry, academia, or consulting where advanced simulation, programming, and modeling skills can drive insight, optimization, and decision-making.
+</div>
+<div class="highlight-box cv-summary">
   Computational biomedical engineer and early-stage investigator whose research is directed at understanding and ultimately preventing cardiovascular disease, with a focus on <strong>calcific aortic valve disease (CAVD)</strong> and <strong>vascular endothelial dysfunction</strong>. Working at the intersection of fluid mechanics, mechanobiology, and multiscale computational modeling, he develops patient-specific simulations that identify hemodynamic biomarkers of early disease, inform valve design, and reveal the mechanistic link between disturbed blood flow and pathological cell behavior. Current work spans <strong>cerebrovascular network modeling</strong>, <strong>stochastic calcium signaling</strong> in brain capillary endothelial cells, orbital shaker CFD optimization, and biomedical image analysis pipelines. Dedicated educator with 8+ years of MATLAB-intensive teaching across undergraduate and graduate BME curricula.
 </div>
+
+<div id="view-banner">Résumé view — showing a concise subset (Experience · Projects · Skills · Education · Awards). Toggle “Full CV” to see everything.</div>
 
 
 <!-- ╔══════════════════════════════════════════════════════════╗
@@ -1251,7 +1259,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <div class="section-inner">
 
       <!-- Research Assistant Professor -->
-      <div class="entry-card open">
+      <div class="entry-card open" data-resume="Lead instructor for graduate/undergraduate computational courses (BME 1054L, 2740, 6715), reaching 60+ students per semester|Principal modeler for multiscale cerebral microvascular simulations: Green's Function NO transport, stochastic IP₃R calcium dynamics, RBC-to-tissue hemodynamic coupling (PI: Dr. Tsoukias)|Principal modeler on NIH/AHA-funded patient-specific FSI simulations of asymmetric calcific aortic valve disease (PI: Dr. Hutcheson)|SBIR/STTR contributor: computational modeling expertise across 3 proposals, >$200K combined requested|Supervised 3 undergraduate researchers and 10+ senior design teams; 2 conference presentations and 1 device advanced to startup incubation">
         <button class="entry-toggle" onclick="toggleEntry(this)">
           <span class="entry-year">2024–Now</span>
           <div class="entry-title-col">
@@ -1279,7 +1287,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       </div>
 
       <!-- Graduate RA -->
-      <div class="entry-card">
+      <div class="entry-card" data-resume="Published first-author findings in Bioengineering (2024) identifying wall shear stress as an early predictor of calcification initiation — first study linking local hemodynamics to cusp-specific disease patterns|Developed a computational pipeline parameterizing 50+ patient-specific aortic valve geometries with an automated calcification generator|Validated models against ex-vivo Vivitro Pulse Duplicator hydrodynamic data and nanoindentation, achieving R² > 0.85|Performed CFD/FSI simulations in ANSYS Fluent + MATLAB analyzing oscillatory shear stress on valve cells; presented at BMES 2023">
         <button class="entry-toggle" onclick="toggleEntry(this)">
           <span class="entry-year">2019–2024</span>
           <div class="entry-title-col">
@@ -1305,7 +1313,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       </div>
 
       <!-- Undergrad RA -->
-      <div class="entry-card">
+      <div class="entry-card" data-resume="Built multiscale ODE models of pericyte neurovascular coupling and ran COMSOL FSI simulations of brain arterioles/capillaries under dilation/constriction|Presented at the World Congress for Microcirculation (Trainee Award, 2018) and BMES (2018)">
         <button class="entry-toggle" onclick="toggleEntry(this)">
           <span class="entry-year">2016–2019</span>
           <div class="entry-title-col">
@@ -1324,7 +1332,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       </div>
 
       <!-- Graduate TA -->
-      <div class="entry-card">
+      <div class="entry-card" data-resume="Lead TA for BME 1054L across 6 semesters; redesigned modules and created instructional videos that improved student comprehension and engagement scores by 25%|Developed project-based modules on solving PDEs/ODEs in MATLAB for BME 3632 Biotransport|Created a new Biosignal Processing module (Fourier analysis, filtering, ECG/EEG applications)">
         <button class="entry-toggle" onclick="toggleEntry(this)">
           <span class="entry-year">2018–2022</span>
           <div class="entry-title-col">
@@ -2957,7 +2965,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <div class="section-inner">
 
       <div class="sub-divider">Fellowships &amp; Grants</div>
-      <div class="award-entry"><div class="award-year">2023</div><div><div class="award-name">Dissertation Year Fellowship — $17,000</div><div class="award-org">University Graduate School, FIU</div></div></div>
+      <div class="award-entry"><div class="award-year">2023</div><div><div class="award-name">Dissertation Year Fellowship — $35,000</div><div class="award-org">University Graduate School, FIU</div></div></div>
       <div class="award-entry"><div class="award-year">2021</div><div><div class="award-name">Koerner Family Foundation Fellowship — $10,000</div><div class="award-org">Koerner Family Foundation</div></div></div>
       <div class="award-entry"><div class="award-year">2023</div><div><div class="award-name">SGA Graduate Scholarship — $1,000</div><div class="award-org">Student Government Association, FIU</div></div></div>
       <div class="award-entry"><div class="award-year">2017</div><div><div class="award-name">McNair Undergraduate Fellowship — $1,000</div><div class="award-org">Ronald E. McNair Post-Baccalaureate Achievement Program</div></div></div>
@@ -3033,6 +3041,12 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
           </div>
         </div>
         <div class="skill-group">
+          <div class="skill-group-title">Professional &amp; Soft Skills</div>
+          <div class="tags-list">
+            <span class="tag">Mentoring</span><span class="tag">Scientific Communication</span><span class="tag">Grant Writing (SBIR/STTR)</span><span class="tag">Project Supervision</span><span class="tag">Interdisciplinary Collaboration</span>
+          </div>
+        </div>
+        <div class="skill-group">
           <div class="skill-group-title">Languages</div>
           <div class="tags-list">
             <span class="tag">English (Native)</span><span class="tag">Urdu (Native)</span><span class="tag">Hindi (Basic)</span>
@@ -3046,6 +3060,60 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     </div>
   </div>
 </div><!-- /skills -->
+
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  L1: SELECTED PROJECTS                                  ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<div class="section-wrapper" id="selected-projects">
+  <button class="section-toggle" onclick="toggleSection(this)">
+    <div class="section-header-left">
+      <div class="section-icon">🧩</div>
+      <div>
+        <div class="section-title">Selected Projects</div>
+        <div class="section-count">Applied modeling · Software · Devices</div>
+      </div>
+    </div>
+    <span class="chevron">▼</span>
+  </button>
+  <div class="section-body">
+    <div class="section-inner">
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2020–2024</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Aortic Valve Calcification Prediction Model</div>
+            <div class="entry-subtitle">Novel FSI model linking hemodynamic wall shear stress to early calcification sites (ANSYS / MATLAB)</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">Developed a patient-specific fluid–structure interaction pipeline that predicts cusp-specific early calcification from local hemodynamic biomarkers (WSS, OSI), validated against ex-vivo hydrodynamic and nanoindentation data (R² &gt; 0.85). Basis of the 2024 <em>Bioengineering</em> publication.</div></div></div>
+      </div>
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2021–2023</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Automated ABET / SACS Accreditation Data Processor</div>
+            <div class="entry-subtitle">MATLAB tooling automating course-assessment data processing · ~40 hours/semester saved</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">Built MATLAB scripts to ingest, clean, and summarize course assessment data for ABET/SACS accreditation reporting, eliminating manual spreadsheet work and saving roughly 40 hours per semester.</div></div></div>
+      </div>
+      <div class="entry-card">
+        <button class="entry-toggle" onclick="toggleEntry(this)">
+          <span class="entry-year">2017</span>
+          <div class="entry-title-col">
+            <div class="entry-title">Portable 3D-Printed Pulse Oximeter</div>
+            <div class="entry-subtitle">Led team to design, build, and test a low-cost oximeter using 3D-printed components</div>
+          </div>
+          <span class="chevron-xs">▼</span>
+        </button>
+        <div class="entry-body"><div class="entry-inner"><div class="entry-abstract">Directed the design, fabrication, and testing of a low-cost portable pulse oximeter built from 3D-printed components and off-the-shelf optical sensing.</div></div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /selected-projects -->
 
 
 <!-- ╔══════════════════════════════════════════════════════════╗
@@ -3290,6 +3358,40 @@ if (skillsSection && 'IntersectionObserver' in window) {
 </script>
 
 <!-- ============================================================
+     CV ⟷ RÉSUMÉ page view toggle
+============================================================ -->
+<style>
+#resume-summary[hidden]{display:none}
+body.mode-resume .cv-summary{display:none}
+body.mode-resume #resume-summary{display:block}
+body.mode-resume .resume-hide{display:none}
+body.mode-resume #view-toggle{background:var(--teal,#2dd4bf);color:#05241f;border-color:var(--teal,#2dd4bf)}
+#view-banner{display:none}
+body.mode-resume #view-banner{display:block;text-align:center;font-family:var(--mono,monospace);font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--teal,#2dd4bf);border:1px dashed var(--teal,#2dd4bf);border-radius:8px;padding:6px 10px;margin:0 0 18px}
+@media print{#view-toggle,#view-banner{display:none!important}}
+</style>
+<script>
+(function(){
+  var RESUME=["experience","selected-projects","skills","education","funding"];
+  var KEY="cv_view_mode";
+  function apply(mode){
+    var resume=mode==="resume";
+    document.body.classList.toggle("mode-resume",resume);
+    document.querySelectorAll(".section-wrapper[id]").forEach(function(s){
+      s.classList.toggle("resume-hide", resume && RESUME.indexOf(s.id)<0);
+    });
+    var btn=document.getElementById("view-toggle");
+    if(btn) btn.textContent=resume?"📄 Full CV":"📃 Résumé view";
+    try{localStorage.setItem(KEY,mode);}catch(e){}
+  }
+  window.toggleView=function(){ apply(document.body.classList.contains("mode-resume")?"cv":"resume"); };
+  var saved="cv"; try{saved=localStorage.getItem(KEY)||"cv";}catch(e){}
+  function init(){ apply(saved); }
+  if(document.readyState!=="loading") init(); else document.addEventListener("DOMContentLoaded",init);
+})();
+</script>
+
+<!-- ============================================================
      CV EXPORT — customizable dynamic .docx generator
      Reads the live DOM (single source of truth) + user options.
 ============================================================ -->
@@ -3353,8 +3455,9 @@ if (skillsSection && 'IntersectionObserver' in window) {
     <div id="xp-body">
       <div class="xp-label">Profile Preset</div>
       <div class="xp-presets">
-        <button class="xp-preset" data-preset="academic"><b>🎓 Academic</b><span>Publications-forward, full record</span></button>
-        <button class="xp-preset" data-preset="industry"><b>🏭 Industry</b><span>Experience &amp; skills first, condensed</span></button>
+        <button class="xp-preset" data-preset="academic"><b>🎓 Academic CV</b><span>Publications-forward, full record</span></button>
+        <button class="xp-preset" data-preset="industry"><b>🏭 Industry CV</b><span>Experience &amp; skills first, condensed</span></button>
+        <button class="xp-preset" data-preset="resume"><b>📃 Résumé</b><span>1–2 pages: summary, achievements, projects, skills</span></button>
         <button class="xp-preset" data-preset="custom"><b>⚙ Custom</b><span>Your current arrangement</span></button>
       </div>
       <div class="xp-label">Sections — toggle, reorder (drag or ▲▼), star to feature</div>
@@ -3374,31 +3477,56 @@ if (skillsSection && 'IntersectionObserver' in window) {
 <script>
 (function(){
   "use strict";
-  var SECTION_META={ education:"🎓",experience:"💼",publications:"📄",conferences:"🎙",teaching:"📚",supervision:"👥",funding:"🏆",skills:"⚙️",service:"🌐" };
+  var SECTION_META={ education:"🎓",experience:"💼",publications:"📄",conferences:"🎙",teaching:"📚",supervision:"👥",funding:"🏆",skills:"⚙️","selected-projects":"🧩",service:"🌐" };
+  // Sections that make up the concise Résumé; ordered as they appear in the résumé.
+  var RESUME_SECTIONS=["experience","selected-projects","skills","education","funding"];
   var PRESETS={
-    academic:{ order:["education","experience","publications","conferences","teaching","supervision","funding","skills","service"], hidden:[] },
-    industry:{ order:["experience","skills","education","funding","publications","supervision","service"], hidden:["conferences","teaching"] }
+    academic:{ order:["education","experience","publications","conferences","teaching","supervision","funding","skills","selected-projects","service"], hidden:[] },
+    industry:{ order:["experience","skills","selected-projects","education","funding","publications","supervision","service"], hidden:["conferences","teaching"] },
+    // Résumé: concise, industry-framed — only résumé sections, achievement bullets, résumé summary.
+    resume:{ order:RESUME_SECTIONS.slice(), hidden:["publications","conferences","teaching","supervision","service"], resumeMode:true }
   };
   var LSKEY="cv_export_state_v1";
   var state=null; // {order:[], hidden:{}, excluded:{}, featured:{}, header:true, badges:true, preset:''}
 
   /* ---------- DOM SCRAPE (single source of truth) ---------- */
   function sectionEntries(sec){
+    // Skills: one entry per group heading (name + comma-joined items/tags),
+    // so skill-bars AND tag lists (CAD, Experimental, Soft Skills, Languages…) all export.
+    if(sec.querySelector(".skills-grid")){
+      var so=[], j=0;
+      sec.querySelectorAll(".skill-group-title").forEach(function(tEl){
+        var items=[], node=tEl.nextElementSibling;
+        while(node && !node.classList.contains("skill-group-title")){
+          if(node.classList.contains("skill-item")){
+            var sp=node.querySelectorAll(".skill-name-row span");
+            if(sp[0]) items.push(sp[0].textContent.trim()+(sp[1]?" ("+sp[1].textContent.trim()+")":""));
+          } else {
+            [].forEach.call(node.querySelectorAll(".tag"),function(tg){ items.push(tg.textContent.trim()); });
+          }
+          node=node.nextElementSibling;
+        }
+        if(items.length) so.push({sub:null,idx:j++,year:"",titleText:tEl.textContent.trim(),subEl:null,subText:items.join(", "),badges:[],resumeNotes:[]});
+      });
+      return so;
+    }
     var out=[], curSub=null, i=0;
     var nodes=sec.querySelectorAll(".subsection-title,.sub-divider,.entry-card,.award-entry,.skill-item");
     nodes.forEach(function(n){
       if(n.classList.contains("subsection-title")||n.classList.contains("sub-divider")){
         curSub=n.textContent.replace(/\s+/g," ").trim(); return;
       }
-      var e={sub:curSub,idx:i++};
+      var e={sub:curSub,idx:i++,resumeNotes:[]};
       if(n.classList.contains("entry-card")){
         var y=n.querySelector(".entry-year"), t=n.querySelector(".entry-title"), s=n.querySelector(".entry-subtitle");
         e.year=y?y.textContent.trim():""; e.titleText=t?t.textContent.trim():""; e.subEl=s||null;
         e.badges=[].map.call(n.querySelectorAll(".entry-badges .badge"),function(b){return b.textContent.trim();});
+        var rn=n.getAttribute("data-resume");
+        if(rn) e.resumeNotes=rn.split("|").map(function(x){return x.trim();}).filter(Boolean);
       } else if(n.classList.contains("award-entry")){
         var ay=n.querySelector(".award-year"), an=n.querySelector(".award-name"), ao=n.querySelector(".award-org");
         e.year=ay?ay.textContent.trim():""; e.titleText=an?an.textContent.trim():""; e.subEl=ao||null; e.badges=[];
-      } else { // skill-item
+      } else { // skill-item (fallback if a skills-grid isn't present)
         var sp=n.querySelectorAll(".skill-name-row span");
         e.year=""; e.titleText=sp[0]?sp[0].textContent.trim():""; e.subEl=null;
         e.subText=sp[1]?sp[1].textContent.trim():""; e.badges=[];
@@ -3436,6 +3564,7 @@ if (skillsSection && 'IntersectionObserver' in window) {
     if(PRESETS[name]){ var live=defaultOrder(); var ord=PRESETS[name].order.filter(function(id){return live.indexOf(id)>-1;});
       live.forEach(function(id){ if(ord.indexOf(id)<0) ord.push(id); });
       base.order=ord; PRESETS[name].hidden.forEach(function(id){ base.hidden[id]=true; });
+      base.resumeMode=!!PRESETS[name].resumeMode;
     }
     base.preset=name; state=base; saveState(); renderSections(); markPreset();
   }
@@ -3525,7 +3654,8 @@ if (skillsSection && 'IntersectionObserver' in window) {
       body+=para(run("ASAD MIRZA, PhD",{b:true,caps:true,sz:44,cspace:24}),{align:"center",after:20});
       body+=para(run("Research Assistant Professor · Department of Biomedical Engineering · Florida International University",{sz:20}),{align:"center",after:0});
       body+=para(run("10555 West Flagler St, Miami, FL 33174 · amirza@fiu.edu · ORCID: 0000-0003-4515-2203 · github.com/DThornz",{sz:18}),{align:"center",after:0});
-      var hl=document.querySelector(".highlight-box");
+      var hl=document.querySelector(state.resumeMode ? "#resume-summary" : ".cv-summary");
+      if(!hl) hl=document.querySelector(".highlight-box");
       if(hl) body+=para(elToRuns(hl,{sz:19}),{align:"both",before:80,after:0});
     }
     state.order.forEach(function(sid){
@@ -3553,6 +3683,10 @@ if (skillsSection && 'IntersectionObserver' in window) {
         var sub=""; if(e.subEl) sub=elToRuns(e.subEl,{sz:19}); else if(e.subText) sub=run(e.subText,{sz:19});
         if(sub) line+=br()+sub;
         if(state.badges && e.badges && e.badges.length) line+=br()+run(e.badges.join("  ·  "),{i:true,sz:17});
+        // Résumé mode: append quantified achievement bullets under the entry.
+        if(state.resumeMode && e.resumeNotes && e.resumeNotes.length){
+          e.resumeNotes.forEach(function(n){ line+=br()+run("•  "+n,{sz:19}); });
+        }
         body+=para(line,{after:40});
       });
     });

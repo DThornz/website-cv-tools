@@ -353,7 +353,7 @@ const INITIAL_DATA = {
       subsections: [{
         id: uid(), title: "", defaultOpen: true,
         entries: [
-          { id: uid(), year: "2023", title: "Dissertation Year Fellowship — $17,000", subtitle: "University Graduate School, FIU", badges: [{ id: uid(), text: "Fellowship", type: "first" }], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
+          { id: uid(), year: "2023", title: "Dissertation Year Fellowship — $35,000", subtitle: "University Graduate School, FIU", badges: [{ id: uid(), text: "Fellowship", type: "first" }], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "2021", title: "Koerner Family Foundation Fellowship — $10,000", subtitle: "Koerner Family Foundation", badges: [{ id: uid(), text: "Fellowship", type: "first" }], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "2023", title: "SGA Graduate Scholarship — $1,000", subtitle: "Student Government Association, FIU", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
           { id: uid(), year: "2017", title: "McNair Undergraduate Fellowship — $1,000", subtitle: "Ronald E. McNair Post-Baccalaureate Achievement Program", badges: [], abstract: "", metaItems: [], links: [], images: [], videos: [], notes: "" },
