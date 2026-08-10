@@ -1027,7 +1027,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
   <div class="top-bar-name">Asad Mirza, PhD</div>
   <div class="top-bar-right">
     <button class="tb-btn" onclick="toggleAll()" id="all-btn">⊞ Expand All</button>
-    <button class="tb-btn primary" onclick="printCV()">⬇ Download Word CV</button>
+    <button class="tb-btn primary" onclick="openExport()">⬇ Export CV (Word)</button>
   </div>
 </div>
 
@@ -3142,18 +3142,6 @@ function printCV() {
   setTimeout(function() { URL.revokeObjectURL(url); a.remove(); }, 1000);
 }
 
-/* ── SETTINGS PANEL ──────────────────────────────────────── */
-function toggleSettings() {
-  document.getElementById('settings-panel').classList.toggle('open');
-}
-document.addEventListener('click', function(e) {
-  var panel = document.getElementById('settings-panel');
-  var btn   = document.getElementById('settings-btn');
-  if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) {
-    panel.classList.remove('open');
-  }
-});
-
 /* ── THEME TOGGLE ────────────────────────────────────────── */
 function toggleTheme(cb) {
   document.body.classList.toggle('dark-mode', cb.checked);
@@ -3298,6 +3286,316 @@ if (skillsSection && 'IntersectionObserver' in window) {
   // Apply on load (before DOMContentLoaded to avoid flash)
   applyPrefs();
   document.addEventListener('DOMContentLoaded',applyPrefs);
+})();
+</script>
+
+<!-- ============================================================
+     CV EXPORT — customizable dynamic .docx generator
+     Reads the live DOM (single source of truth) + user options.
+============================================================ -->
+<style>
+#xp-overlay{position:fixed;inset:0;background:rgba(4,10,22,.62);backdrop-filter:blur(3px);z-index:1200;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+#xp-overlay.open{display:flex}
+#xp-modal{background:var(--bg2,#111a2b);color:var(--text,#e8edf5);border:1px solid var(--border,#2a3548);border-radius:16px;width:100%;max-width:640px;box-shadow:0 24px 70px rgba(0,0,0,.5);font-family:var(--sans,system-ui,sans-serif)}
+#xp-modal .xp-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border,#2a3548)}
+#xp-modal .xp-title{font-size:1.15em;font-weight:700}
+#xp-modal .xp-sub{font-size:.78em;color:var(--text-muted,#9fb0c8);margin-top:2px}
+#xp-close{background:none;border:none;color:var(--text-muted,#9fb0c8);font-size:1.5em;cursor:pointer;line-height:1;padding:0 4px}
+#xp-close:hover{color:var(--text,#fff)}
+#xp-body{padding:18px 22px;max-height:60vh;overflow-y:auto}
+.xp-label{font-size:.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim,#7d8ba3);margin:2px 0 10px}
+.xp-presets{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.xp-preset{flex:1;min-width:120px;padding:10px 12px;border:1px solid var(--border,#2a3548);background:var(--bg3,#1c2230);color:var(--text,#e8edf5);border-radius:10px;cursor:pointer;text-align:left;transition:.15s}
+.xp-preset:hover{border-color:var(--teal,#2dd4bf)}
+.xp-preset.active{border-color:var(--teal,#2dd4bf);background:rgba(45,212,191,.12);box-shadow:0 0 0 1px var(--teal,#2dd4bf) inset}
+.xp-preset b{display:block;font-size:.92em}
+.xp-preset span{font-size:.72em;color:var(--text-muted,#9fb0c8)}
+.xp-sec{border:1px solid var(--border,#2a3548);border-radius:10px;margin-bottom:8px;background:var(--bg3,#1c2230)}
+.xp-sec-row{display:flex;align-items:center;gap:10px;padding:9px 12px}
+.xp-drag{cursor:grab;color:var(--text-dim,#7d8ba3);font-size:1.05em;user-select:none}
+.xp-sec input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal,#2dd4bf);cursor:pointer;flex:none}
+.xp-sec-name{flex:1;font-weight:600;font-size:.92em}
+.xp-sec-meta{font-size:.72em;color:var(--text-muted,#9fb0c8)}
+.xp-ord{display:flex;flex-direction:column;gap:1px}
+.xp-ord button{background:none;border:none;color:var(--text-dim,#7d8ba3);cursor:pointer;font-size:.7em;line-height:.9;padding:0 3px}
+.xp-ord button:hover{color:var(--teal,#2dd4bf)}
+.xp-expand{background:none;border:none;color:var(--text-muted,#9fb0c8);cursor:pointer;font-size:.8em}
+.xp-entries{display:none;padding:2px 12px 10px 40px;border-top:1px solid var(--border,#2a3548)}
+.xp-sec.open .xp-entries{display:block}
+.xp-entry{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.82em}
+.xp-entry input[type=checkbox]{width:14px;height:14px;accent-color:var(--teal,#2dd4bf)}
+.xp-entry .xp-star{cursor:pointer;font-size:1em;color:var(--text-dim,#7d8ba3);user-select:none}
+.xp-entry .xp-star.on{color:#f5b301}
+.xp-entry .xp-etitle{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted,#c3ccdb)}
+.xp-entry.off .xp-etitle{opacity:.4;text-decoration:line-through}
+.xp-opts{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.xp-opt{display:flex;align-items:center;gap:9px;font-size:.85em;cursor:pointer}
+.xp-opt input{width:15px;height:15px;accent-color:var(--teal,#2dd4bf)}
+#xp-foot{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-top:1px solid var(--border,#2a3548);gap:12px}
+#xp-reset{background:none;border:1px solid var(--border,#2a3548);color:var(--text-muted,#9fb0c8);padding:9px 16px;border-radius:9px;cursor:pointer;font-size:.85em}
+#xp-reset:hover{color:var(--text,#fff);border-color:var(--text-muted,#9fb0c8)}
+#xp-download{background:var(--teal,#2dd4bf);color:#05241f;border:none;padding:10px 22px;border-radius:9px;cursor:pointer;font-weight:700;font-size:.9em}
+#xp-download:hover{filter:brightness(1.08)}
+.xp-dragging{opacity:.4}
+.xp-drop-hint{border-top:2px solid var(--teal,#2dd4bf)!important}
+@media print{#xp-overlay{display:none!important}}
+</style>
+
+<div id="xp-overlay" role="dialog" aria-modal="true" aria-labelledby="xp-title-h">
+  <div id="xp-modal">
+    <div class="xp-head">
+      <div>
+        <div class="xp-title" id="xp-title-h">Customize CV Export</div>
+        <div class="xp-sub">Generates a Word .docx from the live CV — tailor it before downloading.</div>
+      </div>
+      <button id="xp-close" onclick="closeExport()" aria-label="Close">×</button>
+    </div>
+    <div id="xp-body">
+      <div class="xp-label">Profile Preset</div>
+      <div class="xp-presets">
+        <button class="xp-preset" data-preset="academic"><b>🎓 Academic</b><span>Publications-forward, full record</span></button>
+        <button class="xp-preset" data-preset="industry"><b>🏭 Industry</b><span>Experience &amp; skills first, condensed</span></button>
+        <button class="xp-preset" data-preset="custom"><b>⚙ Custom</b><span>Your current arrangement</span></button>
+      </div>
+      <div class="xp-label">Sections — toggle, reorder (drag or ▲▼), star to feature</div>
+      <div id="xp-sections"></div>
+      <div class="xp-opts">
+        <label class="xp-opt"><input type="checkbox" id="xp-header" checked> Include header, contact &amp; profile summary</label>
+        <label class="xp-opt"><input type="checkbox" id="xp-badges" checked> Include badges / honors labels</label>
+      </div>
+    </div>
+    <div id="xp-foot">
+      <button id="xp-reset" onclick="xpReset()">Reset</button>
+      <button id="xp-download" onclick="xpDownload()">⬇ Download .docx</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var SECTION_META={ education:"🎓",experience:"💼",publications:"📄",conferences:"🎙",teaching:"📚",supervision:"👥",funding:"🏆",skills:"⚙️",service:"🌐" };
+  var PRESETS={
+    academic:{ order:["education","experience","publications","conferences","teaching","supervision","funding","skills","service"], hidden:[] },
+    industry:{ order:["experience","skills","education","funding","publications","supervision","service"], hidden:["conferences","teaching"] }
+  };
+  var LSKEY="cv_export_state_v1";
+  var state=null; // {order:[], hidden:{}, excluded:{}, featured:{}, header:true, badges:true, preset:''}
+
+  /* ---------- DOM SCRAPE (single source of truth) ---------- */
+  function sectionEntries(sec){
+    var out=[], curSub=null, i=0;
+    var nodes=sec.querySelectorAll(".subsection-title,.sub-divider,.entry-card,.award-entry,.skill-item");
+    nodes.forEach(function(n){
+      if(n.classList.contains("subsection-title")||n.classList.contains("sub-divider")){
+        curSub=n.textContent.replace(/\s+/g," ").trim(); return;
+      }
+      var e={sub:curSub,idx:i++};
+      if(n.classList.contains("entry-card")){
+        var y=n.querySelector(".entry-year"), t=n.querySelector(".entry-title"), s=n.querySelector(".entry-subtitle");
+        e.year=y?y.textContent.trim():""; e.titleText=t?t.textContent.trim():""; e.subEl=s||null;
+        e.badges=[].map.call(n.querySelectorAll(".entry-badges .badge"),function(b){return b.textContent.trim();});
+      } else if(n.classList.contains("award-entry")){
+        var ay=n.querySelector(".award-year"), an=n.querySelector(".award-name"), ao=n.querySelector(".award-org");
+        e.year=ay?ay.textContent.trim():""; e.titleText=an?an.textContent.trim():""; e.subEl=ao||null; e.badges=[];
+      } else { // skill-item
+        var sp=n.querySelectorAll(".skill-name-row span");
+        e.year=""; e.titleText=sp[0]?sp[0].textContent.trim():""; e.subEl=null;
+        e.subText=sp[1]?sp[1].textContent.trim():""; e.badges=[];
+      }
+      out.push(e);
+    });
+    return out;
+  }
+  function collectCV(){
+    var secs=[];
+    document.querySelectorAll(".section-wrapper[id]").forEach(function(sec){
+      var t=sec.querySelector(".section-title");
+      secs.push({ id:sec.id, title:t?t.textContent.trim():sec.id, entries:sectionEntries(sec) });
+    });
+    return secs;
+  }
+
+  /* ---------- STATE ---------- */
+  function defaultOrder(){ return collectCV().map(function(s){return s.id;}); }
+  function freshState(){ return {order:defaultOrder(),hidden:{},excluded:{},featured:{},header:true,badges:true,preset:"custom"}; }
+  function loadState(){
+    try{ var raw=localStorage.getItem(LSKEY); if(raw){ var p=JSON.parse(raw);
+      // reconcile with current sections
+      var live=defaultOrder();
+      p.order=(p.order||[]).filter(function(id){return live.indexOf(id)>-1;});
+      live.forEach(function(id){ if(p.order.indexOf(id)<0) p.order.push(id); });
+      p.hidden=p.hidden||{}; p.excluded=p.excluded||{}; p.featured=p.featured||{};
+      return p;
+    }}catch(e){}
+    return freshState();
+  }
+  function saveState(){ try{localStorage.setItem(LSKEY,JSON.stringify(state));}catch(e){} }
+  function applyPreset(name){
+    var base=freshState();
+    if(PRESETS[name]){ var live=defaultOrder(); var ord=PRESETS[name].order.filter(function(id){return live.indexOf(id)>-1;});
+      live.forEach(function(id){ if(ord.indexOf(id)<0) ord.push(id); });
+      base.order=ord; PRESETS[name].hidden.forEach(function(id){ base.hidden[id]=true; });
+    }
+    base.preset=name; state=base; saveState(); renderSections(); markPreset();
+  }
+
+  /* ---------- DIALOG RENDER ---------- */
+  function markPreset(){ document.querySelectorAll(".xp-preset").forEach(function(b){ b.classList.toggle("active",b.dataset.preset===state.preset); }); }
+  function ekey(sid,idx){ return sid+":"+idx; }
+  function renderSections(){
+    var wrap=document.getElementById("xp-sections"); wrap.innerHTML="";
+    var data={}; collectCV().forEach(function(s){data[s.id]=s;});
+    state.order.forEach(function(sid,pos){
+      var s=data[sid]; if(!s) return;
+      var el=document.createElement("div"); el.className="xp-sec"; el.dataset.sid=sid; el.draggable=false;
+      var shown=!state.hidden[sid];
+      var row=document.createElement("div"); row.className="xp-sec-row";
+      row.innerHTML=
+        '<span class="xp-drag" title="Drag to reorder" draggable="true">⠿</span>'+
+        '<input type="checkbox" '+(shown?"checked":"")+' data-sid="'+sid+'" class="xp-sec-cb">'+
+        '<span class="xp-sec-name">'+(SECTION_META[sid]||"")+' '+s.title+'</span>'+
+        '<span class="xp-sec-meta">'+s.entries.length+' item'+(s.entries.length===1?"":"s")+'</span>'+
+        '<span class="xp-ord"><button data-dir="-1" title="Move up">▲</button><button data-dir="1" title="Move down">▼</button></span>'+
+        '<button class="xp-expand" title="Show items">▸</button>';
+      el.appendChild(row);
+      var ents=document.createElement("div"); ents.className="xp-entries";
+      s.entries.forEach(function(e){
+        var k=ekey(sid,e.idx), inc=!state.excluded[k], feat=!!state.featured[k];
+        var er=document.createElement("div"); er.className="xp-entry"+(inc?"":" off");
+        er.innerHTML='<span class="xp-star'+(feat?" on":"")+'" title="Feature (emphasize)" data-k="'+k+'">★</span>'+
+          '<input type="checkbox" '+(inc?"checked":"")+' data-k="'+k+'">'+
+          '<span class="xp-etitle" title="'+(e.titleText||"").replace(/"/g,"&quot;")+'">'+(e.titleText||"(item)")+'</span>';
+        er.querySelector("input").addEventListener("change",function(){ if(this.checked) delete state.excluded[k]; else state.excluded[k]=true; er.classList.toggle("off",!this.checked); state.preset="custom"; markPreset(); saveState(); });
+        er.querySelector(".xp-star").addEventListener("click",function(){ if(state.featured[k]){delete state.featured[k];this.classList.remove("on");}else{state.featured[k]=true;this.classList.add("on");} state.preset="custom"; markPreset(); saveState(); });
+        ents.appendChild(er);
+      });
+      el.appendChild(ents);
+      // wiring
+      row.querySelector(".xp-sec-cb").addEventListener("change",function(){ if(this.checked) delete state.hidden[sid]; else state.hidden[sid]=true; state.preset="custom"; markPreset(); saveState(); });
+      row.querySelector(".xp-expand").addEventListener("click",function(){ el.classList.toggle("open"); this.textContent=el.classList.contains("open")?"▾":"▸"; });
+      row.querySelectorAll(".xp-ord button").forEach(function(b){ b.addEventListener("click",function(){ moveSec(sid,parseInt(b.dataset.dir,10)); }); });
+      // drag
+      var handle=row.querySelector(".xp-drag");
+      handle.addEventListener("dragstart",function(ev){ el.classList.add("xp-dragging"); ev.dataTransfer.effectAllowed="move"; ev.dataTransfer.setData("text/plain",sid); });
+      handle.addEventListener("dragend",function(){ el.classList.remove("xp-dragging"); document.querySelectorAll(".xp-drop-hint").forEach(function(x){x.classList.remove("xp-drop-hint");}); });
+      el.addEventListener("dragover",function(ev){ ev.preventDefault(); el.classList.add("xp-drop-hint"); });
+      el.addEventListener("dragleave",function(){ el.classList.remove("xp-drop-hint"); });
+      el.addEventListener("drop",function(ev){ ev.preventDefault(); el.classList.remove("xp-drop-hint"); var src=ev.dataTransfer.getData("text/plain"); if(src&&src!==sid) reorderTo(src,sid); });
+      wrap.appendChild(el);
+    });
+    document.getElementById("xp-header").checked=state.header;
+    document.getElementById("xp-badges").checked=state.badges;
+  }
+  function moveSec(sid,dir){ var i=state.order.indexOf(sid),j=i+dir; if(i<0||j<0||j>=state.order.length) return; state.order.splice(i,1); state.order.splice(j,0,sid); state.preset="custom"; saveState(); renderSections(); markPreset(); }
+  function reorderTo(src,target){ var i=state.order.indexOf(src); state.order.splice(i,1); var j=state.order.indexOf(target); state.order.splice(j,0,src); state.preset="custom"; saveState(); renderSections(); markPreset(); }
+
+  /* ---------- OOXML / DOCX GENERATION ---------- */
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function run(text,o){ o=o||{}; var r=""; if(o.b)r+="<w:b/>"; if(o.i)r+="<w:i/>"; if(o.caps)r+="<w:caps/>"; if(o.sz)r+='<w:sz w:val="'+o.sz+'"/>'; if(o.color)r+='<w:color w:val="'+o.color+'"/>';
+    return '<w:r><w:rPr>'+r+'</w:rPr><w:t xml:space="preserve">'+esc(text)+"</w:t></w:r>"; }
+  function br(){ return "<w:r><w:br/></w:r>"; }
+  function para(inner,o){ o=o||{}; var pPr="";
+    var sp='<w:spacing '+(o.before!=null?'w:before="'+o.before+'" ':"")+(o.after!=null?'w:after="'+o.after+'" ':"")+'w:line="'+(o.line||252)+'" w:lineRule="auto"/>';
+    pPr+=sp; if(o.border) pPr+='<w:pBdr><w:bottom w:val="single" w:sz="4" w:space="2" w:color="B8C0CC"/></w:pBdr>';
+    return "<w:p><w:pPr>"+pPr+"</w:pPr>"+inner+"</w:p>"; }
+  function elToRuns(el,base){ base=base||{}; var out="";
+    [].forEach.call(el.childNodes,function(n){
+      if(n.nodeType===3){ if(n.nodeValue) out+=run(n.nodeValue.replace(/\s+/g," "),base); }
+      else if(n.nodeType===1){ var t=n.tagName.toLowerCase(); if(t==="br"){out+="<w:br/>";return;} var o={}; for(var k in base)o[k]=base[k]; if(t==="strong"||t==="b")o.b=true; if(t==="em"||t==="i")o.i=true; out+=elToRuns(n,o); }
+    });
+    return out;
+  }
+  function buildDocumentXml(){
+    var data={}; collectCV().forEach(function(s){data[s.id]=s;});
+    var body="";
+    if(state.header){
+      body+=para(run("ASAD MIRZA, PhD",{b:true,sz:40,color:"0E6E64"}),{after:20,line:240});
+      body+=para(run("Research Assistant Professor · Department of Biomedical Engineering · Florida International University",{sz:20,color:"444444"}),{after:20});
+      body+=para(run("10555 West Flagler St, Miami, FL 33174 · amirza@fiu.edu · ORCID: 0000-0003-4515-2203 · github.com/DThornz",{sz:18,color:"666666"}),{after:60});
+      var hl=document.querySelector(".highlight-box");
+      if(hl) body+=para(elToRuns(hl,{sz:19,color:"333333"}),{after:160,line:264});
+    }
+    state.order.forEach(function(sid){
+      if(state.hidden[sid]) return; var s=data[sid]; if(!s) return;
+      var ents=s.entries.filter(function(e){ return !state.excluded[ekey(sid,e.idx)]; });
+      if(!ents.length) return;
+      body+=para(run(s.title,{b:true,sz:24,caps:true,color:"0E6E64"}),{before:180,after:70,border:true});
+      // feature-first ordering within section (stable)
+      ents.sort(function(a,b){ var fa=state.featured[ekey(sid,a.idx)]?0:1, fb=state.featured[ekey(sid,b.idx)]?0:1; return fa-fb; });
+      var lastSub=null;
+      ents.forEach(function(e){
+        if(e.sub && e.sub!==lastSub){ lastSub=e.sub; body+=para(run(e.sub,{b:true,i:true,sz:19,color:"555555"}),{before:90,after:40}); }
+        var feat=!!state.featured[ekey(sid,e.idx)];
+        var line=run(e.titleText||"",{b:true,sz:21,color:feat?"C77E00":"1A2230"});
+        if(e.year) line+=run("   "+e.year,{i:true,sz:17,color:"888888"});
+        var sub=""; if(e.subEl) sub=elToRuns(e.subEl,{sz:19,color:"3A4658"}); else if(e.subText) sub=run(e.subText,{sz:19,color:"3A4658"});
+        if(sub) line+=br()+sub;
+        if(state.badges && e.badges && e.badges.length) line+=br()+run(e.badges.join("  ·  "),{i:true,sz:17,color:"8A6D00"});
+        body+=para(line,{after:100,line:252});
+      });
+    });
+    var sect='<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'+
+      '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+sect+"</w:body></w:document>";
+  }
+  var STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="21"/><w:szCs w:val="21"/></w:rPr></w:rPrDefault></w:docDefaults></w:styles>';
+  var CONTENT_TYPES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  var RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  var DOCRELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+
+  /* ---------- minimal ZIP writer (store method, CRC32) ---------- */
+  function crc32(bytes){ var t=crc32.t; if(!t){ t=crc32.t=[]; for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c=c&1?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } }
+    var crc=0xFFFFFFFF; for(var i=0;i<bytes.length;i++) crc=(crc>>>8)^t[(crc^bytes[i])&0xFF]; return (crc^0xFFFFFFFF)>>>0; }
+  function zip(files){
+    var enc=new TextEncoder(), parts=[], central=[], offset=0;
+    function u16(n){return [n&255,(n>>8)&255];} function u32(n){return [n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];}
+    files.forEach(function(f){
+      var name=enc.encode(f.name), data=(typeof f.data==="string")?enc.encode(f.data):f.data, crc=crc32(data);
+      var local=[].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0));
+      parts.push(new Uint8Array(local),name,data);
+      central.push({h:new Uint8Array([].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset))),n:name});
+      offset+=local.length+name.length+data.length;
+    });
+    var cStart=offset,cParts=[];
+    central.forEach(function(c){ cParts.push(c.h,c.n); offset+=c.h.length+c.n.length; });
+    var end=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(offset-cStart),u32(cStart),u16(0)));
+    var all=parts.concat(cParts,[end]), total=all.reduce(function(s,a){return s+a.length;},0), out=new Uint8Array(total), p=0;
+    all.forEach(function(a){ out.set(a,p); p+=a.length; });
+    return out;
+  }
+  function buildDocx(){
+    return zip([
+      {name:"[Content_Types].xml",data:CONTENT_TYPES},
+      {name:"_rels/.rels",data:RELS},
+      {name:"word/_rels/document.xml.rels",data:DOCRELS},
+      {name:"word/document.xml",data:buildDocumentXml()},
+      {name:"word/styles.xml",data:STYLES}
+    ]);
+  }
+
+  /* ---------- PUBLIC ---------- */
+  window.openExport=function(){ state=loadState(); renderSections(); markPreset();
+    document.getElementById("xp-overlay").classList.add("open"); };
+  window.closeExport=function(){ document.getElementById("xp-overlay").classList.remove("open"); };
+  window.xpReset=function(){ state=freshState(); saveState(); renderSections(); markPreset(); };
+  window.xpDownload=function(){
+    try{
+      var bytes=buildDocx();
+      var blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+      var url=URL.createObjectURL(blob), a=document.createElement("a");
+      var suffix=state.preset&&state.preset!=="custom"?"_"+state.preset:"";
+      a.href=url; a.download="AsadMirza_CV"+suffix+".docx"; document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },1200);
+    }catch(err){ alert("Export failed: "+err.message); }
+  };
+  document.addEventListener("DOMContentLoaded",function(){
+    document.querySelectorAll(".xp-preset").forEach(function(b){ b.addEventListener("click",function(){ if(b.dataset.preset==="custom"){ state.preset="custom"; markPreset(); saveState(); } else applyPreset(b.dataset.preset); }); });
+    document.getElementById("xp-header").addEventListener("change",function(){ state.header=this.checked; state.preset="custom"; markPreset(); saveState(); });
+    document.getElementById("xp-badges").addEventListener("change",function(){ state.badges=this.checked; state.preset="custom"; markPreset(); saveState(); });
+    document.getElementById("xp-overlay").addEventListener("click",function(e){ if(e.target===this) closeExport(); });
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeExport(); });
+  });
 })();
 </script>
 
