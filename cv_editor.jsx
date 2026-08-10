@@ -93,7 +93,7 @@ const INITIAL_DATA = {
       }]
     },
     {
-      id: "publications", icon: "📄", title: "Publications", subtitle: "1 Patent · 1 Book Chapter · 9 Journal Articles · 8 Oral · 25+ Poster Presentations", defaultOpen: true,
+      id: "publications", icon: "📄", title: "Publications", subtitle: "1 Patent · 1 Book Chapter · 10 Journal Articles · 8 Oral · 25+ Poster Presentations", defaultOpen: true,
       subsections: [
         {
           id: uid(), title: "Patent", defaultOpen: true,
