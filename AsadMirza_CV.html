@@ -342,6 +342,7 @@ body.light-mode .name-gradient { -webkit-text-fill-color: var(--text); backgroun
 .badge-first { background: rgba(45,212,191,0.1); color: var(--teal); border: 1px solid rgba(45,212,191,0.25); }
 .badge-co    { background: rgba(251,140,0,0.1);  color: var(--orange); border: 1px solid rgba(251,140,0,0.25); }
 .badge-award { background: rgba(250,204,21,0.1); color: #d4a000; border: 1px solid rgba(250,204,21,0.25); }
+.badge-role  { background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
 
 .chevron-xs { font-size: 0.667em; color: var(--text-dim); transition: transform var(--tr), color var(--tr); flex-shrink: 0; padding-top: 3px; }
 .entry-card.open > .entry-toggle .chevron-xs { transform: rotate(180deg); color: var(--teal); }
@@ -2400,7 +2401,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       <div class="section-icon">👥</div>
       <div>
         <div class="section-title">Supervision &amp; Mentorship</div>
-        <div class="section-count">4 PhD Co-Mentees · 3 Undergraduate Researchers · 19+ Senior Design Teams</div>
+        <div class="section-count">4 PhD Co-Mentees · 3 Undergraduate Researchers · 23+ Senior Design Teams</div>
       </div>
     </div>
     <span class="chevron">▼</span>
@@ -2546,84 +2547,11 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
       <!-- L2: Senior Design -->
       <div class="subsection-wrapper open">
         <button class="subsection-toggle" onclick="toggleSubsection(this)">
-          <div class="subsection-title">Senior Design Team Consultation <span class="subsection-count">(19+ teams, 2017–2026)</span></div>
+          <div class="subsection-title">Senior Design Team Consultation <span class="subsection-count">(23+ teams, 2017–2026)</span></div>
           <span class="chevron-sm">▼</span>
         </button>
         <div class="subsection-body">
           <div class="subsection-inner">
-
-            <!-- Team 1 Fall 2017 — CAPSTONE PROJECT (detailed) -->
-            <div class="entry-card open">
-              <button class="entry-toggle" onclick="toggleEntry(this)">
-                <span class="entry-year">Fa 2017</span>
-                <div class="entry-title-col">
-                  <div class="entry-title">Team 1 — System for Whole Field Fluorescent Microscopy Imaging In-Vivo</div>
-                  <div class="entry-subtitle">Senior Design Capstone · Asad Mirza (team member) · FIU BME Fall 2017</div>
-                  <div class="entry-badges"><span class="badge badge-award">2nd Place Oral Presentation</span></div>
-                </div>
-                <span class="chevron-xs">▼</span>
-              </button>
-              <div class="entry-body">
-                <div class="entry-inner">
-                  <div class="entry-meta-row">
-                    <div class="entry-meta-item"><div class="entry-meta-label">Faculty Advisor</div><div class="entry-meta-value">Dr. Wei-Chiang Lin</div></div>
-                    <div class="entry-meta-item"><div class="entry-meta-label">Company Sponsor</div><div class="entry-meta-value">Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory</div></div>
-                    <div class="entry-meta-item"><div class="entry-meta-label">Award</div><div class="entry-meta-value">2nd Place Oral, Fall 2017 Senior Design Competition</div></div>
-                  </div>
-                  <div class="entry-meta-label" style="margin-bottom:5px">Team Members</div>
-                  <div style="font-size:0.867em;color:var(--text-muted);margin-bottom:12px">
-                    Asad Mirza, Juan Pinzon, Natalia Fuenzalida, Edwin Robledo
-                  </div>
-                  <!--
-                    TEAM MEMBER PHOTOS:
-                    <div class="team-photos">
-                      <div class="team-member">
-                        <img src="src/images/team1_asad.jpg" alt="Asad Mirza">
-                        <div class="team-member-name">Asad Mirza</div>
-                      </div>
-                      <div class="team-member">
-                        <img src="src/images/team1_juan.jpg" alt="Juan Pinzon">
-                        <div class="team-member-name">Juan Pinzon</div>
-                      </div>
-                      <div class="team-member">
-                        <img src="src/images/team1_natalia.jpg" alt="Natalia Fuenzalida">
-                        <div class="team-member-name">Natalia Fuenzalida</div>
-                      </div>
-                      <div class="team-member">
-                        <img src="src/images/team1_edwin.jpg" alt="Edwin Robledo">
-                        <div class="team-member-name">Edwin Robledo</div>
-                      </div>
-                    </div>
-                  -->
-                  <div class="entry-abstract">
-                    Epilepsy affects roughly 65 million people worldwide and has no known cure, largely due to difficulties in recording neural activity of cerebral cortical cells where epileptic events occur. Using the modalities of calcium and voltage sensitive dye imaging (VSDI), researchers can record action potential and ion dynamics propagated across the cerebral cortex simultaneously.
-                    <br><br>
-                    The team designed a novel system featuring a synchronized fast CMOS camera for VSDI paired with a slower CCD camera for calcium imaging. Both cameras are aimed at a stereotaxic stage, attached to a motorized XY stage, holding a rat with a 1 mm² exposed cranial window. A custom-built MATLAB GUI controls the cameras and stage, allowing dynamic spatial imaging across the cranial window — enabling faster and more accurate data acquisition to identify the underlying causes of epilepsy.
-                  </div>
-                  <div class="entry-link-row">
-                    <!--
-                      LINKS: Add GitHub repo, poster PDF, or video link
-                      <a class="entry-link" href="src/docs/senior_design_team1_poster.pdf" target="_blank">📊 Poster PDF</a>
-                      <a class="entry-link" href="https://github.com/your_repo" target="_blank">💾 GitHub</a>
-                    -->
-                  </div>
-                  <!--
-                    IMAGE: Device photo, system schematic
-                    <div class="entry-media">
-                      <div class="entry-media-label">Project Images</div>
-                      <div class="entry-img-grid">
-                        <img src="src/images/senior_design_fa17_device.jpg" class="entry-img" alt="Microscopy system device">
-                        <img src="src/images/senior_design_fa17_setup.jpg"  class="entry-img" alt="Experimental setup">
-                      </div>
-                    </div>
-                    VIDEO: Project demo
-                    <div class="video-embed">
-                      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                  -->
-                </div>
-              </div>
-            </div><!-- /Team 1 Fa 2017 -->
 
             <!-- Summer 2026 teams -->
             <div class="entry-card open">
@@ -2631,7 +2559,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <span class="entry-year">Su 2026</span>
                 <div class="entry-title-col">
                   <div class="entry-title">Summer 2026 Teams</div>
-                  <div class="entry-subtitle">Team F6: KneeHero (Mentor) · Team F8: Low-Volume Saliva Collection Device (Personal Mentor) · Team F2: GyroFuse · Team F9: Aerosol Assist PRO</div>
+                  <div class="entry-subtitle">Team F6: KneeHero (Mentor) · Team F8: Low-Volume Saliva Collection Device (Mentor) · Team F2: GyroFuse · Team F9: Aerosol Assist PRO</div>
                   <div class="entry-badges"><span class="badge badge-role">Mentor — Teams F6 &amp; F8</span></div>
                 </div>
                 <span class="chevron-xs">▼</span>
@@ -2655,11 +2583,11 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                     </div>
                   </div>
 
-                  <!-- Team F8 — Personal Mentor -->
+                  <!-- Team F8 — Mentor -->
                   <div style="margin-bottom:16px">
                     <div style="font-size:0.9em;font-weight:600;color:var(--accent);margin-bottom:4px">Team F8 — Low-Volume Saliva Collection Device</div>
                     <div class="entry-meta-row" style="margin-bottom:8px">
-                      <div class="entry-meta-item"><div class="entry-meta-label">Role</div><div class="entry-meta-value">Personal Mentor</div></div>
+                      <div class="entry-meta-item"><div class="entry-meta-label">Role</div><div class="entry-meta-value">Mentor</div></div>
                       <div class="entry-meta-item"><div class="entry-meta-label">Sponsor</div><div class="entry-meta-value">Portable Diagnostic Systems</div></div>
                     </div>
                     <div style="font-size:0.833em;color:var(--text-muted);margin-bottom:6px">
@@ -2714,19 +2642,19 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <span class="entry-year">Sp 2026</span>
                 <div class="entry-title-col">
                   <div class="entry-title">Spring 2026 Teams</div>
-                  <div class="entry-subtitle">Team F3: IDD 2.0 (Faculty Mentor) · Team F5: FMT System · Team F7: ECMO Phantom · Team F8: RESTORE</div>
-                  <div class="entry-badges"><span class="badge badge-role">Faculty Mentor — Team F3</span></div>
+                  <div class="entry-subtitle">Team F3: IDD 2.0 (Mentor) · Team F5: FMT System · Team F7: ECMO Phantom · Team F8: RESTORE</div>
+                  <div class="entry-badges"><span class="badge badge-role">Mentor — Team F3</span></div>
                 </div>
                 <span class="chevron-xs">▼</span>
               </button>
               <div class="entry-body">
                 <div class="entry-inner">
 
-                  <!-- Team F3 — Faculty Mentor (primary role) -->
+                  <!-- Team F3 — Mentor (primary role) -->
                   <div style="margin-bottom:16px">
                     <div style="font-size:0.9em;font-weight:600;color:var(--accent);margin-bottom:4px">Team F3 — Wearable Postoperative Device for Mitigation of Capsular Contracture in Breast Augmentation and Reconstruction Patients <span style="font-size:0.8em;color:var(--text-dim);font-weight:400">(IDD 2.0)</span></div>
                     <div class="entry-meta-row" style="margin-bottom:8px">
-                      <div class="entry-meta-item"><div class="entry-meta-label">Role</div><div class="entry-meta-value">Faculty Mentor</div></div>
+                      <div class="entry-meta-item"><div class="entry-meta-label">Role</div><div class="entry-meta-value">Mentor</div></div>
                       <div class="entry-meta-item"><div class="entry-meta-label">Alumni Mentor</div><div class="entry-meta-value">Alex Guillarte</div></div>
                       <div class="entry-meta-item"><div class="entry-meta-label">Sponsor</div><div class="entry-meta-value">Engineering Resources Group, Inc.</div></div>
                     </div>
@@ -2810,7 +2738,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 <span class="entry-year">Fa 2025</span>
                 <div class="entry-title-col">
                   <div class="entry-title">Fall 2025 Teams</div>
-                  <div class="entry-subtitle">Team F2: Low-cost Prosthetic Hand · Team F3: Mechanical Prosthetic Ankle (Faculty Mentor) · Team F4: Hydraulic Spinal Rod Cutter</div>
+                  <div class="entry-subtitle">Team F2: Low-cost Prosthetic Hand · Team F3: Mechanical Prosthetic Ankle (Mentor) · Team F4: Hydraulic Spinal Rod Cutter</div>
                 </div>
                 <span class="chevron-xs">▼</span>
               </button>
@@ -2823,7 +2751,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                   </div>
                   <div style="margin-bottom:12px">
                     <strong>Team F3 — Fully Mechanical Prosthetic Ankle: A Mobility Lifeline for Transtibial Amputees in Low Resource Environments</strong>
-                    <div style="font-size:0.833em;color:var(--text-muted)">Faculty Mentor: Dr. Asad Mirza · Sponsor: Bio Engineering Labs, Corp. · Members: Giuliana Mesa, Laura Guerrero, Nicholas Mohammed</div>
+                    <div style="font-size:0.833em;color:var(--text-muted)">Mentor: Dr. Asad Mirza · Sponsor: Bio Engineering Labs, Corp. · Members: Giuliana Mesa, Laura Guerrero, Nicholas Mohammed</div>
                     <div style="font-size:0.867em;color:var(--text-body);margin-top:4px">Fully mechanical, low-cost prosthetic ankle using a ball-and-socket mechanism (aluminum ball in TPU-lined socket) to deliver controlled multiaxial motion reflecting natural ankle biomechanics.</div>
                   </div>
                   <div>
@@ -2928,6 +2856,79 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
                 </div>
               </div>
             </div>
+
+            <!-- Team 1 Fall 2017 — CAPSTONE PROJECT (detailed) -->
+            <div class="entry-card">
+              <button class="entry-toggle" onclick="toggleEntry(this)">
+                <span class="entry-year">Fa 2017</span>
+                <div class="entry-title-col">
+                  <div class="entry-title">Team 1 — System for Whole Field Fluorescent Microscopy Imaging In-Vivo</div>
+                  <div class="entry-subtitle">Senior Design Capstone · Asad Mirza (team member) · FIU BME Fall 2017</div>
+                  <div class="entry-badges"><span class="badge badge-award">2nd Place Oral Presentation</span></div>
+                </div>
+                <span class="chevron-xs">▼</span>
+              </button>
+              <div class="entry-body">
+                <div class="entry-inner">
+                  <div class="entry-meta-row">
+                    <div class="entry-meta-item"><div class="entry-meta-label">Faculty Advisor</div><div class="entry-meta-value">Dr. Wei-Chiang Lin</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">Company Sponsor</div><div class="entry-meta-value">Dr. Jorge J. Riera's Neuronal Mass Dynamics Laboratory</div></div>
+                    <div class="entry-meta-item"><div class="entry-meta-label">Award</div><div class="entry-meta-value">2nd Place Oral, Fall 2017 Senior Design Competition</div></div>
+                  </div>
+                  <div class="entry-meta-label" style="margin-bottom:5px">Team Members</div>
+                  <div style="font-size:0.867em;color:var(--text-muted);margin-bottom:12px">
+                    Asad Mirza, Juan Pinzon, Natalia Fuenzalida, Edwin Robledo
+                  </div>
+                  <!--
+                    TEAM MEMBER PHOTOS:
+                    <div class="team-photos">
+                      <div class="team-member">
+                        <img src="src/images/team1_asad.jpg" alt="Asad Mirza">
+                        <div class="team-member-name">Asad Mirza</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_juan.jpg" alt="Juan Pinzon">
+                        <div class="team-member-name">Juan Pinzon</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_natalia.jpg" alt="Natalia Fuenzalida">
+                        <div class="team-member-name">Natalia Fuenzalida</div>
+                      </div>
+                      <div class="team-member">
+                        <img src="src/images/team1_edwin.jpg" alt="Edwin Robledo">
+                        <div class="team-member-name">Edwin Robledo</div>
+                      </div>
+                    </div>
+                  -->
+                  <div class="entry-abstract">
+                    Epilepsy affects roughly 65 million people worldwide and has no known cure, largely due to difficulties in recording neural activity of cerebral cortical cells where epileptic events occur. Using the modalities of calcium and voltage sensitive dye imaging (VSDI), researchers can record action potential and ion dynamics propagated across the cerebral cortex simultaneously.
+                    <br><br>
+                    The team designed a novel system featuring a synchronized fast CMOS camera for VSDI paired with a slower CCD camera for calcium imaging. Both cameras are aimed at a stereotaxic stage, attached to a motorized XY stage, holding a rat with a 1 mm² exposed cranial window. A custom-built MATLAB GUI controls the cameras and stage, allowing dynamic spatial imaging across the cranial window — enabling faster and more accurate data acquisition to identify the underlying causes of epilepsy.
+                  </div>
+                  <div class="entry-link-row">
+                    <!--
+                      LINKS: Add GitHub repo, poster PDF, or video link
+                      <a class="entry-link" href="src/docs/senior_design_team1_poster.pdf" target="_blank">📊 Poster PDF</a>
+                      <a class="entry-link" href="https://github.com/your_repo" target="_blank">💾 GitHub</a>
+                    -->
+                  </div>
+                  <!--
+                    IMAGE: Device photo, system schematic
+                    <div class="entry-media">
+                      <div class="entry-media-label">Project Images</div>
+                      <div class="entry-img-grid">
+                        <img src="src/images/senior_design_fa17_device.jpg" class="entry-img" alt="Microscopy system device">
+                        <img src="src/images/senior_design_fa17_setup.jpg"  class="entry-img" alt="Experimental setup">
+                      </div>
+                    </div>
+                    VIDEO: Project demo
+                    <div class="video-embed">
+                      <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                  -->
+                </div>
+              </div>
+            </div><!-- /Team 1 Fa 2017 -->
 
           </div>
         </div>
