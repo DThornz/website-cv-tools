@@ -3521,8 +3521,16 @@ if (skillsSection && 'IntersectionObserver' in window) {
       var ents=s.entries.filter(function(e){ return !state.excluded[ekey(sid,e.idx)]; });
       if(!ents.length) return;
       body+=para(run(s.title,{b:true,sz:24,caps:true,color:"0E6E64"}),{before:180,after:70,border:true});
-      // feature-first ordering within section (stable)
-      ents.sort(function(a,b){ var fa=state.featured[ekey(sid,a.idx)]?0:1, fb=state.featured[ekey(sid,b.idx)]?0:1; return fa-fb; });
+      // Float featured entries to the top of THEIR subsection (keeps subsection
+      // groups contiguous and in order — avoids duplicated sub-headers).
+      var subOrder=[]; ents.forEach(function(e){ if(e.sub && subOrder.indexOf(e.sub)<0) subOrder.push(e.sub); });
+      ents.sort(function(a,b){
+        var ra=a.sub?subOrder.indexOf(a.sub):-1, rb=b.sub?subOrder.indexOf(b.sub):-1;
+        if(ra!==rb) return ra-rb;
+        var fa=state.featured[ekey(sid,a.idx)]?0:1, fb=state.featured[ekey(sid,b.idx)]?0:1;
+        if(fa!==fb) return fa-fb;
+        return a.idx-b.idx;
+      });
       var lastSub=null;
       ents.forEach(function(e){
         if(e.sub && e.sub!==lastSub){ lastSub=e.sub; body+=para(run(e.sub,{b:true,i:true,sz:19,color:"555555"}),{before:90,after:40}); }
