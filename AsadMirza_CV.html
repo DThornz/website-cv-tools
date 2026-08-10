@@ -3491,7 +3491,11 @@ if (skillsSection && 'IntersectionObserver' in window) {
   function reorderTo(src,target){ var i=state.order.indexOf(src); state.order.splice(i,1); var j=state.order.indexOf(target); state.order.splice(j,0,src); state.preset="custom"; saveState(); renderSections(); markPreset(); }
 
   /* ---------- OOXML / DOCX GENERATION ---------- */
-  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  // Strip emoji / pictographs / symbol icons — keep the doc plain text only.
+  function stripEmoji(s){ return String(s)
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{25A0}-\u{25FF}\u{2000}-\u{200D}]/gu,"")
+    .replace(/\s{2,}/g," ").trim(); }
+  function esc(s){ return stripEmoji(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   // Pure black & white. rPr child order follows the OOXML schema:
   // b, i, caps, spacing(char), sz, u.
   function run(text,o){ o=o||{}; var r="";
@@ -3504,7 +3508,7 @@ if (skillsSection && 'IntersectionObserver' in window) {
   // pPr child order per schema: pBdr, spacing, jc.
   function para(inner,o){ o=o||{}; var pPr="";
     if(o.border) pPr+='<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="3" w:color="000000"/></w:pBdr>';
-    pPr+='<w:spacing '+(o.before!=null?'w:before="'+o.before+'" ':"")+(o.after!=null?'w:after="'+o.after+'" ':"")+'w:line="'+(o.line||252)+'" w:lineRule="auto"/>';
+    pPr+='<w:spacing '+(o.before!=null?'w:before="'+o.before+'" ':"")+(o.after!=null?'w:after="'+o.after+'" ':"")+'w:line="'+(o.line||240)+'" w:lineRule="auto"/>';
     if(o.align) pPr+='<w:jc w:val="'+o.align+'"/>';
     return "<w:p><w:pPr>"+pPr+"</w:pPr>"+inner+"</w:p>"; }
   function elToRuns(el,base){ base=base||{}; var out="";
@@ -3518,17 +3522,17 @@ if (skillsSection && 'IntersectionObserver' in window) {
     var data={}; collectCV().forEach(function(s){data[s.id]=s;});
     var body="";
     if(state.header){
-      body+=para(run("ASAD MIRZA, PhD",{b:true,caps:true,sz:44,cspace:24}),{align:"center",after:40,line:240});
-      body+=para(run("Research Assistant Professor · Department of Biomedical Engineering · Florida International University",{sz:20}),{align:"center",after:30});
-      body+=para(run("10555 West Flagler St, Miami, FL 33174 · amirza@fiu.edu · ORCID: 0000-0003-4515-2203 · github.com/DThornz",{sz:18}),{align:"center",after:90});
+      body+=para(run("ASAD MIRZA, PhD",{b:true,caps:true,sz:44,cspace:24}),{align:"center",after:20});
+      body+=para(run("Research Assistant Professor · Department of Biomedical Engineering · Florida International University",{sz:20}),{align:"center",after:0});
+      body+=para(run("10555 West Flagler St, Miami, FL 33174 · amirza@fiu.edu · ORCID: 0000-0003-4515-2203 · github.com/DThornz",{sz:18}),{align:"center",after:0});
       var hl=document.querySelector(".highlight-box");
-      if(hl) body+=para(elToRuns(hl,{sz:19}),{align:"both",after:180,line:264});
+      if(hl) body+=para(elToRuns(hl,{sz:19}),{align:"both",before:80,after:0});
     }
     state.order.forEach(function(sid){
       if(state.hidden[sid]) return; var s=data[sid]; if(!s) return;
       var ents=s.entries.filter(function(e){ return !state.excluded[ekey(sid,e.idx)]; });
       if(!ents.length) return;
-      body+=para(run(s.title,{b:true,caps:true,sz:26,cspace:20}),{align:"center",before:220,after:90,border:true});
+      body+=para(run(s.title,{b:true,caps:true,sz:26,cspace:20}),{before:200,after:40,border:true});
       // Float featured entries to the top of THEIR subsection (keeps subsection
       // groups contiguous and in order — avoids duplicated sub-headers).
       var subOrder=[]; ents.forEach(function(e){ if(e.sub && subOrder.indexOf(e.sub)<0) subOrder.push(e.sub); });
@@ -3541,7 +3545,7 @@ if (skillsSection && 'IntersectionObserver' in window) {
       });
       var lastSub=null;
       ents.forEach(function(e){
-        if(e.sub && e.sub!==lastSub){ lastSub=e.sub; body+=para(run(e.sub,{b:true,i:true,sz:19}),{before:100,after:40}); }
+        if(e.sub && e.sub!==lastSub){ lastSub=e.sub; body+=para(run(e.sub,{b:true,i:true,sz:19}),{before:80,after:0}); }
         var feat=!!state.featured[ekey(sid,e.idx)];
         // Featured entries are underlined (B&W-safe emphasis, no color).
         var line=run(e.titleText||"",{b:true,sz:21,u:feat});
@@ -3549,7 +3553,7 @@ if (skillsSection && 'IntersectionObserver' in window) {
         var sub=""; if(e.subEl) sub=elToRuns(e.subEl,{sz:19}); else if(e.subText) sub=run(e.subText,{sz:19});
         if(sub) line+=br()+sub;
         if(state.badges && e.badges && e.badges.length) line+=br()+run(e.badges.join("  ·  "),{i:true,sz:17});
-        body+=para(line,{after:110,line:252});
+        body+=para(line,{after:40});
       });
     });
     var sect='<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>';
