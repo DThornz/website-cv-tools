@@ -35,21 +35,21 @@ body.dark-mode::before{
 }
 
 /* ── Nav ─────────────────────────────────────────────────── */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
+.site-nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
   background:rgba(248,249,252,.95);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 32px;height:52px;gap:8px;
+  display:flex;align-items:center;gap:6px;padding:0 24px;height:44px;
 }
-body.dark-mode .nav{background:rgba(6,14,28,.92);}
-.nav-logo{font-family:var(--mono);font-size:.85em;color:var(--teal);font-weight:500;letter-spacing:.04em;margin-right:auto}
-.nav-logo span{color:var(--muted)}
-.nav-link{
-  padding:6px 14px;border-radius:6px;font-size:.8em;color:var(--muted);
-  text-decoration:none;transition:all .2s;border:1px solid transparent;
+body.dark-mode .site-nav{background:rgba(6,14,28,.92);}
+.site-nav-logo{font-family:var(--mono);font-size:.8em;color:var(--teal);font-weight:500;letter-spacing:.04em;margin-right:auto;white-space:nowrap;text-decoration:none}
+.site-nav-logo span{color:var(--muted)}
+.site-nav-link{
+  padding:5px 12px;border-radius:6px;font-size:.76em;color:var(--muted);
+  text-decoration:none;transition:all .2s;border:1px solid transparent;white-space:nowrap;
 }
-.nav-link:hover{color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.15)}
-.nav-link.active{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.2)}
+.site-nav-link:hover{color:var(--teal);background:var(--teal-glow);border-color:rgba(11,122,110,.15)}
+.site-nav-link.curr{color:var(--teal);background:var(--teal-glow);border-color:rgba(45,212,191,.2);font-weight:600}
 
 /* ── Hero ────────────────────────────────────────────────── */
 .hero{
@@ -408,12 +408,12 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 </head>
 <body class="light-mode">
 
-<nav class="nav">
-  <span class="nav-logo">A.Mirza <span>/</span> site</span>
-  <a class="nav-link active" href="index.html">Home</a>
-  <a class="nav-link" href="AsadMirza_CV.html">CV</a>
+<div class="site-nav">
+  <a class="site-nav-logo" href="index.html">A.Mirza <span>/</span> site</a>
+  <a class="site-nav-link curr" href="index.html">Home</a>
+  <a class="site-nav-link" href="AsadMirza_CV.html">CV</a>
   <div class="nav-dropdown">
-  <a class="nav-link" href="projects.html">Projects ▾</a>
+  <a class="site-nav-link" href="projects.html">Projects ▾</a>
   <div class="nav-dropdown-menu">
     <a class="nav-dropdown-item" href="https://dthornz.github.io/hodgkin-huxley/">🧠 HH Neuron Model</a>
     <a class="nav-dropdown-item" href="https://dthornz.github.io/maxwell-boltzmann/">⚛ MB Gas Simulator</a>
@@ -425,7 +425,7 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
     <a class="nav-dropdown-item" href="dissertation.html">📋 PhD Dissertation</a>
   </div>
 </div>
-</nav>
+</div>
 
 <main class="hero">
   <div class="hero-eyebrow">Research Assistant Professor · FIU BME</div>
@@ -662,8 +662,9 @@ body.dark-mode .nav-dropdown-menu { background: rgba(10,22,40,.97); border-color
 
 <!-- Copyright footer -->
 <footer style="text-align:center;padding:20px 24px;font-family:'DM Mono',monospace;font-size:.72em;color:var(--dim);border-top:1px solid var(--border);margin-top:auto">
-  © 2025 Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
+  © <span id="cur-year">2026</span> Asad Mirza, Ph.D. · Research Assistant Professor · FIU Biomedical Engineering ·
   <a href="https://github.com/DThornz/website-cv-tools" target="_blank" style="color:var(--dim)">GitHub</a>
 </footer>
+<script>document.getElementById('cur-year').textContent=new Date().getFullYear();</script>
 </body>
 </html>
