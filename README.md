@@ -1,162 +1,104 @@
-# website-cv-tools
+# Personal Academic Website
 
-**Personal academic website for Dr. Asad Mirza** — Research Assistant Professor,  
-Department of Biomedical Engineering, Florida International University.
+**Dr. Asad Mirza, PhD**
+Research Assistant Professor
+Department of Biomedical Engineering
+Florida International University
 
-Deployed via **GitHub Pages** · Static hosting · No backend required
+This repository contains my personal academic website, including my **Curriculum Vitae, research projects, dissertation, and collection of interactive computational tools**.
 
-**Live site:** [dthornz.github.io/website-cv-tools](https://dthornz.github.io/website-cv-tools)
+The website is designed to provide a central location for information about my research, teaching, publications, academic activities, and software projects.
 
----
+**Website:** dthornz.github.io/website-cv-tools
 
-## Pages in this repo
+## Website
 
-| Page | File | Description |
-|------|------|-------------|
-| **Home** | `index.html` | Landing page linking to all tools |
-| **Curriculum Vitae** | `AsadMirza_CV.html` | Full interactive academic CV |
-| **Project Showcase** | `projects.html` | Research portfolio with modal detail cards |
-| **PhD Dissertation** | `dissertation.html` | Dissertation overview page |
+The site includes:
 
-## Linked tool repos (separate GitHub Pages)
+* **Curriculum Vitae** — Academic background, research experience, publications, conference presentations, teaching, mentorship, funding, awards, technical skills, and professional service.
+* **Research Projects** — Selected computational and biomedical engineering projects, with descriptions, methods, results, and supporting media.
+* **PhD Dissertation** — Overview of my doctoral research and dissertation work.
+* **Computational Tools** — Interactive browser-based tools and simulations developed for research, teaching, and engineering applications.
 
-Each tool lives in its own repository and GitHub Pages deployment. The nav bar and shared design system are reproduced in each repo so all pages feel like one site.
+## Interactive Tools
 
-| Tool | Repo | Live URL |
-|------|------|----------|
-| **HH Neuron Model** | [DThornz/hodgkin-huxley](https://github.com/DThornz/hodgkin-huxley) | [dthornz.github.io/hodgkin-huxley](https://dthornz.github.io/hodgkin-huxley/) |
-| **Maxwell–Boltzmann Simulator** | [DThornz/maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann) | [dthornz.github.io/maxwell-boltzmann](https://dthornz.github.io/maxwell-boltzmann/) |
-| **LBM CFD Simulator** | [DThornz/lbm-cfd](https://github.com/DThornz/lbm-cfd) | [dthornz.github.io/lbm-cfd](https://dthornz.github.io/lbm-cfd/) |
-| **Engineering FEA/CFD Calc** | [DThornz/eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc) | [dthornz.github.io/eng-fea-cfd-calc](https://dthornz.github.io/eng-fea-cfd-calc/) |
-| **Reference Validator** | [DThornz/academic-ref-validator](https://github.com/DThornz/academic-ref-validator) | [dthornz.github.io/academic-ref-validator](https://dthornz.github.io/academic-ref-validator/) |
-| **1D Energy Transport Simulator** | [DThornz/1D-Energy-Transport-Sim](https://github.com/DThornz/1D-Energy-Transport-Sim) | [dthornz.github.io/1D-Energy-Transport-Sim](https://dthornz.github.io/1D-Energy-Transport-Sim/) |
-| **Curve Fitting Studio** | [DThornz/curve-fitting-studio](https://github.com/DThornz/curve-fitting-studio) | [dthornz.github.io/curve-fitting-studio](https://dthornz.github.io/curve-fitting-studio/) |
+The website links to several independent computational projects:
 
-All pages share a consistent site-wide navigation bar and an accessibility panel (⚙) for dark/light mode, font size, and font style — preferences saved across pages via `localStorage`.
+* **Hodgkin–Huxley Neuron Model** — Interactive simulation of neuronal membrane dynamics.
+* **Maxwell–Boltzmann Simulator** — Molecular dynamics simulation demonstrating the Maxwell–Boltzmann speed distribution.
+* **LBM CFD Simulator** — Browser-based lattice Boltzmann simulation for fluid and vascular flow.
+* **Engineering FEA/CFD Calculator** — Collection of engineering and biomedical engineering calculation tools.
+* **Academic Reference Validator** — Automated verification and validation of academic references and DOI information.
+* **1D Energy Transport Simulator** — Numerical solution of the one-dimensional heat equation in Cartesian, cylindrical, and spherical coordinates.
+* **Curve Fitting Studio** — Browser-based nonlinear regression and model-fitting environment with a range of numerical optimization methods and scientific models.
 
----
+Each tool is maintained as a separate project and has its own documentation.
 
-## Curriculum Vitae (`AsadMirza_CV.html`)
+## Curriculum Vitae
 
-Interactive single-page academic CV built with vanilla HTML/CSS/JS.
+The online CV provides an interactive version of my academic curriculum vitae.
 
-**Features:**
-- Collapsible sections at three levels: Section → Group → Entry
-- Expandable publication cards with abstract, DOI, image, and video slots
-- Sidebar navigation with scroll-based active highlighting
-- **Expand All / Collapse All** toggle
-- **Download Word CV** button — exports a pre-formatted `.docx` (embedded base64, no server)
-- **Settings panel** — light/dark mode, three font families, three font sizes
-- Print-friendly `@media print` styles (Times New Roman, APA/academic format)
-- Fully responsive — mobile collapses sidebar
+It includes:
 
-**Sections:**
-Education · Work Experience · Publications (Patent, Book Chapter, 9 Articles) ·  
-Conference Proceedings (8 Oral · 25+ Posters) · Teaching · Supervision & Mentorship ·  
-Funding & Awards · Technical Skills · Service & Outreach
+**Education · Research & Work Experience · Publications · Conference Proceedings · Teaching · Supervision & Mentorship · Funding & Awards · Technical Skills · Service & Outreach**
 
-**Supervision & Mentorship (as of Spring 2026):**
-- 4 PhD Co-Mentees (Tsoukias Lab: Khakpour, Saadat, Saha; Alevriadou co-I: Muñoz)
-- 3 Undergraduate Research Interns
-- 19+ Senior Design Teams (2017–2026), including:
-  - **Spring 2026 Faculty Mentor** — Team F3 (IDD 2.0: Wearable Capsular Contracture Device)
-  - **Spring 2026 Consulting Advisor** — Teams F5 (FMT System), F7 (ECMO Phantom), F8 (RESTORE)
-  - **Fall 2025 Faculty Mentor** — Team F3 (Fully Mechanical Prosthetic Ankle)
+The CV can also be printed or exported for use as a conventional academic CV.
 
----
+## Research
 
-## Project Showcase (`projects.html`)
+The Project Showcase presents selected work in areas including:
 
-Research portfolio with filterable cards that expand into full-detail modals.
+* Computational biomechanics
+* Hemodynamics and cardiovascular modeling
+* CFD and fluid–structure interaction
+* Finite element analysis
+* Biomedical transport phenomena
+* Computational neuroscience
+* Image-based modeling
+* Numerical methods and scientific computing
+* Biomedical engineering software development
 
-- Filter by: CFD/FSI · FEA · Biomedical · Image/ML · Software
-- Each card expands to show: description, metrics, equations, image gallery, links
-- 8 projects pre-populated including CAVD hemodynamics, NO transport, calcium signaling, and more
-- Media slots: YouTube embed, local image/video, or placeholder
+The purpose of the showcase is to provide a more detailed view of selected projects than is practical in a traditional CV.
 
----
+## Development
 
-## Tool repos (see their own READMEs for full details)
+The deployed website is composed primarily of static HTML, CSS, and JavaScript and is hosted through GitHub Pages. No server-side application or database is required.
 
-Each tool is documented in its own repository:
+The repository also contains a local React-based editor used to maintain the CV content. The editor allows sections, publications, presentations, teaching activities, mentorship, and other CV entries to be updated and exported to the web-based CV.
 
-- **[hodgkin-huxley](https://github.com/DThornz/hodgkin-huxley)** — Interactive HH neuron model (RK4, 6 real-time plots, channel blockers, temperature scaling)
-- **[maxwell-boltzmann](https://github.com/DThornz/maxwell-boltzmann)** — 2D ideal-gas molecular dynamics with live MB speed distribution
-- **[lbm-cfd](https://github.com/DThornz/lbm-cfd)** — GPU D2Q9 LBM hemodynamics solver (WebGL2, Carreau–Yasuda, 8 vascular presets)
-- **[eng-fea-cfd-calc](https://github.com/DThornz/eng-fea-cfd-calc)** — 25+ client-side FEA/CFD/biomedical engineering calculators
-- **[academic-ref-validator](https://github.com/DThornz/academic-ref-validator)** — Reference list validator (CrossRef, EPMC, Semantic Scholar, DOI verification)
-- **[1D-Energy-Transport-Sim](https://github.com/DThornz/1D-Energy-Transport-Sim)** — Finite difference solver for the 1D heat equation (Cartesian, cylindrical, spherical; Dirichlet/Neumann BCs; Von Neumann stability; Thomas solver steady-state overlay)
-- **[curve-fitting-studio](https://github.com/DThornz/curve-fitting-studio)** — Browser-native nonlinear regression platform with 39 built-in models (LM/Gauss-Newton/Nelder-Mead/BFGS solvers, electrophysiology models, CI/PI bands, Huber IRLS robust fitting, weighted fitting, outlier detection, Fourier pre-processing, Python/R/MATLAB export, visual equation editor, multi-tab sessions)
+### Repository Structure
 
----
-
-## Local Development / Editor
-
-`cv_editor.jsx` is a React-based GUI editor for the CV. Run locally with any JSX bundler (Vite, CRA).
-
-**Features:** sidebar tree navigation · rich text editing · undo/redo (60-step, Ctrl+Z/Y) · media slots (images, YouTube, video) · Export HTML / Export JSON / Import JSON · new entries added at top (reverse chronological)
-
-The editor does **not** need to be deployed — run locally, export `AsadMirza_CV.html`, commit to this repo.
-
-**Editor data is kept in sync with `AsadMirza_CV.html`** and covers all sections: publications, conference proceedings (oral + poster), teaching (primary instructor + TA + course material dev), supervision (PhD co-mentees + undergrad interns + 19+ senior design teams), funding, skills, and service.
-
----
-
-## Repository Structure
-
-```
+```text
 website-cv-tools/
-├── index.html              ← Landing page
-├── AsadMirza_CV.html       ← Interactive academic CV
-├── projects.html           ← Research project showcase
-├── dissertation.html       ← PhD dissertation page
-├── AsadMirza_CV.docx       ← Word export (embedded in CV page)
-├── cv_editor.jsx           ← React GUI editor (run locally)
-├── README.md               ← This file
-└── LICENSE                 ← Apache 2.0
+├── index.html              # Website home page
+├── AsadMirza_CV.html       # Interactive academic CV
+├── projects.html           # Research project showcase
+├── dissertation.html       # Dissertation overview
+├── AsadMirza_CV.docx       # Word version of the CV
+├── cv_editor.jsx            # Local CV editor
+├── README.md
+└── LICENSE
 ```
-
----
 
 ## Deployment
 
-Site is deployed on **GitHub Pages** from the `main` branch root.
+The website is hosted using **GitHub Pages**.
 
-To update content:
-1. Edit `AsadMirza_CV.html` directly, or use `cv_editor.jsx` locally to export it
-2. Commit changes to `main`
-3. GitHub Pages rebuilds in ~60 seconds
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Markup | HTML5, SVG |
-| Styling | CSS3 (custom properties, grid, flexbox, `@media print`) |
-| Interactivity | Vanilla JavaScript — Canvas API, RK4 ODE solver |
-| Math rendering | KaTeX (simulator pages) |
-| Fonts | Google Fonts — DM Serif Display, DM Mono, DM Sans |
-| Editor | React (JSX hooks) |
-| Hosting | GitHub Pages |
-
-No build step required for deployed pages. Open any `.html` file in a browser.
-
----
+Updates to the main branch are automatically published to the website.
 
 ## Contact
 
-**Dr. Asad Mirza, PhD**  
-Research Assistant Professor · Biomedical Engineering  
-Florida International University · Miami, FL 33174
+**Dr. Asad Mirza, PhD**
+Research Assistant Professor
+Department of Biomedical Engineering
+Florida International University
 
-📧 [amirza@fiu.edu](mailto:amirza@fiu.edu)  
-🔗 [ORCID: 0000-0003-4515-2203](https://orcid.org/0000-0003-4515-2203)  
-📑 [Google Scholar](https://scholar.google.com/citations?user=a8fYPM0AAAAJ)  
-🔬 [ResearchGate](https://www.researchgate.net/profile/Asad_Mirza2)  
-⌥ [GitHub](https://github.com/DThornz)
+**Email:** [amirza@fiu.edu](mailto:amirza@fiu.edu)
+**ORCID:** 0000-0003-4515-2203
+**Google Scholar:** Asad Mirza
+**ResearchGate:** Asad Mirza
+**GitHub:** DThornz
 
 ---
 
-*Last updated: May 2026*
+*Last updated: September 2026*
